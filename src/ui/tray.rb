@@ -14,7 +14,7 @@ class Tray
 
     @tray_item = Swt::Widgets::TrayItem.new( App.display.system_tray, Swt::SWT::NONE)
     @tray_item.image = @standby_icon
-    @tray_item.tool_tip_text = "Compass.app"
+    @tray_item.tool_tip_text = "Fire.app"
     @tray_item.addListener(Swt::SWT::Selection,  update_menu_position_handler) unless org.jruby.platform.Platform::IS_MAC
     @tray_item.addListener(Swt::SWT::MenuDetect, update_menu_position_handler)
 
@@ -30,7 +30,7 @@ class Tray
 
     add_menu_separator
 
-    item =  add_menu_item( "Create Compass Project", create_project_handler, Swt::SWT::CASCADE)
+    item =  add_menu_item( "Create Project", create_project_handler, Swt::SWT::CASCADE)
 
     item.menu = Swt::Widgets::Menu.new( @menu )
     build_compass_framework_menuitem( item.menu, create_project_handler )
