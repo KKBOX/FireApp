@@ -5,7 +5,7 @@ class Report
 #    target_display.asyncExec(
 #      Swt::RRunnable.new do | runnable |
       shell = Swt::Widgets::Shell.new(target_display, Swt::SWT::DIALOG_TRIM)
-      shell.setText("Compass Report")
+      shell.setText("Fire.app Report")
       shell.setBackgroundMode(Swt::SWT::INHERIT_DEFAULT)
       shell.setSize(800,480)
       layout = Swt::Layout::GridLayout.new
@@ -32,7 +32,7 @@ class Report
       if options[:show_reset_button]
         label.setText('There is something wrong in your gem paths or plugins:')
       else
-        label.setText('Compass Report:')
+        label.setText('Fire.app Report:')
       end
       label.setLayoutData(gridData)
 

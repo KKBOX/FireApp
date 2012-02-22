@@ -3,7 +3,7 @@ class Alert
   def initialize(msg, target_display = nil, &block)
     target_display = Swt::Widgets::Display.get_current unless target_display
       shell = Swt::Widgets::Shell.new(target_display, Swt::SWT::DIALOG_TRIM)
-      shell.setText("Compass.app")
+      shell.setText("Fire.app")
       shell.setBackgroundMode(Swt::SWT::INHERIT_DEFAULT)
       shell.setSize(800,480)
       layout = Swt::Layout::GridLayout.new

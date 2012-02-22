@@ -3,7 +3,7 @@ class WelcomeWindow
   def initialize()
     target_display = Swt::Widgets::Display.get_current
       shell = Swt::Widgets::Shell.new(target_display, Swt::SWT::DIALOG_TRIM)
-      shell.setText("Compass.app")
+      shell.setText("Fire.app")
       shell.setBackgroundMode(Swt::SWT::INHERIT_DEFAULT)
       shell.setSize(800,480)
       layout = Swt::Layout::RowLayout.new(Swt::SWT::VERTICAL)
