@@ -21,7 +21,7 @@ class WelcomeWindow
       end
       new_font=Swt::Graphics::Font.new(target_display, font_data)
       label = Swt::Widgets::Label.new(shell, Swt::SWT::LEFT)
-      label.setText('Compass.app is a menu bar only application.')
+      label.setText('Fire.app is a menu bar only application.')
       label.setFont(new_font);
 
       label = Swt::Widgets::Label.new(shell, Swt::SWT::LEFT|Swt::SWT::WRAP)
