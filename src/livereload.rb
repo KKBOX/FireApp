@@ -57,6 +57,7 @@ class SimpleLivereload
       :port => 35729,
       :debug => false
     }.merge(options)
+    
 
     Thread.abort_on_exception = true
     @livereload_thread = Thread.new do 
@@ -114,6 +115,7 @@ class SimpleLivereload
   end 
 
   def start_watch_project(dir)
+    tray = Tray.instance
     @watch_project_thread = Thread.new do
       FSSM.monitor do |monitor|
         monitor.path dir do |path|
@@ -129,6 +131,10 @@ class SimpleLivereload
           path.update do |base, relative|
             puts ">>> Change detected to: #{relative}"
             SimpleLivereload.instance.send_livereload_msg( base, relative )
+            if defined?(App) && App::CONFIG["notifications"].include?(:overwrite) 
+              App.notifications << "overwrite #{relative} "
+              tray.shell.display.wake
+            end
           end 
           path.create do |base, relative|
             puts ">>> New file detected: #{relative}"
