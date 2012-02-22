@@ -4,6 +4,8 @@ require 'tilt'
 require 'active_support/all'
 require 'webrick/httpservlet/view_helpers'
 require 'haml'
+require 'maruku'
+
 WEBrick::HTTPRequest.class_eval do
   attr_accessor :path
 end
@@ -40,7 +42,7 @@ module WEBrick
       alias do_POST do_GET
 
       private
-      def extensions
+      def layout_extensions
         ["erb", "haml"]
       end
 
@@ -70,7 +72,7 @@ module WEBrick
         until layout or path == "/"
           path = File.dirname(path)
           
-          full_extensions = extensions + extensions.map{|x| "html."+ x}
+          full_extensions = layout_extensions + layout_extensions.map{|x| "html."+ x}
           possible_layouts = full_extensions.map do |ext|
             l = "_layout.#{ext}"
             possible_layout = File.join(root, path, l)

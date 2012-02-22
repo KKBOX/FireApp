@@ -3,9 +3,9 @@ require "webrick";
 require "erb"
 require "webrick/httpservlet/dynamic_handler"
 
-WEBrick::HTTPServlet::FileHandler.add_handler("haml", WEBrick::HTTPServlet::DynamicHandler)
-WEBrick::HTTPServlet::FileHandler.add_handler("erb",  WEBrick::HTTPServlet::DynamicHandler)
-
+["haml", "erb", "markdown"].each do |ext|
+  WEBrick::HTTPServlet::FileHandler.add_handler(ext, WEBrick::HTTPServlet::DynamicHandler)
+end
 class SimpleHTTPServer
   include Singleton
   include WEBrick

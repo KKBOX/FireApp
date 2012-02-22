@@ -84,7 +84,7 @@ module App
       end
  
 
-      common_lib_path = File.join(LIB_PATH, "ruby", "compass_common" )
+      common_lib_path = File.join(LIB_PATH, "ruby", "common" )
       scan_library( common_lib_path )
 
       if App::CONFIG['use_version'] == 0.10 
