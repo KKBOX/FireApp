@@ -17,8 +17,8 @@ module App
   end
 
   
-  CONFIG_DIR = File.join( java.lang.System.getProperty("user.home") , '.compass-ui' )
-  AUTOCOMPLTETE_CACHE_DIR = File.join( java.lang.System.getProperty("user.home") , '.compass-ui', 'autocomplete_cache' )
+  CONFIG_DIR = File.join( java.lang.System.getProperty("user.home") , '.fire-app' )
+  AUTOCOMPLTETE_CACHE_DIR = File.join( java.lang.System.getProperty("user.home") , '.fire-app', 'autocomplete_cache' )
 
   Dir.mkdir( CONFIG_DIR ) unless File.exists?( CONFIG_DIR )
   Dir.mkdir( AUTOCOMPLTETE_CACHE_DIR ) unless File.exists?( AUTOCOMPLTETE_CACHE_DIR )

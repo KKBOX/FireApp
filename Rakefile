@@ -46,10 +46,10 @@ INFO_ENDL
         %x{cp -R lib/#{copy_dir} #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources }
       end
       Dir.chdir CONFIG.osx_output_dir
-      %x{mv #{CONFIG.project_name}.app compass.app;}
-      @osx_bundle_file="compass.app.osx.#{@compile_time}-#{@revision}.zip"
-      %x{zip -9 -r #{@packages_dir}/#{@osx_bundle_file} compass.app}
-      %x{mkdir #{@packages_dir}/osx; cp -R compass.app #{@packages_dir}/osx}
+      %x{mv #{CONFIG.project_name}.app fire.app;}
+      @osx_bundle_file="fire.app.osx.#{@compile_time}-#{@revision}.zip"
+      %x{zip -9 -r #{@packages_dir}/#{@osx_bundle_file} fire.app}
+      %x{mkdir #{@packages_dir}/osx; cp -R fire.app #{@packages_dir}/osx}
     end
     
     task(:exe).clear_prerequisites.clear_actions
@@ -69,10 +69,10 @@ INFO_ENDL
       %x{mv package/windows/package/windows/*.exe package/windows}
       %x{rm -rf package/windows/package}
       Dir.chdir 'package'
-      %x{rm -rf compass.app windows/*.xml; mv windows compass.app}
-      @windows_bundle_file="compass.app.windows.#{@compile_time}-#{@revision}.zip"
-      %x{zip -9 -r #{@packages_dir}/#{@windows_bundle_file} compass.app}
-      %x{mkdir #{@packages_dir}/windows; cp -R compass.app #{@packages_dir}/windows}
+      %x{rm -rf fire.app windows/*.xml; mv windows fire.app}
+      @windows_bundle_file="fire.app.windows.#{@compile_time}-#{@revision}.zip"
+      %x{zip -9 -r #{@packages_dir}/#{@windows_bundle_file} fire.app}
+      %x{mkdir #{@packages_dir}/windows; cp -R fire.app #{@packages_dir}/windows}
     end
     
     desc "Bundles the jar from rawr:jar into a Linux script"
@@ -85,15 +85,15 @@ INFO_ENDL
         %x{cp -R lib/#{copy_dir} package/jar/lib }
       end
       
-      %x{mv package/jar package/compass.app}
-      File.open('package/compass.app/run.sh','w') do |f|
-        f.write("#!/usr/bin/env bash\ncd $(dirname $0)\njava -client -jar compass-app.jar")
+      %x{mv package/jar package/fire.app}
+      File.open('package/fire.app/run.sh','w') do |f|
+        f.write("#!/usr/bin/env bash\ncd $(dirname $0)\njava -client -jar fire-app.jar")
       end
-      %x{chmod +x package/compass.app/run.sh}
+      %x{chmod +x package/fire.app/run.sh}
       Dir.chdir 'package'
-      @linux_bundle_file="compass.app.linux.#{@compile_time}-#{@revision}.zip"
-      %x{zip -9 -r #{@packages_dir}/#{@linux_bundle_file} compass.app}
-      %x{mkdir #{@packages_dir}/linux; cp -R compass.app #{@packages_dir}/linux}
+      @linux_bundle_file="fire.app.linux.#{@compile_time}-#{@revision}.zip"
+      %x{zip -9 -r #{@packages_dir}/#{@linux_bundle_file} fire.app}
+      %x{mkdir #{@packages_dir}/linux; cp -R fire.app #{@packages_dir}/linux}
     end
 
     desc "Bundles Linux, OSX and Window package"

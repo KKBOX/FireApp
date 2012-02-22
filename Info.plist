@@ -5,7 +5,7 @@
     <key>NSUIElement</key>
     <string>1</string>
     <key>CFBundleName</key>
-    <string>compass.app</string>
+    <string>Fire.app</string>
     <key>CFBundleVersion</key>
     <string>1.0.0</string>
     <key>CFBundleAllowMixedLocalizations</key>
@@ -30,7 +30,7 @@
         <string>1.6*</string>
         <key>ClassPath</key>
             <array>
-                <string>$JAVAROOT/compass-app.jar</string>
+                <string>$JAVAROOT/fire-app.jar</string>
             </array>
         <key>Properties</key>
         <dict>

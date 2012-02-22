@@ -1,8 +1,8 @@
-# Compass.app
+# Fire.app
 
-http://compass.handlino.com/
+http://fireapp.handlino.com/
 
-[Compass.app](http://compass.handlino.com/) helps designers compile stylesheets easily without resorting to command line interface. It is written in Java and works in Windows/Linux/Mac OS X.
+[Fire.app](http://Fireapp.handlino.com/) helps designers compile stylesheets easily without resorting to command line interface. It is written in Java and works in Windows/Linux/Mac OS X.
 
 [Compass](http://compass-style.org/) is a stylesheet authoring framework that makes your stylesheets and markup easier to build and maintain. With compass, you write your stylesheets in [Sass](http://sass-lang.com/) instead of CSS.
 

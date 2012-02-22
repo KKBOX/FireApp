@@ -2,7 +2,7 @@ configuration do |c|
 	# The name for your resulting application file (e.g., if the project_name is 'foo' then you'll get foo.jar, foo.exe, etc.)
 	# default value: "tka"
 	#
-	c.project_name = "compass-app"
+	c.project_name = "fire-app"
 
 	# Undocumented option 'output_dir'
 	# default value: "package"
