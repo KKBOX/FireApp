@@ -57,7 +57,7 @@ configuration do |c|
 	# Undocumented option 'jvm_arguments'
 	# default value: ""
 	#
-	#c.jvm_arguments = ""
+	#c.jvm_arguments = "-Djruby.compat.version=1.9"
 
 	# Undocumented option 'java_library_path'
 	# default value: ""
