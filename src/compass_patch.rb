@@ -110,6 +110,7 @@ module Compass
       msg = "#{action_padding(action)}#{action} #{arguments.join(' ')}"
       if App::CONFIG["notifications"].include?(action)
         App.notify( msg.strip, @display )
+        @display.wake
       end
       log( msg )
     end
