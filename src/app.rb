@@ -4,7 +4,7 @@ module App
   extend self
 
   include CompileVersion
-  VERSION = "1.0"
+  VERSION = "1.0.beta"
   OS = org.jruby.platform.Platform::OS 
   OS_VERSION = java.lang.System.getProperty("os.version")
 
@@ -69,7 +69,7 @@ module App
       "gem_path" => App.get_system_default_gem_path,
       "notifications" => [ :error, :warning ],
       "save_notification_to_file" => true,
-      "services" => [ ],
+      "services" => [ :http, :livereload],
       "services_http_port" => 24680,
       "services_livereload_port" => 35729,
       "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml",
