@@ -10,6 +10,7 @@ class Tray
     @shell    = App.create_shell(Swt::SWT::ON_TOP | Swt::SWT::MODELESS)
 
     @standby_icon = App.create_image("icon/16_dark.png")
+    @active_icon = App.create_image("icon/16_white.png")
     @watching_icon = App.create_image("icon/16.png")
 
     @tray_item = Swt::Widgets::TrayItem.new( App.display.system_tray, Swt::SWT::NONE)
@@ -19,6 +20,8 @@ class Tray
     @tray_item.addListener(Swt::SWT::MenuDetect, update_menu_position_handler)
 
     @menu = Swt::Widgets::Menu.new(@shell, Swt::SWT::POP_UP)
+    @menu.addListener(Swt::SWT::Show, show_menu_handler)
+    @menu.addListener(Swt::SWT::Hide, hide_menu_handler)
 
     @watch_item = add_menu_item( "Watch a Folder...", open_dir_handler)
 
@@ -284,6 +287,21 @@ class Tray
       stop_watch
       App.set_histoy(@history_dirs[0,5])
       @shell.close
+    end
+  end
+  
+  def show_menu_handler
+    Swt::Widgets::Listener.impl do |method, evt|
+      @tray_item.image = @active_icon
+    end
+  end
+  def hide_menu_handler
+    Swt::Widgets::Listener.impl do |method, evt|
+      if @watching_dir
+        @tray_item.image = @watching_icon
+      else
+        @tray_item.image = @standby_icon
+      end
     end
   end
 
