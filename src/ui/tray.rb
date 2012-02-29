@@ -9,8 +9,8 @@ class Tray
     @history_dirs  = App.get_history
     @shell    = App.create_shell(Swt::SWT::ON_TOP | Swt::SWT::MODELESS)
 
-    @standby_icon = App.create_image("icon/16_dark.png")
-    @watching_icon = App.create_image("icon/16.png")
+    @standby_icon = App.create_image("icon/32_dark.png")
+    @watching_icon = App.create_image("icon/32.png")
 
     @tray_item = Swt::Widgets::TrayItem.new( App.display.system_tray, Swt::SWT::NONE)
     @tray_item.image = @standby_icon
