@@ -46,10 +46,10 @@ INFO_ENDL
         %x{cp -R lib/#{copy_dir} #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources }
       end
       Dir.chdir CONFIG.osx_output_dir
-      %x{mv #{CONFIG.project_name}.app fire.app;}
+      %x{mv #{CONFIG.project_name}.app Fire.app;}
       @osx_bundle_file="fire.app.osx.#{@compile_time}-#{@revision}.zip"
-      %x{zip -9 -r #{@packages_dir}/#{@osx_bundle_file} fire.app}
-      %x{mkdir #{@packages_dir}/osx; cp -R fire.app #{@packages_dir}/osx}
+      %x{zip -9 -r #{@packages_dir}/#{@osx_bundle_file} Fire.app}
+      %x{mkdir #{@packages_dir}/osx; cp -R Fire.app #{@packages_dir}/osx}
     end
     
     task(:exe).clear_prerequisites.clear_actions
