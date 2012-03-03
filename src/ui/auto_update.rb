@@ -65,7 +65,7 @@ class AutoUpdate
         end)
       else
         label = Swt::Widgets::Label.new(shell, Swt::SWT::HORIZONTAL )
-        label.setText("Compass.app is up to date")
+        label.setText("Fire.app is up to date")
       end
 
       m=target_display.getPrimaryMonitor().getBounds();
