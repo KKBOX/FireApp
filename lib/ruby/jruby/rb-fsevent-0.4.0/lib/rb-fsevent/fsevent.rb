@@ -8,9 +8,9 @@ class FSEvent
     class_eval <<-END
       def watcher_path
       if App::OS_VERSION.to_f >= 10.7
-      "#{File.join(FSEvent.root_path, 'bin', 'fsevent_watch_for_compass_app_lion')}"
+      "#{File.join(FSEvent.root_path, 'bin', 'fsevent_watch_for_fire_app_lion')}"
       else
-      "#{File.join(FSEvent.root_path, 'bin', 'fsevent_watch_for_compass_app')}"
+      "#{File.join(FSEvent.root_path, 'bin', 'fsevent_watch_for_fire_app')}"
       end
       end
     END
