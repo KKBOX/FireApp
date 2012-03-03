@@ -392,7 +392,7 @@ class PreferencePanel
     special_gem_label_ex = Swt::Widgets::Label.new( @apply_group, Swt::SWT::LEFT | Swt::SWT::WRAP)
     red = Swt::Graphics::Color.new(@display, 255, 0, 0);
     special_gem_label_ex.setForeground(red);
-    special_gem_label_ex.setText(" You have to restart Commpass.app to apply this change")
+    special_gem_label_ex.setText(" You have to restart Fire.app to apply this change")
 
     compass_version_apply_button = Swt::Widgets::Button.new(@apply_group, Swt::SWT::PUSH )
     compass_version_apply_button.setText("Apply Change")

@@ -380,7 +380,7 @@ class Tray
   end
 
   def update_config(need_clean_attr, value)
-    new_config_str = "\n#{need_clean_attr} = #{value} # by Compass.app "
+    new_config_str = "\n#{need_clean_attr} = #{value} # by Fire.app "
 
     file_name = Compass.detect_configuration_file
 
