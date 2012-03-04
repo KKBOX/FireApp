@@ -3,9 +3,13 @@ require "webrick";
 require "erb"
 require "webrick/httpservlet/dynamic_handler"
 
+mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
 ["haml", "erb", "markdown"].each do |ext|
   WEBrick::HTTPServlet::FileHandler.add_handler(ext, WEBrick::HTTPServlet::DynamicHandler)
+  mime_types[ext] = "text/html"
 end
+FireAppMimeTypes=mime_types
+
 class SimpleHTTPServer
   include Singleton
   include WEBrick
@@ -22,7 +26,8 @@ class SimpleHTTPServer
     @http_server_thread = Thread.new do 
       @http_server.mount("/",HTTPServlet::FileHandler, dir,  {
         :AcceptableLanguages => WEBrick::HTTPServlet::FileHandler::HandlerTable.keys,
-        :FancyIndexing => true
+        :FancyIndexing => true,
+        :MimeTypes => FireAppMimeTypes
       });
       
       @http_server.start
