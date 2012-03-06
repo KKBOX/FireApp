@@ -4,6 +4,7 @@ require "erb"
 require "webrick/httpservlet/dynamic_handler"
 
 mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
+mime_types["js"] = "text/javascript"
 ["haml", "erb", "markdown"].each do |ext|
   WEBrick::HTTPServlet::FileHandler.add_handler(ext, WEBrick::HTTPServlet::DynamicHandler)
   mime_types[ext] = "text/html"
