@@ -70,7 +70,7 @@ module App
       "notifications" => [ :error, :warning ],
       "save_notification_to_file" => true,
       "services" => [ :http, :livereload],
-      "services_http_port" => 24680,
+      "services_http_port" => 24681,
       "services_livereload_port" => 35729,
       "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml",
       "preferred_syntax" => "scss"
