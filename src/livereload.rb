@@ -133,7 +133,7 @@ class SimpleLivereload
             SimpleLivereload.instance.send_livereload_msg( base, relative )
             if defined?(App) && App::CONFIG["notifications"].include?(:overwrite) 
               App.notifications << "overwrite #{relative} "
-              tray.shell.display.wake
+              tray.shell.display.wake if tray.shell
             end
           end 
           path.create do |base, relative|
