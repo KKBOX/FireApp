@@ -56,8 +56,13 @@ class Tray
   def shell 
     @shell
   end
-  def run
+  def run(options={})
     puts 'tray OK, spend '+(Time.now.to_f - INITAT.to_f).to_s
+    
+    if(options[:watch])
+      watch(options[:watch])
+    end
+
     while(!@shell.is_disposed) do
       App.display.sleep if(!App.display.read_and_dispatch) 
       App.show_and_clean_notifications

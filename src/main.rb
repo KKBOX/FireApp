@@ -40,7 +40,7 @@ begin
   end
   App.clear_autocomplete_cache
 
-  Tray.instance.run
+  Tray.instance.run(:watch => ARGV[0])
 
 rescue Exception => e
   puts e.message
