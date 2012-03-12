@@ -98,22 +98,18 @@ module App
       
     rescue LoadError => e
       if CONFIG["use_specify_gem_path"]
-        alert("Load custom Compass fail, use default Compass v0.11 library, please check the Gem Path")
+        alert("Load custom Compass fail, use default Compass v0.12 library, please check the Gem Path")
       end
  
 
       common_lib_path = File.join(LIB_PATH, "ruby", "common" )
       scan_library( common_lib_path )
 
-      if App::CONFIG['use_version'] == 0.10 
-        alert("Compass.app v#{VERSION} not support Compass v0.10, use Default Compass v0.11 library")
+      if App::CONFIG['use_version'] <= 0.12
+        alert("Compass.app v#{VERSION} not support Compass #{App::CONFIG['use_version']}, use Compass v0.12 library")
       end
       
-      if App::CONFIG['use_version'] == 0.12
       compass_gems_path = File.join(LIB_PATH, "ruby", "compass_0.12")
-      else
-      compass_gems_path = File.join(LIB_PATH, "ruby", "compass_0.11")
-      end
 
       scan_library(compass_gems_path)
 
