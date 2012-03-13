@@ -331,7 +331,6 @@ class Tray
   def build_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
       App.try do 
-        start_build_project=Time.now
 
         report_window = App.report('Start build project!')
         project_path = Compass.configuration.project_path
@@ -369,7 +368,7 @@ class Tray
         end
 
         end_build_project=Time.now
-        report_window.append "Build project Complete! \nspend #{(end_build_project- start_build_project).to_s} sec." do
+        report_window.append "Done!" do
           Swt::Program.launch(release_dir)
         end
       end

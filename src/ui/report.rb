@@ -110,6 +110,7 @@ class Report
 
   def append(text, &block)
     @text.append "\n#{text}" if @text && !@text.is_disposed
+    @text.update
     block.call if block_given?
   end
 end
