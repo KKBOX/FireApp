@@ -58,7 +58,7 @@ class Tray
   end
   def run(options={})
     puts 'tray OK, spend '+(Time.now.to_f - INITAT.to_f).to_s
-    
+
     if(options[:watch])
       watch(options[:watch])
     end
@@ -280,7 +280,7 @@ class Tray
       Swt::Program.launch('http://sass-lang.com/')
     end
   end
-  
+
   def open_livereloadjs_link_handler
     Swt::Widgets::Listener.impl do |method, evt|
       Swt::Program.launch('https://github.com/livereload/livereload-js')
@@ -294,7 +294,7 @@ class Tray
       @shell.close
     end
   end
-  
+
   def show_menu_handler
     Swt::Widgets::Listener.impl do |method, evt|
       @tray_item.image = @active_icon
@@ -331,37 +331,45 @@ class Tray
   def build_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
       App.try do 
+        start_build_project=Time.now
+
+        report_window = App.report('Start build project!')
         project_path = Compass.configuration.project_path
         release_dir = File.join(project_path, "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
         FileUtils.mkdir_p( release_dir)
         file_extensions = WEBrick::HTTPServlet::FileHandler::HandlerTable.keys.join(',')
         Dir.glob( File.join(Compass.configuration.project_path, '**', "[^_]*.html.{#{file_extensions}}") ) do |file|
-          next if file =~ /build_\d{14}/
+        next if file =~ /build_\d{14}/
+
           extname=File.extname(file[project_path.size..-1])# get .erb, .html, .php
+        request = WEBrick::HTTPRequest.new({})
+        request.path = file[project_path.size ... (extname.size*-1)]
 
-          request = WEBrick::HTTPRequest.new({})
-          request.path = file[project_path.size ... (extname.size*-1)]
+        handler = (WEBrick::HTTPServlet::FileHandler::HandlerTable[extname[1..-1]])
+        content = handler.new(nil, file).send(:parse, request, nil)
 
-          handler = (WEBrick::HTTPServlet::FileHandler::HandlerTable[extname[1..-1]])
-          content = handler.new(nil, file).send(:parse, request, nil)
+        new_file = File.join(release_dir, request.path)
+        FileUtils.mkdir_p( File.dirname(  new_file ))
+        File.open(new_file, 'w') {|f| f.write(content) }
 
-          new_file = File.join(release_dir, request.path)
-          FileUtils.mkdir_p( File.dirname(  new_file ))
-          File.open(new_file, 'w') {|f| f.write(content) }
+        report_window.append "Create: #{request.path}"
         end
-
         Dir.glob( File.join(Compass.configuration.project_path, '**', '[^_]*.{html,swf,txt,ico,png,json,xml}') ) do |file|
           next if file =~ /build_\d{14}/
-          new_file = File.join(release_dir, file[project_path.size..-1])
+            new_file = File.join(release_dir, file[project_path.size..-1])
           FileUtils.mkdir_p( File.dirname(  new_file ))
           FileUtils.cp( file, new_file )
+          report_window.append "Copy: #{file[project_path.size..-1]}"
         end
 
         %w{images css javascripts}.each do |asset|
           asset_path = Compass.configuration.send("#{asset}_path")
           FileUtils.cp_r(asset_path, release_dir) if File.exists?(asset_path)
+          report_window.append "Copy directory: #{asset_path[project_path.size..-1]}"
         end
-        App.alert("Build project completed") do
+
+        end_build_project=Time.now
+        report_window.append "Build project Complete! \nspend #{(end_build_project- start_build_project).to_s} sec." do
           Swt::Program.launch(release_dir)
         end
       end
