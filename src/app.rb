@@ -105,8 +105,10 @@ module App
       common_lib_path = File.join(LIB_PATH, "ruby", "common" )
       scan_library( common_lib_path )
 
-      if App::CONFIG['use_version'] <= 0.12
-        alert("Compass.app v#{VERSION} not support Compass #{App::CONFIG['use_version']}, use Compass v0.12 library")
+      if App::CONFIG['use_version'] < 0.12
+        alert("Welcome to use Fire.app v#{VERSION}!\nFire.app is using Compass 0.12 by default. Compass #{App::CONFIG['use_version']} is no longer supported.\nPlease check our site for more information.")
+        App::CONFIG['use_version']=0.12
+        App.save_config
       end
       
       compass_gems_path = File.join(LIB_PATH, "ruby", "compass_0.12")
