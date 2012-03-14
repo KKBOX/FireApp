@@ -332,9 +332,13 @@ class Tray
     Swt::Widgets::Listener.impl do |method, evt|
       App.try do 
 
-        report_window = App.report('Start build project!')
         project_path = Compass.configuration.project_path
         release_dir = File.join(project_path, "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
+
+        report_window = App.report('Start build project!') do
+          Swt::Program.launch(release_dir)
+        end
+
         FileUtils.mkdir_p( release_dir)
         file_extensions = WEBrick::HTTPServlet::FileHandler::HandlerTable.keys.join(',')
         Dir.glob( File.join(Compass.configuration.project_path, '**', "[^_]*.html.{#{file_extensions}}") ) do |file|
@@ -368,9 +372,7 @@ class Tray
         end
 
         end_build_project=Time.now
-        report_window.append "Done!" do
-          Swt::Program.launch(release_dir)
-        end
+        report_window.append "Done!" 
       end
     end
 

@@ -186,8 +186,8 @@ module App
     end
   end
 
-  def report(msg, target_display = nil, options={})
-    Report.new(msg, target_display, options)
+  def report(msg, target_display = nil, options={}, &block)
+    Report.new(msg, target_display, options, &block)
   end
   
   def alert(msg, target_display = nil, &block)
