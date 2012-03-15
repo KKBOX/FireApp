@@ -25,7 +25,6 @@ module App
 
   HISTORY_FILE =  File.join( CONFIG_DIR, 'history')
   CONFIG_FILE  =  File.join( CONFIG_DIR, 'config')
-
   @notifications = []
   def notifications
     @notifications
@@ -66,7 +65,6 @@ module App
       "show_welcome" => true,
       "use_version" => 0.12,
       "use_specify_gem_path" => false,
-      "gem_path" => App.get_system_default_gem_path,
       "notifications" => [ :error, :warning ],
       "save_notification_to_file" => true,
       "services" => [ :http, :livereload],
@@ -74,11 +72,18 @@ module App
       "services_livereload_port" => 35729,
       "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml",
       "preferred_syntax" => "scss"
-    }.merge!(x)
+    }
 
+    config.merge!(x)
+    if !config["gem_path"]
+      config["gem_path"] = App.get_system_default_gem_path
+    end
+
+    return config
   end
  
   CONFIG = get_config
+  
   def require_compass
 
     begin
