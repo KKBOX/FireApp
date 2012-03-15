@@ -8,7 +8,7 @@ http://fireapp.handlino.com/
 
 # License
 
-Copyright (c) 2010 Handlino Inc.
+Copyright (c) 2012 Handlino Inc.
 Licensed under GPL v2.
 
 We sell prebuild software in our offical site. If you know how to build it, feel free to download the source and build your own.
