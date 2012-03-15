@@ -45,9 +45,11 @@ class SplashWindow
   end
 
   def replace(msg)
-    @label.text = msg
     @replace_count += 1
-    @label.update if @replace_count % 20 ==0
+    if @replace_count % 10 ==0
+      @label.text = "Loading #{@replace_count.to_s} modules..."
+      @label.update 
+    end
   end
 
   def dispose
