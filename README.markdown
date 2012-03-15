@@ -1,22 +1,22 @@
 # Fire.app
 
-http://fireapp.handlino.com/
+[Fire.app][fireapp] is a **menubar only app** for fast HTML prototyping.
 
-[Fire.app](http://Fireapp.handlino.com/) helps designers compile stylesheets easily without resorting to command line interface. It is written in Java and works in Windows/Linux/Mac OS X.
+Fire.app is written in **Java (JRuby)**, and works in mac, linux and pc.
 
-[Compass](http://compass-style.org/) is a stylesheet authoring framework that makes your stylesheets and markup easier to build and maintain. With compass, you write your stylesheets in [Sass](http://sass-lang.com/) instead of CSS.
+## System Requirement
 
-# License
+Fire.app has been tested in:
+
+* Windows: Windows 7/Vista/XP
+* OS X: 10.5, 10.6 32/64bit, 10.7 32/64bit
+* Linux: Arch Linux 32/64bit
+
+Fire.app is written in **Java (JRuby)**, so you must install JRE(Java Runtime Environment) first. If you do not have JRE installed, Fire.app will guide you to install it first.
+
+## License
 
 Copyright (c) 2012 Handlino Inc.
 Licensed under GPL v2.
 
-We sell prebuild software in our offical site. If you know how to build it, feel free to download the source and build your own.
-
-# System Requirement
-
-* Java Runtime
-
-# Build Your Own
-
-If you want to build your own copy, you will need [JRuby 1.6.5](http://jruby.org/) and [rawr](http://rawr.rubyforge.org/).
+[fireapp]: http://fireapp.handlino.com/
