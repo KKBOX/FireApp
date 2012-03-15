@@ -1,7 +1,4 @@
-INITAT=Time.now.to_f
-def show_time(tag="something")
-  puts "#{tag}: #{( Time.now.to_f - INITAT )}"
-end
+INITAT=Time.now
 
 $LOAD_PATH << 'src'
 
