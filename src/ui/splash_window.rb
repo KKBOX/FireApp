@@ -41,12 +41,13 @@ class SplashWindow
       @shell.forceActive
       @img_label.redraw
       @img_label.update
+      @replace_count = 0
   end
 
   def replace(msg)
     @label.text = msg
-    @label.update
-    @label.pack
+    @replace_count += 1
+    @label.update if @replace_count % 20 ==0
   end
 
   def dispose
