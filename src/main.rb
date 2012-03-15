@@ -1,4 +1,7 @@
-INITAT=Time.now
+INITAT=Time.now.to_f
+def show_time(tag="something")
+  puts "#{tag}: #{( Time.now.to_f - INITAT )}"
+end
 
 $LOAD_PATH << 'src'
 
@@ -10,7 +13,9 @@ else
 end
 
 require "swt_wrapper"
-
+require "ui/splash_window"
+SplashWindow.instance.replace('Loading...')
+require "require_patch.rb"
 
 require 'stringio'
 require 'thread'
@@ -21,6 +26,7 @@ require "yaml"
 end
 
 require "app.rb"
+
 
 begin
   App.require_compass

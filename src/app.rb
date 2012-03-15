@@ -83,7 +83,6 @@ module App
   end
  
   CONFIG = get_config
-  
   def require_compass
 
     begin

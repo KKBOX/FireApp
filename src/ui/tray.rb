@@ -62,6 +62,8 @@ class Tray
     if(options[:watch])
       watch(options[:watch])
     end
+    
+    SplashWindow.instance.dispose
 
     while(!@shell.is_disposed) do
       App.display.sleep if(!App.display.read_and_dispatch) 
