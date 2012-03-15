@@ -3,10 +3,14 @@ class SplashWindow
   include Singleton
   def initialize(msg="Starting", target_display = nil, &block)
     target_display = Swt::Widgets::Display.get_current unless target_display
-      @shell = Swt::Widgets::Shell.new(target_display, Swt::SWT::BORDER|Swt::SWT::ON_TOP)
+      if org.jruby.platform.Platform::IS_MAC
+        @shell = Swt::Widgets::Shell.new(target_display, Swt::SWT::BORDER|Swt::SWT::ON_TOP|Swt::SWT::TITLE)
+      else
+        @shell = Swt::Widgets::Shell.new(target_display, Swt::SWT::BORDER|Swt::SWT::ON_TOP)
+      end
       @shell.setText("Fire.app")
       @shell.setBackgroundMode(Swt::SWT::INHERIT_DEFAULT)
-      @shell.setSize(400,80)
+      @shell.setSize(400,100)
       layout = Swt::Layout::GridLayout.new
       layout.numColumns = 2;
       @shell.layout = layout
@@ -36,6 +40,7 @@ class SplashWindow
       @shell.open
       @shell.forceActive
       @img_label.redraw
+      @img_label.update
   end
 
   def replace(msg)
