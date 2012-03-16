@@ -1,3 +1,5 @@
+![Fire.app](https://github.com/handlino/FireApp/raw/master/lib/images/icon/512.png)
+
 # Fire.app
 
 [Fire.app][fireapp] is a **menubar only app** for dead easy HTML prototyping.
