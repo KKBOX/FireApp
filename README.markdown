@@ -1,6 +1,6 @@
 # Fire.app
 
-[Fire.app][fireapp] is a **menubar only app** for fast HTML prototyping.
+[Fire.app][fireapp] is a **menubar only app** for dead easy HTML prototyping.
 
 Fire.app is written in **Java (JRuby)**, and works in mac, linux and pc.
 
@@ -14,9 +14,24 @@ Fire.app has been tested in:
 
 Fire.app is written in **Java (JRuby)**, so you must install JRE(Java Runtime Environment) first. If you do not have JRE installed, Fire.app will guide you to install it first.
 
+## Download
+
+You can buy Fire.app from [our official site][fireapp]. Once you bought it, We will send an email with download links to your PayPal's email address. You will also get 1.x updates for free.
+
+Fire.app is **GPLv2 licensed** because we love open source so much. The source code is [available on GitHub][fireapp-github]. You can build it your own, or even modify it based on your needs.
+
+## Install
+
+There is no need to **install** Fire.app. You can just unzip and put it anywhere. You can even use Dropbox to sync between computers.
+
+## Build Your Own
+
+If you want to build your own copy, you will need [JRuby](http://jruby.org/) and [rawr](http://rawr.rubyforge.org/).
+
 ## License
 
 Copyright (c) 2012 Handlino Inc.
 Licensed under GPL v2.
 
 [fireapp]: http://fireapp.handlino.com/
+[fireapp-github]: http://github.com/handlino/fireapp
