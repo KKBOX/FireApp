@@ -161,7 +161,7 @@ class Tray
 
   def build_change_options_menuitem( index )
 
-    @changeoptions_item = add_menu_item( "Change Options...", empty_handler , Swt::SWT::CASCADE, @menu, index)
+    @changeoptions_item = add_menu_item( "Change Sass Options...", empty_handler , Swt::SWT::CASCADE, @menu, index)
     submenu = Swt::Widgets::Menu.new( @menu )
     @changeoptions_item.menu = submenu
 
