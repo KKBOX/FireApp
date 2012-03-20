@@ -1,0 +1,42 @@
+=== 1.72.8 2011-06-26
+* fix passing of options hash to ruby.
+
+=== 1.72.6 2009-11-30
+* 2 major enhancements:
+  * evaluate an IO object such as a file or an socket input stream
+  * load javascript sources directly into the context with the file system
+
+=== 1.72.5 2009-11-12
+* 2 major enhancements:
+  * evaluate javascript with a ruby object as it's scope using Context#open(:with => object)
+  * add eval_js() method to Object to evaluate in the context of that object
+
+=== 1.72.4 2009-11-12
+* 3 major enhancements:
+  * automatically wrap/unwrap ruby and javascript arrays
+  * automatically convert ruby method objects and Proc objects into javascript functions
+  * Make functions defined in javascript callable from ruby
+
+=== 1.72.3 2009-11-11
+* 4 major enhancements:
+  * greatly simplified interface to context by unifying context and scope
+  * remove Context#open_std()
+  * remove Context#standard
+  * remove Context#init_standard_objects
+
+=== 1.72.2 2009-11-10
+* 1 major enhancement:
+  * ability to limit the instruction count for a context
+
+=== 1.72.1 2009-11-09
+* 4 major enhancements:
+  * easily manipulate javascript objects from ruby (NativeObject)
+  * make NativeObject Enumerable
+  * to_h and to_json for NativeObject
+  * embed ruby instances and call methods from javascript
+
+=== 1.72.0 2009-09-24
+
+* 2 major enhancements:
+  * evaluate javascript in jruby
+  * embed callable ruby objects in javascript

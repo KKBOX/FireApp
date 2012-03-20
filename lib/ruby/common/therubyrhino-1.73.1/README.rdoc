@@ -1,0 +1,157 @@
+= therubyrhino
+
+* http://github.com/cowboyd/therubyrhino
+* irc://irc.freenode.net/therubyrhino
+
+== DESCRIPTION:
+
+Embed the Mozilla Rhino Javascript interpreter into Ruby
+
+== FEATURES/PROBLEMS:
+
+* Evaluate Javascript from with in Ruby
+* Embed your Ruby objects into the Javascript world
+
+== SYNOPSIS:
+
+1. Javascript goes into Ruby
+1. Ruby Objects goes into Javascript
+1. Our shark's in the Javascript!
+
+  require 'rhino'
+  
+# evaluate some simple javascript
+  eval_js "7 * 6" #=> 42
+
+# that's quick and dirty, but if you want more control over your
+# environment, use a Context:
+  Rhino::Context.open do |cxt|
+    cxt['foo'] = "bar"
+    cxt.eval('foo') # => "bar"
+  end
+
+# evaluate a ruby function from javascript
+  
+  Rhino::Context.open do |context|
+    context["say"] = lambda {|word, times| word * times}
+    context.eval("say("Hello", 3)") #=> HelloHelloHello
+  end
+  
+# embed a ruby object into your javascript environment
+
+  class MyMath
+    def plus(lhs, rhs)
+      lhs + rhs
+    end
+  end
+
+  Rhino::Context.open do |context|
+    context["math"] = MyMath.new
+    context.eval("math.plus(20,22)") #=> 42
+  end
+  
+# make a ruby object *be* your javascript environment
+  math = MyMath.new
+  Rhino::Context.open(:with => math) do |context|
+    context.eval("plus(20,22)") #=> 42
+  end
+  
+  #or the equivalent
+  
+  math.eval_js("plus(20,22)")
+
+# Configure your embedding setup
+
+  # Make your standard objects (Object, String, etc...) immutable
+  Rhino::Context.open(:sealed => true) do |context|
+    context.eval("Object.prototype.toString = function() {}") # this is an error!
+  end
+  
+  #Turn on Java integration from javascript (probably a bad idea)
+  Rhino::Context.open(:java => true) do |context|
+    context.eval("java.lang.System.exit()") #it's dangerous!
+  end
+
+  #limit the number of instructions that can be executed in order to prevent
+  #rogue scripts
+  Rhino::Context.open do |context|
+    context.instruction_limit = 100000
+    context.eval("while (true);") # => Error!
+  end
+
+==== Different ways of loading javascript source
+
+In addition to just evaluating strings, you can also use streams such as files.
+
+# evaluate bytes read from any File/IO object:
+  File.open("mysource.js") do |file|
+    eval_js file, "mysource.js"
+  end
+
+# or load it by filename
+  Rhino::Context.open do |context|
+    context.load("mysource.js")
+  end
+
+=== Safe by default
+
+The Ruby Rhino is designed to let you evaluate javascript as safely as possible unless you tell it to do something more
+dangerous. The default context is a hermetically sealed javascript environment with only the standard javascript objects
+and functions. Nothing from the ruby world is accessible at all.
+
+For ruby objects that you explicitly embed into javascript, only the +public+ methods *defined in their classes* are
+exposed by default. E.g.
+
+  class A
+    def a
+      "a"
+    end
+  end
+
+  class B < A
+    def b
+      "b"
+    end
+  end
+
+
+  Rhino::Context.open do |cxt|
+    cxt['a'] = A.new
+    cxt['b'] = B.new
+    cxt.eval("a.a()") # => 'a'
+    cxt.eval("b.b()") # => 'b'
+    cxt.eval("b.a()") # => 'TypeError: undefined property 'a' is not a function'
+  end
+  
+== REQUIREMENTS:
+
+* JRuby >= 1.3.0
+
+== INSTALL:
+
+* jgem install therubyrhino
+
+== LICENSE:
+
+(The MIT License)
+
+Copyright (c) 2009 Charles Lowell
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

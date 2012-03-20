@@ -341,32 +341,52 @@ class Tray
           Swt::Program.launch(release_dir)
         end
 
+        #build html 
         FileUtils.mkdir_p( release_dir)
         file_extensions = WEBrick::HTTPServlet::FileHandler::HandlerTable.keys.join(',')
         Dir.glob( File.join(Compass.configuration.project_path, '**', "[^_]*.html.{#{file_extensions}}") ) do |file|
-        next if file =~ /build_\d{14}/
+          next if file =~ /build_\d{14}/
 
-          extname=File.extname(file[project_path.size..-1])# get .erb, .html, .php
-        request = WEBrick::HTTPRequest.new({})
-        request.path = file[project_path.size ... (extname.size*-1)]
+          extname=File.extname(file)# get .erb, .html, .php
+          request = WEBrick::HTTPRequest.new({})
+          request.path = file[project_path.size ... (extname.size*-1)]
 
-        handler = (WEBrick::HTTPServlet::FileHandler::HandlerTable[extname[1..-1]])
-        content = handler.new(nil, file).send(:parse, request, nil)
+          handler = (WEBrick::HTTPServlet::FileHandler::HandlerTable[extname[1..-1]])
+          content = handler.new(nil, file).send(:parse, request, nil)
 
-        new_file = File.join(release_dir, request.path)
-        FileUtils.mkdir_p( File.dirname(  new_file ))
-        File.open(new_file, 'w') {|f| f.write(content) }
+          new_file = File.join(release_dir, request.path)
+          FileUtils.mkdir_p( File.dirname(  new_file ))
+          File.open(new_file, 'w') {|f| f.write(content) }
 
-        report_window.append "Create: #{request.path}"
+          report_window.append "Create: #{request.path}"
         end
+ 
+        #build js from coffeescript 
+        FileUtils.mkdir_p( release_dir)
+        Dir.glob( File.join(project_path, 'coffeescripts', "**","*.coffee") ) do |file|
+          request = WEBrick::HTTPRequest.new({})
+          request.path = file[project_path.size .. -1].gsub(/\/coffeescripts\//, "/#{Compass.configuration.javascripts_dir}/").gsub(/\.coffee$/,'.js')
+
+          handler = WEBrick::HTTPServlet::CoffeeScriptHandler
+          content = handler.new(nil).send(:parse, request, nil)
+
+          new_file = File.join(release_dir, request.path)
+          FileUtils.mkdir_p( File.dirname(  new_file ))
+          File.open(new_file, 'w') {|f| f.write(content) }
+
+          report_window.append "Create: #{request.path}"
+        end
+
+        #copy static file
         Dir.glob( File.join(Compass.configuration.project_path, '**', '[^_]*.{html,swf,txt,ico,png,json,xml}') ) do |file|
           next if file =~ /build_\d{14}/
-            new_file = File.join(release_dir, file[project_path.size..-1])
+          new_file = File.join(release_dir, file[project_path.size..-1])
           FileUtils.mkdir_p( File.dirname(  new_file ))
           FileUtils.cp( file, new_file )
           report_window.append "Copy: #{file[project_path.size..-1]}"
         end
 
+        #copy compass asset folder
         %w{images css javascripts}.each do |asset|
           asset_path = Compass.configuration.send("#{asset}_path")
           FileUtils.cp_r(asset_path, release_dir) if File.exists?(asset_path)

@@ -2,13 +2,15 @@ require "singleton"
 require "webrick";
 require "erb"
 require "webrick/httpservlet/dynamic_handler"
+require "webrick/httpservlet/coffeescript_handler"
 
 mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
-mime_types["js"] = "text/javascript"
+
 ["haml", "erb", "markdown"].each do |ext|
   WEBrick::HTTPServlet::FileHandler.add_handler(ext, WEBrick::HTTPServlet::DynamicHandler)
   mime_types[ext] = "text/html"
 end
+
 FireAppMimeTypes=mime_types
 
 class SimpleHTTPServer
@@ -24,13 +26,13 @@ class SimpleHTTPServer
     }.merge(options)
     stop
     @http_server = HTTPServer.new(options) unless @http_server
+    @http_server.mount("/#{Compass.configuration.javascripts_dir}", WEBrick::HTTPServlet::CoffeeScriptHandler) 
     @http_server_thread = Thread.new do 
       @http_server.mount("/",HTTPServlet::FileHandler, dir,  {
         :AcceptableLanguages => WEBrick::HTTPServlet::FileHandler::HandlerTable.keys,
         :FancyIndexing => true,
         :MimeTypes => FireAppMimeTypes
       });
-      
       @http_server.start
     end
   end

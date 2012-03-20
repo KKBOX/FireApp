@@ -25,7 +25,6 @@ module WEBrick
 
       def do_GET(req, res)
         begin
-          puts @config.inspect
           res.body = parse(req, res)
           res['content-type'] ||=
             HTTPUtils::mime_type(@script_filename, @config[:MimeTypes]) 
