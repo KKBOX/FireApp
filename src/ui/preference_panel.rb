@@ -262,7 +262,7 @@ class PreferencePanel
     layoutdata.top = Swt::Layout::FormAttachment.new(  label,  5, Swt::SWT::BOTTOM)
     @log_notifaction_button = Swt::Widgets::Button.new(composite, Swt::SWT::CHECK )
     @log_notifaction_button.setLayoutData( layoutdata )
-    @log_notifaction_button.setText( "Generate compass_app_log.txt in the project folder" )
+    @log_notifaction_button.setText( "Generate fire_app_log.txt in the project folder" )
     @log_notifaction_button.setSelection( App::CONFIG["save_notification_to_file"] )
     @log_notifaction_button.addListener(Swt::SWT::Selection, notification_button_handler)
 
