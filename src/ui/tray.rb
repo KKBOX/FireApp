@@ -388,7 +388,7 @@ class Tray
           "*/.sass-cache",
           "*/compass_app_log.txt",
           "*/fire_app_log.txt",
-          "*/build_ignore.txt",
+          "*/build_ingore.txt",
           "#{Compass.detect_configuration_file}",
           "#{Compass.configuration.sass_path}/*",
           "#{Compass.configuration.sass_path}",
@@ -396,10 +396,10 @@ class Tray
           File.join(project_path, 'coffeescripts'),
         ]
         if File.exists?(File.join( project_path, "build_ingore.txt"))
-          blacklist += File.open( File.join( project_path, "build_ingore.txt") ).readlines.map(&:strip)
+          blacklist += File.open( File.join( project_path, "build_ingore.txt") ).readlines.map{|p| File.join(project_path, p.strip)}
         end
         WEBrick::HTTPServlet::FileHandler::HandlerTable.keys.each do |x|
-          blacklist << "*/*.#{x}"
+          blacklist << "*.#{x}"
         end
 
 
@@ -428,7 +428,7 @@ class Tray
           new_file = File.join(release_dir, file[project_path.size..-1])
           FileUtils.mkdir_p( File.dirname(  new_file ))
           FileUtils.cp_r( file, new_file )
-          report_window.append "Copy#{File.directory?(file) ? "directory" : ''}: #{file[project_path.size..-1]}"
+          report_window.append "Copy#{File.directory?(file) ? " directory" : ''}: #{file[project_path.size..-1]}"
           blacklist << "#{file }/*" if File.directory?(file)
         end
 
