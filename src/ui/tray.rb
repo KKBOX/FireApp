@@ -377,20 +377,59 @@ class Tray
           report_window.append "Create: #{request.path}"
         end
 
-        #copy static file
-        Dir.glob( File.join(Compass.configuration.project_path, '**', '[^_]*.{html,swf,txt,ico,png,json,xml}') ) do |file|
-          next if file =~ /build_\d{14}/
-          new_file = File.join(release_dir, file[project_path.size..-1])
-          FileUtils.mkdir_p( File.dirname(  new_file ))
-          FileUtils.cp( file, new_file )
-          report_window.append "Copy: #{file[project_path.size..-1]}"
+        blacklist=[
+          "*.swp",
+          "*~",
+          "*/.DS_Store",
+          "*/.git",
+          "*/.gitignore",
+          "*.svn",
+          "*/Thumbs.db",
+          "*/.sass-cache",
+          "*/compass_app_log.txt",
+          "*/fire_app_log.txt",
+          "*/build_ignore.txt",
+          "#{Compass.detect_configuration_file}",
+          "#{Compass.configuration.sass_path}/*",
+          "#{Compass.configuration.sass_path}",
+          File.join(project_path, 'coffeescripts', "*"),
+          File.join(project_path, 'coffeescripts'),
+        ]
+        if File.exists?(File.join( project_path, "build_ingore.txt"))
+          blacklist += File.open( File.join( project_path, "build_ingore.txt") ).readlines.map(&:strip)
         end
+        WEBrick::HTTPServlet::FileHandler::HandlerTable.keys.each do |x|
+          blacklist << "*/*.#{x}"
+        end
+
 
         #copy compass asset folder
         %w{images css javascripts}.each do |asset|
           asset_path = Compass.configuration.send("#{asset}_path")
+          blacklist << "#{asset_path}/*"
+          blacklist << "#{asset_path}"
           FileUtils.cp_r(asset_path, release_dir) if File.exists?(asset_path)
           report_window.append "Copy directory: #{asset_path[project_path.size..-1]}"
+        end
+        
+
+        #copy static file
+        Dir.glob( File.join(Compass.configuration.project_path, '**', '*') ) do |file|
+          next if file =~ /build_\d{14}/
+          pass = false
+          blacklist.each do |pattern|
+            if File.fnmatch(pattern, file)
+              pass = true
+              break
+            end
+          end
+          next if pass
+
+          new_file = File.join(release_dir, file[project_path.size..-1])
+          FileUtils.mkdir_p( File.dirname(  new_file ))
+          FileUtils.cp_r( file, new_file )
+          report_window.append "Copy#{File.directory?(file) ? "directory" : ''}: #{file[project_path.size..-1]}"
+          blacklist << "#{file }/*" if File.directory?(file)
         end
 
         end_build_project=Time.now
