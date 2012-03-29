@@ -43,12 +43,15 @@ module WEBrick
         root_path = Compass.configuration.project_path
         script_filename = File.join(root_path, request.path)
         
-        coffeescript_filename = script_filename.gsub(/\/#{Compass.configuration.javascripts_dir}\//,"/coffeescripts/").gsub(/\.js$/,".coffee")
+        coffeescript_filename_1 = script_filename.gsub(/\/#{Compass.configuration.javascripts_dir}\//,"/coffeescripts/").gsub(/\.js$/,".coffee")
+        coffeescript_filename_2 = script_filename.gsub(/\/#{Compass.configuration.javascripts_dir}\//,"/coffeescripts/").gsub(/\.js$/,".js.coffee")
         
         if File.exists?(script_filename)
           File.open(script_filename, 'r').read 
-        elsif File.exists?(coffeescript_filename)
-          Tilt["coffee"].new(coffeescript_filename, nil, :outvar => '_out_buf').render
+        elsif File.exists?(coffeescript_filename_1)
+          Tilt["coffee"].new(coffeescript_filename_1, nil, :outvar => '_out_buf').render
+        elsif File.exists?(coffeescript_filename_2)
+          Tilt["coffee"].new(coffeescript_filename_2, nil, :outvar => '_out_buf').render
         else
           raise HTTPStatus::NotFound, "`#{request.path}' not found."
         end

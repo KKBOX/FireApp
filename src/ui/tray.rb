@@ -365,7 +365,7 @@ class Tray
         FileUtils.mkdir_p( release_dir)
         Dir.glob( File.join(project_path, 'coffeescripts', "**","*.coffee") ) do |file|
           request = WEBrick::HTTPRequest.new({})
-          request.path = file[project_path.size .. -1].gsub(/\/coffeescripts\//, "/#{Compass.configuration.javascripts_dir}/").gsub(/\.coffee$/,'.js')
+          request.path = file[project_path.size .. -1].gsub(/\/coffeescripts\//, "/#{Compass.configuration.javascripts_dir}/").gsub(/(\.js)?\.coffee$/,'.js')
 
           handler = WEBrick::HTTPServlet::CoffeeScriptHandler
           content = handler.new(nil).send(:parse, request, nil)
