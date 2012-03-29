@@ -132,7 +132,7 @@ class SimpleLivereload
             puts ">>> Change detected to: #{relative}"
             SimpleLivereload.instance.send_livereload_msg( base, relative )
             if defined?(App) && App::CONFIG["notifications"].include?(:overwrite) 
-              App.notifications << "overwrite #{relative} "
+              App.notifications << "Changed: #{relative}"
               tray.shell.display.wake if tray.shell
             end
           end 
