@@ -70,7 +70,7 @@ module App
       "services" => [ :http, :livereload],
       "services_http_port" => 24681,
       "services_livereload_port" => 35729,
-      "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml",
+      "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,.coffee",
       "preferred_syntax" => "scss"
     }
 
