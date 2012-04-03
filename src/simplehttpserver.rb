@@ -6,7 +6,7 @@ require "webrick/httpservlet/coffeescript_handler"
 
 mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
 
-["haml", "erb", "markdown"].each do |ext|
+["haml", "erb", "markdown", "mkd", "md"].each do |ext|
   WEBrick::HTTPServlet::FileHandler.add_handler(ext, WEBrick::HTTPServlet::DynamicHandler)
   mime_types[ext] = "text/html"
 end
