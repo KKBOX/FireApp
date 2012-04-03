@@ -145,7 +145,7 @@ class PreferencePanel
     layoutdata.left = Swt::Layout::FormAttachment.new( livereload_extensions_label, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( livereload_extensions_label, 10, Swt::SWT::BOTTOM)
     livereload_service_info = Swt::Widgets::Link.new( composite, Swt::SWT::LEFT | Swt::SWT::WRAP)
-    livereload_service_help_info.setText("You have to install <a href=\"https://github.com/handlino/FireApp/wiki/Preferences\">livereload browser extension or use livereload-js</a> to use this feature.")
+    livereload_service_info.setText("You have to install <a href=\"https://github.com/handlino/FireApp/wiki/Preferences\">livereload browser extension or use livereload-js</a> to use this feature.")
     livereload_service_info.setLayoutData(layoutdata)
     livereload_service_info.addListener(Swt::SWT::Selection, Swt::Widgets::Listener.impl do |method, evt| 
        Swt::Program.launch(evt.text)
