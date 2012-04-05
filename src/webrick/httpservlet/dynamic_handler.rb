@@ -3,9 +3,9 @@
 require 'tilt'
 require 'active_support/all'
 require 'webrick/httpservlet/view_helpers'
-require 'haml'
-require 'maruku'
-require "erb"
+#require 'haml'
+#require 'maruku'
+#require "erb"
 
 WEBrick::HTTPRequest.class_eval do
   attr_accessor :path
