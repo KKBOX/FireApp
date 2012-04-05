@@ -35,8 +35,6 @@ begin
   rescue LoadError
   end
 
-  require "livereload"
-  require "simplehttpserver"
 
   if App::CONFIG['show_welcome']
     WelcomeWindow.new
