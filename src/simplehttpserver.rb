@@ -1,22 +1,16 @@
 require "singleton"
 require "webrick";
-require "erb"
-require "webrick/httpservlet/dynamic_handler"
-require "webrick/httpservlet/coffeescript_handler"
 
-mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
-
-["haml", "erb", "markdown", "mkd", "md"].each do |ext|
-  WEBrick::HTTPServlet::FileHandler.add_handler(ext, WEBrick::HTTPServlet::DynamicHandler)
-  mime_types[ext] = "text/html"
-end
-
-FireAppMimeTypes=mime_types
 
 class SimpleHTTPServer
   include Singleton
   include WEBrick
   def start(dir, options)
+    unless defined?( WEBrick::HTTPServlet::DynamicHandler )
+      require "webrick/httpservlet/dynamic_handler"
+      require "webrick/httpservlet/coffeescript_handler"
+    end
+
     if File.exists?( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb'))
       load File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')
     end
