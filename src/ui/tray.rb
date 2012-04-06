@@ -457,14 +457,14 @@ class Tray
   def update_config(need_clean_attr, value)
     new_config_str = "\n#{need_clean_attr} = #{value} # by Fire.app "
 
-    file_name = Compass.detect_configuration_file
+    file_name = Compass.detect_configuration_file(@watching_dir)
 
     if file_name
       new_config = ''
       last_is_blank = false
       config_file = File.new(file_name,'r').each do | x | 
         next if last_is_blank && x.strip.empty?
-      new_config += x unless x =~ /by Compass\.app/ && x =~ Regexp.new(need_clean_attr)
+      new_config += x unless x =~ /by Fire\.app/ && x =~ Regexp.new(need_clean_attr)
       last_is_blank = x.strip.empty?
       end
       config_file.close
