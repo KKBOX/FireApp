@@ -32,6 +32,7 @@ begin
     require "ninesixty"
     require "html5-boilerplate"
     require "compass-h5bp"
+    require "fireapp-example"
   rescue LoadError
   end
 
