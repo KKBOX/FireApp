@@ -1,5 +1,3 @@
-require "singleton"
-require "webrick";
 
 
 class SimpleHTTPServer

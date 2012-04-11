@@ -64,7 +64,7 @@ class Tray
     end
     
     SplashWindow.instance.dispose
-
+    
     while(!@shell.is_disposed) do
       App.display.sleep if(!App.display.read_and_dispatch) 
       App.show_and_clean_notifications
@@ -558,15 +558,18 @@ class Tray
         if @menu.items[ @menu.indexOf(@build_project_item)+1 ].getStyle != Swt::SWT::SEPARATOR
           add_menu_separator(@menu, @menu.indexOf(@build_project_item) + 1 )
         end
-
-         if App::CONFIG['services'].include?( :http )
-          require "simplehttpserver"
-          SimpleHTTPServer.instance.start(dir, :Port =>  App::CONFIG['services_http_port'])
+        if App::CONFIG['services'].include?( :http )
+          @simplehttpserver_thread = Thread.new do
+            require "simplehttpserver"
+            SimpleHTTPServer.instance.start(dir, :Port =>  App::CONFIG['services_http_port'])
+          end
         end
 
         if App::CONFIG['services'].include?( :livereload )
-          require "livereload"
-          SimpleLivereload.instance.watch(dir, { :port => App::CONFIG["services_livereload_port"] }) 
+          @simplelivereload_thread = Thread.new do
+            require "livereload"
+            SimpleLivereload.instance.watch(dir, { :port => App::CONFIG["services_livereload_port"] }) 
+          end
         end
 
         current_display = App.display
@@ -589,8 +592,13 @@ class Tray
   end
 
   def stop_watch
-    @compass_thread.kill if @compass_thread && @compass_thread.alive?
+    [@simplelivereload_thread, @simplehttpserver_thread, @compass_thread].each do |x|
+      x.kill if x && x.alive?
+    end
     @compass_thread = nil
+    @simplehttpserver_thread = nil
+    @simplelivereload_thread = nil
+
     @watch_item.text="Watch a Folder..."
     @install_item.dispose() if @install_item && !@install_item.isDisposed
     @clean_item.dispose()   if @clean_item && !@clean_item.isDisposed

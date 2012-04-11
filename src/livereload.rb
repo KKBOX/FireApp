@@ -1,6 +1,4 @@
-require "singleton"
-require 'em-websocket'
-require 'json'
+
 module EventMachine
   module WebSocket
     class Connection 
