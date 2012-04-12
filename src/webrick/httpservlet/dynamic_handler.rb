@@ -1,11 +1,9 @@
 # the logic form https://github.com/jlong/serve/blob/master/lib/serve/handlers/dynamic_handler.rb
 
 require 'tilt'
+require 'slim'
 require 'active_support/all'
 require 'webrick/httpservlet/view_helpers'
-#require 'haml'
-#require 'maruku'
-#require "erb"
 
 WEBrick::HTTPRequest.class_eval do
   attr_accessor :path
@@ -45,7 +43,7 @@ module WEBrick
 
       private
       def layout_extensions
-        ["erb", "haml"]
+        ["erb", "haml", "slim"]
       end
 
       def parse(request, response)
@@ -109,6 +107,8 @@ module WEBrick
         ext = File.extname(filename).sub(/^\.html\.|^\./, '').downcase
 
         @script_extension = ext
+        
+        ext = "template.slim" if ext == "slim"
 
         @engine = Tilt[ext].new(filename, nil, :outvar => '@_out_buf')
 
@@ -143,7 +143,7 @@ end
 
 mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
 
-["haml", "erb", "markdown", "mkd", "md"].each do |ext|
+["haml", "erb", "markdown", "mkd", "md", "slim"].each do |ext|
   WEBrick::HTTPServlet::FileHandler.add_handler(ext, WEBrick::HTTPServlet::DynamicHandler)
   mime_types[ext] = "text/html"
 end

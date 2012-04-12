@@ -1,5 +1,3 @@
-
-
 class SimpleHTTPServer
   include Singleton
   include WEBrick
