@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Bootstrap, from Twitter</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <!-- Le styles -->
+        <%= stylesheet_link_tag 'bootstrap' %>
+        <style type="text/css">
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px;
+            }
+            .sidebar-nav {
+                padding: 9px 0;
+            }
+        </style>
+        <%= stylesheet_link_tag 'bootstrap-responsive' %>
+
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <!-- Le fav and touch icons -->
+        <link rel="shortcut icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    </head>
+
+    <body>
+
+        <%= render :partial => "header" %>
+
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span3">
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li class="nav-header">Sidebar</li>
+                            <li class="active"><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li class="nav-header">Sidebar</li>
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li class="nav-header">Sidebar</li>
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                        </ul>
+                    </div><!--/.well -->
+                </div><!--/span-->
+                <div class="span9">
+                    <%= yield %>
+                </div>
+            </div><!--/row-->
+
+            <%= render :partial => "footer" %>
+
+        </div><!--/.fluid-container-->
+
+        <!-- Le javascript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="/javascripts/jquery.js"></script>
+        <script src="/javascripts/bootstrap-transition.js"></script>
+        <script src="/javascripts/bootstrap-alert.js"></script>
+        <script src="/javascripts/bootstrap-modal.js"></script>
+        <script src="/javascripts/bootstrap-dropdown.js"></script>
+        <script src="/javascripts/bootstrap-scrollspy.js"></script>
+        <script src="/javascripts/bootstrap-tab.js"></script>
+        <script src="/javascripts/bootstrap-tooltip.js"></script>
+        <script src="/javascripts/bootstrap-popover.js"></script>
+        <script src="/javascripts/bootstrap-button.js"></script>
+        <script src="/javascripts/bootstrap-collapse.js"></script>
+        <script src="/javascripts/bootstrap-carousel.js"></script>
+        <script src="/javascripts/bootstrap-typeahead.js"></script>
+        <%= livereload_js %>
+    </body>
+</html>

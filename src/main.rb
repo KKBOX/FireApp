@@ -13,7 +13,8 @@ require "swt_wrapper"
 require "ui/splash_window"
 SplashWindow.instance.replace('Loading...')
 require "require_patch.rb"
-
+require "singleton"
+require "webrick";
 require 'stringio'
 require 'thread'
 require "open-uri"
@@ -28,15 +29,16 @@ require "app.rb"
 begin
   App.require_compass
 
+  require 'em-websocket'
+  require 'json'
   begin
     require "ninesixty"
     require "html5-boilerplate"
     require "compass-h5bp"
+    require "fireapp-example"
   rescue LoadError
   end
 
-  require "livereload"
-  require "simplehttpserver"
 
   if App::CONFIG['show_welcome']
     WelcomeWindow.new

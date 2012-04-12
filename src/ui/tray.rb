@@ -64,7 +64,7 @@ class Tray
     end
     
     SplashWindow.instance.dispose
-
+    
     while(!@shell.is_disposed) do
       App.display.sleep if(!App.display.read_and_dispatch) 
       App.show_and_clean_notifications
@@ -457,14 +457,14 @@ class Tray
   def update_config(need_clean_attr, value)
     new_config_str = "\n#{need_clean_attr} = #{value} # by Fire.app "
 
-    file_name = Compass.detect_configuration_file
+    file_name = Compass.detect_configuration_file(@watching_dir)
 
     if file_name
       new_config = ''
       last_is_blank = false
       config_file = File.new(file_name,'r').each do | x | 
         next if last_is_blank && x.strip.empty?
-      new_config += x unless x =~ /by Compass\.app/ && x =~ Regexp.new(need_clean_attr)
+      new_config += x unless x =~ /by Fire\.app/ && x =~ Regexp.new(need_clean_attr)
       last_is_blank = x.strip.empty?
       end
       config_file.close
@@ -521,23 +521,9 @@ class Tray
       if !x.new_compiler_instance.sass_files.empty? # make sure we watch a compass project
         stop_watch
 
-        if App::CONFIG['services'].include?( :http )
-          SimpleHTTPServer.instance.start(dir, :Port =>  App::CONFIG['services_http_port'])
-        end
-
-        if App::CONFIG['services'].include?( :livereload )
-          SimpleLivereload.instance.watch(dir, { :port => App::CONFIG["services_livereload_port"] }) 
-        end
-
-        current_display = App.display
-
-        Thread.abort_on_exception = true
-        @compass_thread = Thread.new do
-          Compass.reset_configuration!
-          Compass::Commands::WatchProject.new( dir, { :logger => Compass::Logger.new({ :display => current_display,
-                                                                                     :log_dir => dir}) }).execute
-        end
-
+        @tray_item.image = @watching_icon
+        
+       
         @watching_dir = dir
         @menu.items.each do |item|
           item.dispose if @history_dirs.include?(item.text)
@@ -572,8 +558,28 @@ class Tray
         if @menu.items[ @menu.indexOf(@build_project_item)+1 ].getStyle != Swt::SWT::SEPARATOR
           add_menu_separator(@menu, @menu.indexOf(@build_project_item) + 1 )
         end
-        @tray_item.image = @watching_icon
+        if App::CONFIG['services'].include?( :http )
+          @simplehttpserver_thread = Thread.new do
+            require "simplehttpserver"
+            SimpleHTTPServer.instance.start(dir, :Port =>  App::CONFIG['services_http_port'])
+          end
+        end
 
+        if App::CONFIG['services'].include?( :livereload )
+          @simplelivereload_thread = Thread.new do
+            require "livereload"
+            SimpleLivereload.instance.watch(dir, { :port => App::CONFIG["services_livereload_port"] }) 
+          end
+        end
+
+        current_display = App.display
+
+        Thread.abort_on_exception = true
+        @compass_thread = Thread.new do
+          Compass.reset_configuration!
+          Compass::Commands::WatchProject.new( dir, { :logger => Compass::Logger.new({ :display => current_display,
+                                                                                     :log_dir => dir}) }).execute
+        end
 
         return true
 
@@ -586,8 +592,13 @@ class Tray
   end
 
   def stop_watch
-    @compass_thread.kill if @compass_thread && @compass_thread.alive?
+    [@simplelivereload_thread, @simplehttpserver_thread, @compass_thread].each do |x|
+      x.kill if x && x.alive?
+    end
     @compass_thread = nil
+    @simplehttpserver_thread = nil
+    @simplelivereload_thread = nil
+
     @watch_item.text="Watch a Folder..."
     @install_item.dispose() if @install_item && !@install_item.isDisposed
     @clean_item.dispose()   if @clean_item && !@clean_item.isDisposed
@@ -595,8 +606,8 @@ class Tray
     @changeoptions_item.dispose()   if @changeoptions_item && !@changeoptions_item.isDisposed
     @watching_dir = nil
     @tray_item.image = @standby_icon
-    SimpleLivereload.instance.unwatch
-    SimpleHTTPServer.instance.stop
+    SimpleLivereload.instance.unwatch if defined?(SimpleLivereload)
+    SimpleHTTPServer.instance.stop if defined?(SimpleHTTPServer)
     FSEvent.stop_all_instances if Object.const_defined?("FSEvent") && FSEvent.methods.include?("stop_all_instances")
   end
 
