@@ -615,6 +615,7 @@ class Tray
     @watch_item.text="Watch a Folder..."
     @install_item.dispose() if @install_item && !@install_item.isDisposed
     @clean_item.dispose()   if @clean_item && !@clean_item.isDisposed
+    @open_project_item.dispose()   if @open_project_item && !@open_project_item.isDisposed
     @build_project_item.dispose()   if @build_project_item && !@build_project_item.isDisposed
     @changeoptions_item.dispose()   if @changeoptions_item && !@changeoptions_item.isDisposed
     @watching_dir = nil
