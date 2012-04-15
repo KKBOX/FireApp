@@ -153,6 +153,11 @@ class Tray
       end
     end
   end
+  def open_project_handler
+    Swt::Widgets::Listener.impl do |method, evt|
+        Swt::Program.launch(@watching_dir)
+    end
+  end
 
   def compass_project_config
     file_name = Compass.detect_configuration_file(@watching_dir)
@@ -536,11 +541,18 @@ class Tray
 
 
         @watch_item.text="Stop watching " + dir
+
+        @open_project_item =  add_menu_item( "Open Project Folder", 
+                                             open_project_handler, 
+                                             Swt::SWT::PUSH,
+                                             @menu, 
+                                             @menu.indexOf(@watch_item) +1 )
+
         @install_item =  add_menu_item( "Install...", 
                                        install_project_handler, 
                                        Swt::SWT::CASCADE,
                                        @menu, 
-                                       @menu.indexOf(@watch_item) +1 )
+                                       @menu.indexOf(@open_project_item) +1 )
 
         @install_item.menu = Swt::Widgets::Menu.new( @menu )
         build_compass_framework_menuitem( @install_item.menu, install_project_handler )
@@ -556,7 +568,6 @@ class Tray
                                              Swt::SWT::PUSH,
                                              @menu, 
                                              @menu.indexOf(@clean_item) +1 )
-
         if @menu.items[ @menu.indexOf(@build_project_item)+1 ].getStyle != Swt::SWT::SEPARATOR
           add_menu_separator(@menu, @menu.indexOf(@build_project_item) + 1 )
         end
