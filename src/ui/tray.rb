@@ -226,7 +226,9 @@ class Tray
                                                    :preferred_syntax => App::CONFIG["preferred_syntax"].to_sym 
             }).execute
           end
-          App.report( actual)
+          App.report( actual) do
+            Swt::Program.launch(dir)
+          end
         end
 
         watch(dir)
