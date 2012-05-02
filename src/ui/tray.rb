@@ -386,6 +386,7 @@ class Tray
 
         blacklist=[
           "*.swp",
+          "*.layout",
           "*~",
           "*/.DS_Store",
           "*/.git",
