@@ -29,38 +29,14 @@ There is no need to **install** Fire.app. You can just unzip and put it anywhere
 ## Build Your Own
 
 If you want to build your own copy, you will need [JRuby](http://jruby.org/) and [rawr](http://rawr.rubyforge.org/).
-
-### Install JRuby
-
-For example, using jRuby 1.6.7 with [rvm](https://rvm.io):
-
-    echo "rvm use jruby-1.6.7@fireapp --create --install" > .rvmrc;
-    ruby --version;
-
-or [rbenv](https://github.com/sstephenson/rbenv):
-
-    echo "jruby-1.6.7" > .rbenv-version;
-    rbenv-install jruby-1.6.7;
-    ruby --version;
-
-### Install rawr
-
-Install rawr gem using [bundler](http://gembundler.com):
-
-    gem install bundler;
-    bundle install;
-
-### Build FireApp for OSX
+You might want to take a look on <INSTALL.markdown> doc.
 
     # Available tasks:
     rake -T;
 
     # Compile it, generate th FireApp.app:
     rake rawr:compile;
-    rake rawr:bundle:app;
-
-    # Drag to Applications folder.
-    open package/
+    rake rawr:bundle:all;
 
 ## License
 
