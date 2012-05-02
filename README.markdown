@@ -30,6 +30,22 @@ There is no need to **install** Fire.app. You can just unzip and put it anywhere
 
 If you want to build your own copy, you will need [JRuby](http://jruby.org/) and [rawr](http://rawr.rubyforge.org/).
 
+### OSX
+
+    # Install jruby and rawl using bundler
+    gem install bundler;
+    bundle;
+
+    # See available tasks
+    rake -T;
+
+    # Compile it
+    rake rawr:compile;
+    rake rawr:bundle:app;
+
+    # Drag to Applications folder.
+    open package/
+
 ## License
 
 Copyright (c) 2012 Handlino Inc.
