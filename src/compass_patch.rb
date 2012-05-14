@@ -1,21 +1,6 @@
 
 module Compass
   module Commands
-    class UpdateProject
-      def new_compiler_instance(additional_options = {})
-        compiler_opts = Compass.sass_engine_options
-        compiler_opts.merge!(:quiet => options[:quiet],
-                             :force => options[:force],
-                             :sass_files => explicit_sass_files,
-                             :dry_run => options[:dry_run],
-                             :logger => options[:logger])
-        compiler_opts.merge!(additional_options)
-        Compass::Compiler.new(working_path,
-                              Compass.configuration.sass_path,
-                              Compass.configuration.css_path,
-                              compiler_opts)
-      end
-    end
     class WatchProject 
 
       def perform # we remove  Signal.trap("INT"), add version check on configuration.watches
