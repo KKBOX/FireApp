@@ -1,35 +1,74 @@
+require 'rack'
+require 'rack/builder'
+require "singleton"
+require "webrick"
+require 'serve'
+require 'slim'
+require 'serve/application'
+require 'sass'
+require 'sass/plugin/rack'
+require 'compass'
+require 'rack/coffee'
+
 class SimpleHTTPServer
   include Singleton
-  include WEBrick
   def start(dir, options)
-    unless defined?( WEBrick::HTTPServlet::DynamicHandler )
-      require "webrick/httpservlet/dynamic_handler"
-      require "webrick/httpservlet/coffeescript_handler"
-    end
-
-    if File.exists?( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb'))
-      load File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')
-    end
-
+    Dir.chdir(dir)
     options={
-      :Port => 24680
+      :Port => 24681
     }.merge(options)
-    stop
-    @http_server = HTTPServer.new(options) unless @http_server
-    @http_server.mount("/#{Compass.configuration.javascripts_dir}", WEBrick::HTTPServlet::CoffeeScriptHandler) 
+    
+    stop 
+
+    app = Rack::Builder.new do
+      Compass.reset_configuration!
+      file_name = Compass.detect_configuration_file(dir)
+      Compass.add_project_configuration(file_name)
+
+      if File.file?( File.join(dir, "compass.config") ) 
+        Compass.add_project_configuration( File.join(dir, "compass.config") )
+      end
+
+      Compass.configure_sass_plugin!
+      use Sass::Plugin::Rack, nil  # Sass Middleware
+
+      use Rack::CommonLogger
+      use Rack::ShowStatus
+      use Rack::ShowExceptions
+ 
+      use Rack::Coffee, { 
+          :root => 'coffeescripts', 
+          :urls => Compass.configuration.http_javascripts_path,
+          :cache_compile => true
+      }
+      views_dir = File.join(dir, 'views')
+      public_dir = File.join(dir, 'public')
+      puts dir
+      if( File.exists?(views_dir) && File.exists?(public_dir))
+        run Rack::Cascade.new([
+          Serve::RackAdapter.new( views_dir ),
+          Rack::Directory.new( public_dir)
+        ]) 
+      else 
+        run Rack::Cascade.new([
+          Serve::RackAdapter.new( dir ),
+          Rack::Directory.new( dir )
+        ]) 
+      end
+    end
+
+    @webrick_server = Rack::Handler.get('webrick')
+
     @http_server_thread = Thread.new do 
-      @http_server.mount("/",HTTPServlet::FileHandler, dir,  {
-        :AcceptableLanguages => WEBrick::HTTPServlet::FileHandler::HandlerTable.keys,
-        :FancyIndexing => true,
-        :MimeTypes => FireAppMimeTypes
-      });
-      @http_server.start
+      @webrick_server.run app, :Port => options[:Port], :Host => "0.0.0.0" do |server|
+        trap("INT") { server.shutdown }
+      end
     end
   end
 
   def stop
-    @http_server.shutdown if @http_server
-    @http_server = nil 
+    @webrick_server.shutdown if @webrick_server
+    @webrick_server = nil
     @http_server_thread.kill if @http_server_thread && @http_server_thread.alive?
   end
 
