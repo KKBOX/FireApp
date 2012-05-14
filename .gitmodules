@@ -1,0 +1,3 @@
+[submodule "lib/ruby/common/tka-serve"]
+	path = lib/ruby/common/tka-serve
+	url = git@github.com:tka/serve.git
