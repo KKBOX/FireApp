@@ -90,7 +90,7 @@ class PreferencePanel
     @http_port_text  = Swt::Widgets::Text.new(composite, Swt::SWT::BORDER)
     @http_port_text.setText( App::CONFIG["services_http_port"].to_s )
     @http_port_text.setLayoutData( layoutdata )
-    @http_port_text.addListener(Swt::SWT::Modify, services_port_handler)
+    @http_port_text.addListener(Swt::SWT::Modify, services_apply_button_handler)
 
     layoutdata = Swt::Layout::FormData.new(480, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( http_port_label, 0, Swt::SWT::LEFT )
@@ -123,7 +123,7 @@ class PreferencePanel
     @livereload_port_text = Swt::Widgets::Text.new(composite, Swt::SWT::BORDER)
     @livereload_port_text.setText( App::CONFIG["services_livereload_port"].to_s )
     @livereload_port_text.setLayoutData( layoutdata )
-    @livereload_port_text.addListener(Swt::SWT::Modify, services_port_handler)
+    @livereload_port_text.addListener(Swt::SWT::Modify, services_apply_button_handler)
     
     layoutdata = Swt::Layout::FormData.new()
     layoutdata.left = Swt::Layout::FormAttachment.new( livereload_port_label, 0, Swt::SWT::LEFT )
@@ -153,13 +153,22 @@ class PreferencePanel
     
     layoutdata = Swt::Layout::FormData.new(480, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( livereload_service_info, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( livereload_service_info, 00, Swt::SWT::BOTTOM)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( livereload_service_info, 0, Swt::SWT::BOTTOM)
     livereload_service_help_info = Swt::Widgets::Link.new( composite, Swt::SWT::LEFT | Swt::SWT::WRAP)
     livereload_service_help_info.setText("You have to install <a href=\"https://github.com/handlino/FireApp/wiki/Preferences\">livereload browser extension or use livereload-js</a> to use this feature.")
     livereload_service_help_info.setLayoutData(layoutdata)
     livereload_service_help_info.addListener(Swt::SWT::Selection, Swt::Widgets::Listener.impl do |method, evt| 
        Swt::Program.launch(evt.text)
     end)
+
+    layoutdata = Swt::Layout::FormData.new(150, Swt::SWT::DEFAULT)
+    layoutdata.right = Swt::Layout::FormAttachment.new( livereload_service_help_info, 0, Swt::SWT::RIGHT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( livereload_service_help_info, 10, Swt::SWT::BOTTOM)
+    @services_apply_button = Swt::Widgets::Button.new( composite,  Swt::SWT::PUSH )
+    @services_apply_button.setLayoutData(layoutdata)
+    @services_apply_button.setText("Apply Change")
+    @services_apply_button.addListener(Swt::SWT::Selection, services_port_handler)
+    @services_apply_button.visible=false
      return composite
   end
 
@@ -172,51 +181,67 @@ class PreferencePanel
       Tray.instance.rewatch
     end
   end
+  
+  def services_apply_button_handler 
+    Swt::Widgets::Listener.impl do |method, evt|   
+      
+      if  @http_port_text.getText.to_i != App::CONFIG['services_http_port'] ||
+        @livereload_port_text.getText.to_i != App::CONFIG['services_livereload_port'] 
+
+          @services_apply_button.visible = true
+      end
+
+    end
+  end
 
   def services_port_handler 
     Swt::Widgets::Listener.impl do |method, evt|   
       has_change = false
-      port = @http_port_text.getText.to_i
-      port = port.to_i
-      if port < 0 || port > 65535 
+      port = @http_port_text.getText
+      if !(port =~ /^[0-9]+$/) || port.to_i < 0 || port.to_i > 65535
         App.alert("http port number should be intergers between 0 and 65535")
+
       else
-       
+        port = port.to_i
         if App::CONFIG['services_http_port'] != port
           App::CONFIG['services_http_port'] = port
-          @http_port_text.setText(App::CONFIG['services_http_port'].to_s)
           has_change = true 
         end
       end
 
-      port = @livereload_port_text.getText.to_i
-      port = port.to_i
-      if port < 0 || port > 65535 
+      port = @livereload_port_text.getText
+      if !(port =~ /^[0-9]+$/) || port.to_i < 0 || port.to_i > 65535
         App.alert("livereload port number should be intergers between 0 and 65535")
-      else
 
+      else
+        port = port.to_i
         if App::CONFIG['services_livereload_port'] != port
           App::CONFIG['services_livereload_port'] = port
-          @livereload_port_text.setText(App::CONFIG['services_livereload_port'].to_s)
           has_change = true 
         end
 
-        if has_change
-          App.save_config
-          Tray.instance.rewatch
-        end
+      end
+
+      extensions = @livereload_extensions_text.getText.split(/,/).map!{|x| x.strip }.join(',')
+
+      if extensions != App::CONFIG["services_livereload_extensions"]
+        App::CONFIG["services_livereload_extensions"] = extensions
+        has_change = true
+      end
+
+      if has_change
+        App.save_config
+        Tray.instance.rewatch
+        @services_apply_button.visible = false
       end
     end
   end
 
   def services_extensions_handler
     Swt::Widgets::Listener.impl do |method, evt|  
-      
       extensions = @livereload_extensions_text.getText.split(/,/).map!{|x| x.strip }.join(',')
       if extensions != App::CONFIG["services_livereload_extensions"]
-        App::CONFIG["services_livereload_extensions"] = extensions
-        App.save_config
-        Tray.instance.rewatch
+        @services_apply_button.visible = true
       end
     end
   end
