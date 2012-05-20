@@ -87,11 +87,11 @@ class Java::OrgMozillaJavascript::ScriptableObject
   
   # Delegate methods to JS object if possible when called from Ruby.
   def method_missing(name, *args)
-    s_name = name.to_s
-    if s_name[-1, 1] == '=' && args.size == 1 # writer -> JS put
-      self[ s_name[0...-1] ] = args[0]
+    name_str = name.to_s
+    if name_str[-1, 1] == '=' && args.size == 1 # writer -> JS put
+      self[ name_str[0...-1] ] = args[0]
     else
-      if property = self[s_name]
+      if property = self[name_str]
         if property.is_a?(Rhino::JS::Function)
           begin
             context = Rhino::JS::Context.enter
@@ -103,7 +103,7 @@ class Java::OrgMozillaJavascript::ScriptableObject
           end
         else
           if args.size > 0
-            raise ArgumentError, "can't #{name}(#{args.join(', ')}) as '#{name}' is a property"
+            raise ArgumentError, "can't call '#{name_str}' with args: #{args.inspect} as it's a property"
           end
           Rhino.to_ruby property
         end
@@ -196,18 +196,35 @@ class Java::OrgMozillaJavascript::BaseFunction
   
 end
 
+class Java::OrgMozillaJavascript::ScriptStackElement
+  
+  def file_name; fileName; end # public final String fileName;
+  def function_name; functionName; end # public final String functionName;
+  def line_number; lineNumber; end # public final int lineNumber;
+  
+  def to_s
+    str = "at #{fileName}"
+    str << ':' << lineNumber.to_s if lineNumber > -1
+    str << " (#{funcionName})" if functionName
+    str
+  end
+  
+end
+
 class Java::OrgMozillaJavascript::Context
   
+  CACHE = java.util.WeakHashMap.new
+  
   def reset_cache!
-    @cache = java.util.WeakHashMap.new
+    CACHE[self] = java.util.WeakHashMap.new
   end
 
   def enable_cache!
-    @cache = nil unless @cache
+    CACHE[self] = nil unless CACHE[self]
   end
 
   def disable_cache!
-    @cache = false
+    CACHE[self] = false
   end
   
   # Support for caching JS data per context.
@@ -217,20 +234,20 @@ class Java::OrgMozillaJavascript::Context
   #       (implementing #equals & #hashCode e.g. RubyStrings will work ...)
   #
   def cache(key)
-    return yield if @cache == false
-    reset_cache! unless @cache
-    fetch(key) || store(key, yield)
+    return yield if (cache = CACHE[self]) == false
+    cache = reset_cache! unless cache
+    fetch(key, cache) || store(key, yield, cache)
   end
     
   private
 
-    def fetch(key)
-      ref = @cache.get(key)
+    def fetch(key, cache = CACHE[self])
+      ref = cache.get(key)
       ref ? ref.get : nil
     end
 
-    def store(key, value)
-      @cache.put(key, java.lang.ref.WeakReference.new(value))
+    def store(key, value, cache = CACHE[self])
+      cache.put(key, java.lang.ref.WeakReference.new(value))
       value
     end
     

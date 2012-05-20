@@ -2,28 +2,52 @@
 module Rhino
   module Ruby
     
-    def self.wrap_error(e)
-      JS::WrappedException.new(org.jruby.exceptions.RaiseException.new(e))
-    end
-    
     # shared JS::Scriptable implementation
     module Scriptable
+      
+      @@access = nil
+      def self.access=(access)
+        @@access = ( access.respond_to?(:get) && access.respond_to?(:put) ) ? access : 
+          begin
+            access = 
+              if access && ! access.is_a?(Class) # Scriptable.access = :attribute
+                name = access.to_s.chomp('_access')
+                name = name[0, 1].capitalize << name[1..-1]
+                name = :"#{name}Access"
+                if Ruby.const_defined?(name)
+                  Ruby.const_get(name) # e.g. Rhino::Ruby::AttributeAccess
+                else
+                  const_get(name) # e.g. Rhino::Ruby::Scriptable::FooAccess
+                end
+              else # nil, false, Class
+                access
+              end
+            access.is_a?(Class) ? access.new : access
+          end
+      end
+      
+      def self.access
+        @@access ||= Ruby::DefaultAccess.new
+      end
       
       # override Object Scriptable#get(String name, Scriptable start);
       # override Object Scriptable#get(int index, Scriptable start);
       def get(name, start)
+        return nil if exclude?(name)
         access.get(unwrap, name, self) { super }
       end
 
       # override boolean Scriptable#has(String name, Scriptable start);
       # override boolean Scriptable#has(int index, Scriptable start);
       def has(name, start)
+        return nil if exclude?(name)
         access.has(unwrap, name, self) { super }
       end
 
       # override void Scriptable#put(String name, Scriptable start, Object value);
       # override void Scriptable#put(int index, Scriptable start, Object value);
       def put(name, start, value)
+        return nil if exclude?(name)
         access.put(unwrap, name, value) { super }
       end
       
@@ -31,29 +55,36 @@ module Rhino
       def getIds
         ids = []
         unwrap.public_methods(false).each do |name| 
-          name = name[0...-1] if name[-1, 1] == '=' # 'foo=' ... 'foo'
-          name = name.to_java # java.lang.String
+          next unless name = convert(name)
+          name = name.to_s.to_java # java.lang.String
           ids << name unless ids.include?(name)
         end
         super.each { |id| ids.unshift(id) }
         ids.to_java
       end
       
-      @@access = nil
-      
-      def self.access=(access)
-        @@access = access
-      end
-      
-      def self.access
-        @@access ||= Ruby::DefaultAccess
-      end
-      
       private
       
-        def access
-          Scriptable.access
+      def convert(name)
+        if exclude?(name)
+          nil
+        elsif name[-1, 1] == '='
+          name[0...-1]
+        else
+          name
         end
+      end
+      
+      FETCH = '[]'.freeze
+      STORE = '[]='.freeze
+      
+      def exclude?(name)
+        name == FETCH || name == STORE
+      end
+      
+      def access
+        Scriptable.access
+      end
       
     end
     
@@ -78,7 +109,7 @@ module Rhino
       def unwrap
         @ruby
       end
-
+      
       # abstract String Scriptable#getClassName();
       def getClassName
         @ruby.class.to_s # to_s handles 'nameless' classes as well
@@ -160,12 +191,12 @@ module Rhino
         begin
           callable = 
             if @callable.is_a?(UnboundMethod)
-              @callable.bind(Rhino.to_ruby(this))
+              @callable.bind(Rhino.to_ruby(this)) # might end up as TypeError
             else
               @callable
             end
           result = callable.call(*rb_args)
-        rescue => e
+        rescue StandardError, ScriptError => e
           raise Ruby.wrap_error(e) # thus `try { } catch (e)` works in JS
         end
         Rhino.to_javascript(result, scope)
@@ -214,6 +245,25 @@ module Rhino
     def self.cache(key, &block)
       context = JS::Context.getCurrentContext
       context ? context.cache(key, &block) : yield
+    end
+    
+    # "hack" for ruby errors so that they act as JS thrown objects
+    class Exception < JS::JavaScriptException
+      
+      def initialize(value)
+        super wrap_value(value)
+      end
+    
+      private
+      
+      def wrap_value(value)
+        value.is_a?(Object) ? value : Object.wrap(value)
+      end
+      
+    end
+    
+    def self.wrap_error(e)
+      Exception.new(e)
     end
     
   end

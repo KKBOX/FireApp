@@ -1,4 +1,5 @@
 .idea
+nbproject
 doc
 *.gem
 .rvmrc

@@ -388,3 +388,27 @@ describe Rhino::Ruby::Constructor do
   end
   
 end
+
+describe Rhino::Ruby::Exception do
+  
+  it 'outcomes as ruby errors in function calls' do
+    klass = Class.new(Object) do
+      def foo(arg)
+        raise TypeError, "don't foo me with #{arg}" unless arg.is_a?(String)
+      end
+    end
+    rb_function = Rhino::Ruby::Function.wrap klass.new.method(:foo)
+    context = nil; scope = nil; this = nil; args = [ 42.to_java ].to_java
+    begin
+      rb_function.call(context, scope, this, args)
+    rescue java.lang.Exception => e
+      e.should be_a(Rhino::Ruby::Exception)
+      e.getValue.should be_a(Rhino::Ruby::Object)
+      e.value.unwrap.should be_a(TypeError)
+      e.value.unwrap.message == "don't foo me with 42"
+    else
+      fail "#{Rhino::Ruby::Exception} expected to be raised"
+    end
+  end
+  
+end

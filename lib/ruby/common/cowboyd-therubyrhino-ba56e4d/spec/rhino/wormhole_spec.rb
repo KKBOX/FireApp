@@ -91,6 +91,46 @@ describe Rhino::To do
         h.prototype.should be_nil # this is how Rhino works !
       end
     end
+
+    it "converts deeply nested ruby hashes into native objects" do
+      hash = {
+          :array => [
+              {
+                  :breed => "Pug"
+              },
+              {
+                  :breed => "English Bulldog"
+              },
+              {
+                  :breed => [
+                      "Pug",
+                      "Beagle"
+                  ]
+              }
+          ]
+      }
+
+      Rhino.to_javascript(hash).tap do |h|
+        h.should be_kind_of(Rhino::JS::NativeObject)
+
+        a = h.get("array", h)
+        a.should be_kind_of(Rhino::JS::NativeArray)
+
+        element0 = a.get(0,a)
+        element0.should be_kind_of(Rhino::JS::NativeObject)
+        element0.get("breed", element0).should == "Pug"
+
+        element2 = a.get(2,a)
+        element2.should be_kind_of(Rhino::JS::NativeObject)
+
+        nested_array = element2.get("breed", element2)
+        nested_array.should be_kind_of(Rhino::JS::NativeArray)
+        nested_array.get(0,nested_array).should == "Pug"
+        nested_array.get(1,nested_array).should == "Beagle"
+
+        h.prototype.should be_nil # this is how Rhino works !
+      end
+    end
     
     describe "with a scope" do
       
@@ -132,12 +172,12 @@ describe Rhino::To do
     it "converts procs and methods into native functions" do
       Rhino.to_javascript(lambda {|lhs,rhs| lhs * rhs}).tap do |f|
         f.should be_kind_of(Rhino::JS::Function)
-        f.call(nil, nil, nil, [7,6]).should be(42)
+        f.call(nil, nil, nil, [7, 6].to_java).should be(42)
       end
       
-      Rhino.to_javascript("foo,bar,baz".method(:split)).tap do |m|
-        m.should be_kind_of(Rhino::JS::Function)
-        Rhino.to_ruby(m.call(nil, nil, nil, ',')).should == ['foo', 'bar', 'baz']
+      Rhino.to_javascript("foo,bar,baz".method(:split)).tap do |f|
+        f.should be_kind_of(Rhino::JS::Function)
+        Rhino.to_ruby(f.call(nil, nil, nil, [','].to_java)).should == ['foo', 'bar', 'baz']
       end
     end
 

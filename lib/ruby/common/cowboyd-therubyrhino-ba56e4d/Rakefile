@@ -8,4 +8,8 @@ task :clean do
 end
 
 require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new
+RSpec::Core::RakeTask.new do |spec|
+  spec.rspec_opts = ['--color', "--format documentation"]
+end
+
+task :default => :spec

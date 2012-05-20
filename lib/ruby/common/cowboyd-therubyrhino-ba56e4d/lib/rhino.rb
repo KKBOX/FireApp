@@ -1,8 +1,8 @@
 require 'java'
 
-require 'rhino/rhino-1.7R3.jar'
-
 module Rhino
+  
+  require defined?(Rhino::JAR_PATH) ? JAR_PATH : 'rhino/rhino-1.7R3.jar'
   
   # This module contains all the native Rhino objects implemented in Java
   # e.g. Rhino::JS::NativeObject # => org.mozilla.javascript.NativeObject
@@ -17,6 +17,7 @@ module Rhino
   
 end
 
+require 'rhino/version'
 require 'rhino/wormhole'
 Rhino.extend Rhino::To
 

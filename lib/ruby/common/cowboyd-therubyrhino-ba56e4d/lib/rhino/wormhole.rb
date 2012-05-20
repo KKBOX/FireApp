@@ -43,10 +43,17 @@ module Rhino
       end
 
       def array_to_javascript(rb_array, scope = nil)
+        # First convert all array elements to their javascript equivalents and
+        # then invoke to_java below in order to create a Java array.  This allows
+        # arrays with nested hashes to be converted properly.
+        converted_rb_array = rb_array.map do |rb_element|
+          to_javascript(rb_element, scope)
+        end
+
         if scope && context = JS::Context.getCurrentContext
-          context.newArray(scope, rb_array.to_java)
+          context.newArray(scope, converted_rb_array.to_java)
         else
-          JS::NativeArray.new(rb_array.to_java)
+          JS::NativeArray.new(converted_rb_array.to_java)
         end
       end
 

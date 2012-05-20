@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Embed the Rhino JavaScript interpreter into JRuby}
 
   s.add_development_dependency "rake"
-  s.add_development_dependency "rspec"
+  s.add_development_dependency "rspec", ">= 2.7"
   s.add_development_dependency "mocha"
   s.add_development_dependency "jruby-openssl"
 end
