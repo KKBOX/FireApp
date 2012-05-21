@@ -337,6 +337,12 @@ class Tray
     end
   end
 
+  def write_dynamaic_file(release_dir, request_path )
+    new_file = File.join(release_dir, request_path)
+    FileUtils.mkdir_p( File.dirname(  new_file ))
+    File.open(new_file, 'w') {|f| f.write( open("http://127.0.0.1:#{App::CONFIG['services_http_port']}#{request_path}").read ) } 
+  end 
+
   def build_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
       App.try do 
@@ -347,44 +353,31 @@ class Tray
         report_window = App.report('Start build project!') do
           Swt::Program.launch(release_dir)
         end
-
         #build html 
         FileUtils.mkdir_p( release_dir)
-        file_extensions = WEBrick::HTTPServlet::FileHandler::HandlerTable.keys.join(',')
-        Dir.glob( File.join(Compass.configuration.project_path, '**', "[^_]*.html.{#{file_extensions}}") ) do |file|
+        Dir.glob( File.join(Compass.configuration.project_path, '**', "[^_]*.html.*") ) do |file|
           next if file =~ /build_\d{14}/
-
-          extname=File.extname(file)# get .erb, .html, .php
-          request = WEBrick::HTTPRequest.new({})
-          request.path = file[project_path.size ... (extname.size*-1)]
-
-          handler = (WEBrick::HTTPServlet::FileHandler::HandlerTable[extname[1..-1]])
-          content = handler.new(nil, file).send(:parse, request, nil)
-
-          new_file = File.join(release_dir, request.path)
-          FileUtils.mkdir_p( File.dirname(  new_file ))
-          File.open(new_file, 'w') {|f| f.write(content) }
-
-          report_window.append "Create: #{request.path}"
+          extname=File.extname(file)
+          if Tilt[ extname[1..-1] ]
+            request_path = file[1 ... (-1*extname.size)]
+            write_dynamaic_file(release_dir, request_path)
+            report_window.append "Create: #{request_path}"
+          end
         end
  
         #build js from coffeescript 
         FileUtils.mkdir_p( release_dir)
         Dir.glob( File.join(project_path, 'coffeescripts', "**","*.coffee") ) do |file|
-          request = WEBrick::HTTPRequest.new({})
-          request.path = file[project_path.size .. -1].gsub(/\/coffeescripts\//, "/#{Compass.configuration.javascripts_dir}/").gsub(/(\.js)?\.coffee$/,'.js')
+          request_path = file[project_path.size .. -1].gsub(/\/coffeescripts\//, "/#{Compass.configuration.javascripts_dir}/").gsub(/(\.js)?\.coffee$/,'.js')
+          write_dynamaic_file(release_dir, request_path)
 
-          handler = WEBrick::HTTPServlet::CoffeeScriptHandler
-          content = handler.new(nil).send(:parse, request, nil)
-
-          new_file = File.join(release_dir, request.path)
-          FileUtils.mkdir_p( File.dirname(  new_file ))
-          File.open(new_file, 'w') {|f| f.write(content) }
-
-          report_window.append "Create: #{request.path}"
+          report_window.append "Create: #{request_path}"
         end
 
-        blacklist=[
+        blacklist = []
+        Tilt.mappings.each{|key, value| blacklist << "*#{key}" if !key.strip.empty? }
+
+        blacklist += [
           "*.swp",
           "*.layout",
           "*~",
@@ -403,14 +396,12 @@ class Tray
           File.join(project_path, 'coffeescripts', "*"),
           File.join(project_path, 'coffeescripts'),
         ]
+
         if File.exists?(File.join( project_path, "build_ingore.txt"))
           blacklist += File.open( File.join( project_path, "build_ingore.txt") ).readlines.map{|p| File.join(project_path, p.strip)}
         end
-        WEBrick::HTTPServlet::FileHandler::HandlerTable.keys.each do |x|
-          blacklist << "*.#{x}"
-        end
-
-
+    
+        
         #copy compass asset folder
         %w{images css javascripts}.each do |asset|
           asset_path = Compass.configuration.send("#{asset}_path")
@@ -420,10 +411,12 @@ class Tray
           report_window.append "Copy directory: #{asset_path[project_path.size..-1]}"
         end
         
-
+        blacklist.uniq!
+        blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
         #copy static file
         Dir.glob( File.join(Compass.configuration.project_path, '**', '*') ) do |file|
           next if file =~ /build_\d{14}/
+          file = file[2..-1]
           pass = false
           blacklist.each do |pattern|
             if File.fnmatch(pattern, file)
@@ -433,11 +426,12 @@ class Tray
           end
           next if pass
 
-          new_file = File.join(release_dir, file[project_path.size..-1])
-          FileUtils.mkdir_p( File.dirname(  new_file ))
-          FileUtils.cp_r( file, new_file )
-          report_window.append "Copy#{File.directory?(file) ? " directory" : ''}: #{file[project_path.size..-1]}"
-          blacklist << "#{file }/*" if File.directory?(file)
+          new_file = File.join(release_dir, file)
+          if File.file? file
+            FileUtils.mkdir_p( File.dirname(  new_file ))
+            FileUtils.cp( file, new_file )
+            report_window.append "Copy: #{file}"
+          end
         end
 
         end_build_project=Time.now

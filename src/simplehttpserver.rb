@@ -4,6 +4,7 @@ require "singleton"
 require "webrick"
 require 'serve'
 require 'slim'
+require 'tilt'
 require 'serve/application'
 require 'sass'
 require 'sass/plugin/rack'
