@@ -37,13 +37,21 @@ begin
     require "compass-h5bp"
     require "bootstrap-sass"
     require "fireapp-example"
+    
   rescue LoadError
   end
 
-
+  
   if App::CONFIG['show_welcome']
     WelcomeWindow.new
   end
+
+  begin
+    require 'execjs'
+  rescue ExecJS::RuntimeUnavailable => e
+    App.report( "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager", nil, {:show_reset_button => true} )
+  end
+
   App.clear_autocomplete_cache
 
   Tray.instance.run(:watch => ARGV[0])
