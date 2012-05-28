@@ -75,7 +75,7 @@ module App
     }
 
     config.merge!(x)
-    if !config["gem_path"]
+    unless config["gem_path"]
       config["gem_path"] = App.get_system_default_gem_path
     end
 

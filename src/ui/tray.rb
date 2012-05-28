@@ -65,7 +65,7 @@ class Tray
     
     SplashWindow.instance.dispose
     
-    while(!@shell.is_disposed) do
+    while(! @shell.is_disposed) do
       App.display.sleep if(!App.display.read_and_dispatch) 
       App.show_and_clean_notifications
 
