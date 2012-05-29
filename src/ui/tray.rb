@@ -389,7 +389,7 @@ class Tray
           "*/.sass-cache",
           "*/compass_app_log.txt",
           "*/fire_app_log.txt",
-          "*/build_ingore.txt",
+          "*/build_ignore.txt",
           "#{Compass.detect_configuration_file}",
           "#{Compass.configuration.sass_path}/*",
           "#{Compass.configuration.sass_path}",
@@ -397,8 +397,8 @@ class Tray
           File.join(project_path, 'coffeescripts'),
         ]
 
-        if File.exists?(File.join( project_path, "build_ingore.txt"))
-          blacklist += File.open( File.join( project_path, "build_ingore.txt") ).readlines.map{|p| File.join(project_path, p.strip)}
+        if File.exists?(File.join( project_path, "build_ignore.txt"))
+          blacklist += File.open( File.join( project_path, "build_ignore.txt") ).readlines.map{|p| File.join(project_path, p.strip)}
         end
     
         
