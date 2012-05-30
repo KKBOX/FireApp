@@ -349,6 +349,13 @@ class Tray
 
         project_path = Compass.configuration.project_path
         release_dir = File.join(project_path, "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
+        
+        release_dir = if File.exists?(File.join( project_path, "build_project_path.txt"))
+                        dir_path = File.open( File.join( project_path, "build_project_path.txt") ).gets.strip
+                        File.expand_path(dir_path)
+                      else
+                        File.join(project_path, "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
+                      end
 
         report_window = App.report('Start build project!') do
           Swt::Program.launch(release_dir)
@@ -389,17 +396,20 @@ class Tray
           "*/.sass-cache",
           "*/compass_app_log.txt",
           "*/fire_app_log.txt",
-          "*/build_ignore.txt",
           "#{Compass.detect_configuration_file}",
           "#{Compass.configuration.sass_path}/*",
           "#{Compass.configuration.sass_path}",
           File.join(project_path, 'coffeescripts', "*"),
           File.join(project_path, 'coffeescripts'),
         ]
-
-        if File.exists?(File.join( project_path, "build_ignore.txt"))
-          blacklist += File.open( File.join( project_path, "build_ignore.txt") ).readlines.map{|p| File.join(project_path, p.strip)}
+        
+        %w{build_ignore.txt build_project_path.txt}.each do |f|
+          if File.exists?(File.join( project_path, f))
+            blacklist << "*/#{f}"
+            blacklist += File.open( File.join( project_path, f) ).readlines.map{|p| File.join(project_path, p.strip)}
+          end
         end
+        
     
         
         #copy compass asset folder
