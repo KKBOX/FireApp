@@ -28,7 +28,21 @@ module Sass::Script
   end
 end
 
+
 module Compass
+  
+  # for add fireapp_build_path configuration property
+  module Configuration
+    def self.strip_trailing_separator(*args)
+      Data.strip_trailing_separator(*args)
+    end
+  end
+
+  # add fireapp_build_path configuration property
+  Configuration.add_configuration_property(:fireapp_build_path, nil) do
+    nil
+  end
+
   module Commands
     class WatchProject 
 

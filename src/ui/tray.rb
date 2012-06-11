@@ -347,31 +347,35 @@ class Tray
     Swt::Widgets::Listener.impl do |method, evt|
       App.try do 
 
-        project_path = Compass.configuration.project_path
-        release_dir = File.join(project_path, "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
+        project_path = File.expand_path(Compass.configuration.project_path)
         
-        release_dir = if File.exists?(File.join( project_path, "build_project_path.txt"))
-                        dir_path = File.open( File.join( project_path, "build_project_path.txt") ).gets.strip
-                        File.expand_path(dir_path)
-                      else
-                        File.join(project_path, "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
-                      end
+        release_dir = File.join(project_path, Compass.configuration.fireapp_build_path || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
+  
+        puts "="*50
+        puts Dir.pwd
+        puts project_path
+        puts release_dir
 
         report_window = App.report('Start build project!') do
           Swt::Program.launch(release_dir)
         end
+        
         #build html 
+        FileUtils.rm_r( release_dir) if File.exists?(release_dir)
         FileUtils.mkdir_p( release_dir)
-        Dir.glob( File.join(Compass.configuration.project_path, '**', "[^_]*.html.*") ) do |file|
-          next if file =~ /build_\d{14}/
+        Dir.glob( File.join(project_path, '**', "[^_]*.html.*") ) do |file|
+          if file =~ /build_\d{14}/ || file =~ /^#{release_dir}/
+            next 
+          end
+          puts file
           extname=File.extname(file)
           if Tilt[ extname[1..-1] ]
-            request_path = file[1 ... (-1*extname.size)]
+            request_path = file[project_path.length ... (-1*extname.size)]
             write_dynamaic_file(release_dir, request_path)
             report_window.append "Create: #{request_path}"
           end
         end
- 
+
         #build js from coffeescript 
         FileUtils.mkdir_p( release_dir)
         Dir.glob( File.join(project_path, 'coffeescripts', "**","*.coffee") ) do |file|
@@ -403,40 +407,44 @@ class Tray
           File.join(project_path, 'coffeescripts'),
         ]
         
-        %w{build_ignore.txt build_project_path.txt}.each do |f|
+        %w{build_ignore.txt}.each do |f|
           if File.exists?(File.join( project_path, f))
             blacklist << "*/#{f}"
             blacklist += File.open( File.join( project_path, f) ).readlines.map{|p| File.join(project_path, p.strip)}
           end
         end
-        
-    
+       
+        if Compass.configuration.fireapp_build_path 
+          blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
+        end
         
         #copy compass asset folder
         %w{images css javascripts}.each do |asset|
-          asset_path = Compass.configuration.send("#{asset}_path")
-          blacklist << "#{asset_path}/*"
-          blacklist << "#{asset_path}"
+          asset_path = File.expand_path( Compass.configuration.send("#{asset}_path") )
           FileUtils.cp_r(asset_path, release_dir) if File.exists?(asset_path)
-          report_window.append "Copy directory: #{asset_path[project_path.size..-1]}"
+          asset_path_basename = File.basename(asset_path)
+          blacklist << "#{asset_path_basename}/*"
+          report_window.append "Copy directory: #{asset_path_basename}"
         end
         
         blacklist.uniq!
         blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
+
         #copy static file
-        Dir.glob( File.join(Compass.configuration.project_path, '**', '*') ) do |file|
-          next if file =~ /build_\d{14}/
-          file = file[2..-1]
+        Dir.glob( File.join(project_path, '**', '*') ) do |file|
+          path = file[(project_path.length+1) .. -1]
+          next if path =~ /build_\d{14}/
           pass = false
+          
           blacklist.each do |pattern|
-            if File.fnmatch(pattern, file)
+            if File.fnmatch(pattern, path)
               pass = true
               break
             end
           end
           next if pass
 
-          new_file = File.join(release_dir, file)
+          new_file = File.join(release_dir, path)
           if File.file? file
             FileUtils.mkdir_p( File.dirname(  new_file ))
             FileUtils.cp( file, new_file )
@@ -529,6 +537,7 @@ class Tray
     dir.gsub!('\\','/') if org.jruby.platform.Platform::IS_WINDOWS
     App.try do 
       Compass.reset_configuration!
+      Dir.chdir(dir)
       x = Compass::Commands::UpdateProject.new( dir, {})
       if !x.new_compiler_instance.sass_files.empty? # make sure we watch a compass project
         stop_watch
