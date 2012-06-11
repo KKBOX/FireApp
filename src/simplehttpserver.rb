@@ -1,7 +1,7 @@
 require 'rack'
 require 'rack/builder'
 require "singleton"
-require "mongrel"
+require "webrick"
 require 'serve'
 require 'slim'
 require 'tilt'
@@ -13,8 +13,6 @@ require 'rack/coffee'
 
 class SimpleHTTPServer
   include Singleton
-  Servers = []
-
   def start(dir, options)
     Dir.chdir(dir)
     options={
@@ -60,16 +58,18 @@ class SimpleHTTPServer
       end
     end
 
-    
+    @webrick_server = Rack::Handler.get('webrick')
+
     @http_server_thread = Thread.new do 
-    Rack::Handler.get('mongrel').run app, :Port => options[:Port], :Host => "0.0.0.0", :timeout => 1 do |server|
-        SimpleHTTPServer::Servers << server
+      @webrick_server.run app, :Port => options[:Port], :Host => "0.0.0.0" do |server|
+        trap("INT") { server.shutdown }
       end
     end
   end
 
   def stop
-    Servers.each{|x| x.stop}
+    @webrick_server.shutdown if @webrick_server
+    @webrick_server = nil
     @http_server_thread.kill if @http_server_thread && @http_server_thread.alive?
   end
 
