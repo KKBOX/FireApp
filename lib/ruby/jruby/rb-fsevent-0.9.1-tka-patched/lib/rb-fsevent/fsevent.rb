@@ -54,11 +54,12 @@ class FSEvent
   end
 
   def stop
-    unless @pipe.nil?
+    unless @pipe.nil? || @pipe.closed? 
       Process.kill('KILL', @pipe.pid)
       @pipe.close
     end
   rescue IOError
+  rescue Errno::ESRCH
   ensure
     @running = false
   end
