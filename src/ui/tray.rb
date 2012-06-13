@@ -1,14 +1,14 @@
 require "singleton"
 class Tray
   include Singleton
-
+  attr_reader :logger
   def initialize()
     @http_server = nil
     @compass_thread = nil
     @watching_dir = nil
+    @logger = nil
     @history_dirs  = App.get_history
     @shell    = App.create_shell(Swt::SWT::ON_TOP | Swt::SWT::MODELESS)
-
     @standby_icon = App.create_image("icon/16_dark.png")
     @active_icon = App.create_image("icon/16_white.png")
     @watching_icon = App.create_image("icon/16.png")
@@ -331,12 +331,6 @@ class Tray
     end
   end
 
-  def clean_project_handler
-    Swt::Widgets::Listener.impl do |method, evt|
-      clean_project(true)
-    end
-  end
-
   def write_dynamaic_file(release_dir, request_path )
     new_file = File.join(release_dir, request_path)
     FileUtils.mkdir_p( File.dirname(  new_file ))
@@ -541,11 +535,17 @@ class Tray
       x = Compass::Commands::UpdateProject.new( dir, {})
       if !x.new_compiler_instance.sass_files.empty? # make sure we watch a compass project
         stop_watch
+        
+        @logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
+        
+        x.perform
 
         @tray_item.image = @watching_icon
         
        
         @watching_dir = dir
+        
+
         @menu.items.each do |item|
           item.dispose if @history_dirs.include?(item.text)
         end
@@ -604,8 +604,7 @@ class Tray
         Thread.abort_on_exception = true
         @compass_thread = Thread.new do
           Compass.reset_configuration!
-          Compass::Commands::WatchProject.new( dir, { :logger => Compass::Logger.new({ :display => current_display,
-                                                                                     :log_dir => dir}) }).execute
+          Compass::Commands::WatchProject.new( dir, { :logger => @logger  }).execute
         end
 
         return true
@@ -622,6 +621,7 @@ class Tray
     [@simplelivereload_thread, @simplehttpserver_thread, @compass_thread].each do |x|
       x.kill if x && x.alive?
     end
+    @logger = nil
     @compass_thread = nil
     @simplehttpserver_thread = nil
     @simplelivereload_thread = nil

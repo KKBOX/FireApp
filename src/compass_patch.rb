@@ -42,6 +42,10 @@ module Compass
   Configuration.add_configuration_property(:fireapp_build_path, nil) do
     nil
   end
+  
+  Configuration.add_configuration_property(:fireapp_coffeescripts_dir, nil) do
+    "coffeescripts"
+  end
 
   module Commands
     class WatchProject 
@@ -75,6 +79,24 @@ module Compass
                 path.create &method(:recompile)
               end
             end
+            
+            # for coffeescripts
+            monitor.path Compass.configuration.fireapp_coffeescripts_dir do |path|
+              path.glob '**/*.coffee'
+              path.update do |base, relative|
+                puts ">>> Change detected to: #{relative}"
+                CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+              end
+              path.create do |base, relative|
+                puts ">>> New file detected: #{relative}"
+                CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+              end
+              path.delete do |base, relative|
+                puts ">>> File Removed: #{relative}"
+                CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+              end
+            end
+
             Compass.configuration.watches.each do |glob, callback|
               monitor.path Compass.configuration.project_path do |path|
                 path.glob glob
@@ -102,6 +124,30 @@ module Compass
         end
 
       end
+    end
+
+    class UpdateProject
+      def perform
+        CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+
+        compiler = new_compiler_instance
+        check_for_sass_files!(compiler)
+        compiler.clean! if compiler.new_config?
+        error_count = compiler.run
+        failed! if error_count > 0 
+      end 
+
+    end
+    class CleanProject
+      def perform
+        CoffeeCompiler.clean_compile_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
+        compiler = new_compiler_instance
+        compiler.clean!
+        Compass::SpriteImporter.find_all_sprite_map_files(Compass.configuration.generated_images_path).each do |sprite|
+          remove sprite
+        end 
+      end 
+
     end
   end
 

@@ -30,18 +30,10 @@ class SimpleHTTPServer
         Compass.add_project_configuration( File.join(dir, "compass.config") )
       end
 
-      Compass.configure_sass_plugin!
-      use Sass::Plugin::Rack, nil  # Sass Middleware
-
       use Rack::CommonLogger
       use Rack::ShowStatus
       use Rack::ShowExceptions
  
-      use Rack::Coffee, { 
-          :root => 'coffeescripts', 
-          :urls => Compass.configuration.http_javascripts_path,
-          :cache_compile => true
-      }
       views_dir = File.join(dir, 'views')
       public_dir = File.join(dir, 'public')
       puts dir

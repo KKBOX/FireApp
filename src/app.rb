@@ -128,6 +128,7 @@ module App
 
     $LOAD_PATH.unshift('.')
     require "fsevent_patch" if OS == 'darwin'
+    require "coffee_compiler.rb"
     require "compass_patch.rb"
     require "sass_patch.rb"
   end

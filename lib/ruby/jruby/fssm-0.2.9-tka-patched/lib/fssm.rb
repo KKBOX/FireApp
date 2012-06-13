@@ -73,8 +73,10 @@ module FSSM
   
 end
 
+=begin
 STDERR.puts "\nDear developers making use of FSSM in your projects,\n"
 STDERR.puts "FSSM is essentially dead at this point. Further development will"
 STDERR.puts "be taking place in the new shared guard/listen project. Please"
 STDERR.puts "let us know if you need help transitioning! ^_^b\n"
 STDERR.puts "- Travis Tilley\n\n"
+=end

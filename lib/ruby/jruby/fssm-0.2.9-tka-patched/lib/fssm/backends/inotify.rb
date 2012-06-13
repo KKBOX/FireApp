@@ -6,7 +6,7 @@ module FSSM::Backends
 
     def add_handler(handler, preload=true)
       @notifier.watch(handler.path.to_s, :recursive, :attrib, :close_write, :create,
-                      :delete, :delete_self, :moved_from, :moved_to, :move_self) do |event|
+                      :delete, :delete_self, :moved_from, :moved_to, :move_self) do |event| 
         handler.refresh()
       end
 
