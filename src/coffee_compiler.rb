@@ -58,7 +58,7 @@ class CoffeeCompiler
 
   def compile()
     if @cache_dir
-      cache_file = @cache_dir + @coffeescript_path.to_s.gsub(/[\/\\]/,"_")
+      cache_file = @cache_dir + @coffeescript_path.to_s.gsub(/[^a-z0-9]/,"_")
       if cache_file.file?
         cache_object = JSON.load( cache_file.read)
         if cache_object["mtime"] == @coffeescript_path.mtime.to_i
