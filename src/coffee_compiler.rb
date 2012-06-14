@@ -33,12 +33,15 @@ class CoffeeCompiler
     javascripts_dir = File.expand_path(javascripts_dir)
     
     cache_dir=get_cache_dir(coffeescripts_dir)
-    FileUtils.rm_r(cache_dir)
+    FileUtils.rm_rf(cache_dir)
     CoffeeCompiler.log( :remove, "#{cache_dir}/")
+
     Dir.glob( File.join(coffeescripts_dir, "**", "*.coffee")) do |full_path|
       new_js_path = get_new_js_path(coffeescripts_dir, full_path, javascripts_dir)
-      CoffeeCompiler.log( :remove, new_js_path)
-      FileUtils.rm(new_js_path)
+      if File.exists?(new_js_path)
+        CoffeeCompiler.log( :remove, new_js_path)
+        FileUtils.rm_rf(new_js_path)
+      end 
     end
 
   end
