@@ -34,7 +34,7 @@ class CoffeeCompiler
     
     cache_dir=get_cache_dir(coffeescripts_dir)
     FileUtils.rm_r(cache_dir)
-    CoffeeCompiler.log( :remove, cache_dir)
+    CoffeeCompiler.log( :remove, "#{cache_dir}/")
     Dir.glob( File.join(coffeescripts_dir, "**", "*.coffee")) do |full_path|
       new_js_path = get_new_js_path(coffeescripts_dir, full_path, javascripts_dir)
       CoffeeCompiler.log( :remove, new_js_path)
@@ -100,7 +100,13 @@ class CoffeeCompiler
   end
 
   def self.get_cache_dir(base_dir)
-    cache_dir = File.join( base_dir, ".coffeescript_cache")
+
+    if defined?(App) 
+      cache_dir = File.expand_path( File.join(Compass.configuration.project_path, ".coffeescript-cache"))
+    else
+      cache_dir = File.join( base_dir, ".coffeescript-cache")
+    end
+
     FileUtils.mkdir_p(cache_dir) unless  File.exists?(cache_dir)
     return cache_dir
   end
