@@ -345,18 +345,17 @@ class Tray
         
         release_dir = File.join(project_path, Compass.configuration.fireapp_build_path || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
   
-        puts "="*50
-        puts Dir.pwd
-        puts project_path
-        puts release_dir
-
         report_window = App.report('Start build project!') do
           Swt::Program.launch(release_dir)
         end
         
-        #build html 
         FileUtils.rm_r( release_dir) if File.exists?(release_dir)
         FileUtils.mkdir_p( release_dir)
+
+        # rebuild sass & coffeescript
+        Compass::Commands::UpdateProject.new( project_path, {}).perform
+
+        #build html 
         Dir.glob( File.join(project_path, '**', "[^_]*.html.*") ) do |file|
           if file =~ /build_\d{14}/ || file =~ /^#{release_dir}/
             next 
@@ -370,14 +369,6 @@ class Tray
           end
         end
 
-        #build js from coffeescript 
-        FileUtils.mkdir_p( release_dir)
-        Dir.glob( File.join(project_path, 'coffeescripts', "**","*.coffee") ) do |file|
-          request_path = file[project_path.size .. -1].gsub(/\/coffeescripts\//, "/#{Compass.configuration.javascripts_dir}/").gsub(/(\.js)?\.coffee$/,'.js')
-          write_dynamaic_file(release_dir, request_path)
-
-          report_window.append "Create: #{request_path}"
-        end
 
         blacklist = []
         Tilt.mappings.each{|key, value| blacklist << "*#{key}" if !key.strip.empty? }
