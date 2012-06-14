@@ -342,8 +342,8 @@ class Tray
       App.try do 
 
         project_path = File.expand_path(Compass.configuration.project_path)
-        
-        release_dir = File.join(project_path, Compass.configuration.fireapp_build_path || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
+ 
+        release_dir = File.expand_path( Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
   
         report_window = App.report('Start build project!') do
           Swt::Program.launch(release_dir)
@@ -360,7 +360,6 @@ class Tray
           if file =~ /build_\d{14}/ || file =~ /^#{release_dir}/
             next 
           end
-          puts file
           extname=File.extname(file)
           if Tilt[ extname[1..-1] ]
             request_path = file[project_path.length ... (-1*extname.size)]
@@ -371,7 +370,7 @@ class Tray
 
 
         blacklist = []
-        Tilt.mappings.each{|key, value| blacklist << "*#{key}" if !key.strip.empty? }
+        Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? }
 
         blacklist += [
           "*.swp",
@@ -383,13 +382,10 @@ class Tray
           "*.svn",
           "*/Thumbs.db",
           "*/.sass-cache",
+          "*/.coffeescript-cache",
           "*/compass_app_log.txt",
           "*/fire_app_log.txt",
           "#{Compass.detect_configuration_file}",
-          "#{Compass.configuration.sass_path}/*",
-          "#{Compass.configuration.sass_path}",
-          File.join(project_path, 'coffeescripts', "*"),
-          File.join(project_path, 'coffeescripts'),
         ]
         
         %w{build_ignore.txt}.each do |f|
@@ -415,6 +411,7 @@ class Tray
         blacklist.uniq!
         blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
 
+
         #copy static file
         Dir.glob( File.join(project_path, '**', '*') ) do |file|
           path = file[(project_path.length+1) .. -1]
@@ -433,7 +430,7 @@ class Tray
           if File.file? file
             FileUtils.mkdir_p( File.dirname(  new_file ))
             FileUtils.cp( file, new_file )
-            report_window.append "Copy: #{file}"
+            report_window.append "Copy: #{file.gsub(/#{project_path}/,'')}"
           end
         end
 
