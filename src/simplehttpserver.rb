@@ -22,21 +22,21 @@ class SimpleHTTPServer
     stop 
 
     app = Rack::Builder.new do
-      Compass.reset_configuration!
-      file_name = Compass.detect_configuration_file(dir)
-      Compass.add_project_configuration(file_name)
-
-      if File.file?( File.join(dir, "compass.config") ) 
-        Compass.add_project_configuration( File.join(dir, "compass.config") )
-      end
 
       use Rack::CommonLogger
       use Rack::ShowStatus
       use Rack::ShowExceptions
- 
+
+      puts File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')
+      puts File.exists?( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')).inspect
+
+      if File.exists?( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb'))
+        eval(File.read( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')))
+      end
+
       views_dir = File.join(dir, 'views')
       public_dir = File.join(dir, 'public')
-      puts dir
+
       if( File.exists?(views_dir) && File.exists?(public_dir))
         run Rack::Cascade.new([
           Serve::RackAdapter.new( views_dir ),
