@@ -373,31 +373,33 @@ class Tray
         blacklist = []
         Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? }
 
-        blacklist += [
-          "*.swp",
-          "*.layout",
-          "*~",
-          "*/.DS_Store",
-          "*/.git",
-          "*/.gitignore",
-          "*.svn",
-          "*/Thumbs.db",
-          "*/.sass-cache",
-          "*/.coffeescript-cache",
-          "*/compass_app_log.txt",
-          "*/fire_app_log.txt",
-          "view_helpers.rb",
-          "Gemfile",
-          "Gemfile.lock",
-          "config.ru",
-          File.basename(Compass.detect_configuration_file)
-        ]
-        
-        %w{build_ignore.txt}.each do |f|
-          if File.exists?(File.join( project_path, f))
-            blacklist << "*/#{f}"
-            blacklist += File.open( File.join( project_path, f) ).readlines.map{|p| File.join(project_path, p.strip)}
-          end
+        build_ignore_file = "build_ignore.txt"
+
+        if File.exists?(File.join( project_path, build_ignore_file))
+          blacklist << build_ignore_file
+          blacklist += File.open( File.join( project_path, build_ignore_file) ).readlines.map{|p|
+            p.strip
+          }
+        else
+          blacklist += [
+            "*.swp",
+            "*.layout",
+            "*~",
+            "*/.DS_Store",
+            "*/.git",
+            "*/.gitignore",
+            "*.svn",
+            "*/Thumbs.db",
+            "*/.sass-cache",
+            "*/.coffeescript-cache",
+            "*/compass_app_log.txt",
+            "*/fire_app_log.txt",
+            "view_helpers.rb",
+            "Gemfile",
+            "Gemfile.lock",
+            "config.ru",
+            File.basename(Compass.detect_configuration_file)
+          ]
         end
        
         if Compass.configuration.fireapp_build_path 
