@@ -334,6 +334,7 @@ class Tray
   def write_dynamaic_file(release_dir, request_path )
     new_file = File.join(release_dir, request_path)
     FileUtils.mkdir_p( File.dirname(  new_file ))
+    puts request_path
     File.open(new_file, 'w') {|f| f.write( open("http://127.0.0.1:#{App::CONFIG['services_http_port']}#{request_path}").read ) } 
   end 
 
@@ -385,7 +386,11 @@ class Tray
           "*/.coffeescript-cache",
           "*/compass_app_log.txt",
           "*/fire_app_log.txt",
-          "#{Compass.detect_configuration_file}",
+          "view_helpers.rb",
+          "Gemfile",
+          "Gemfile.lock",
+          "config.ru",
+          File.basename(Compass.detect_configuration_file)
         ]
         
         %w{build_ignore.txt}.each do |f|
