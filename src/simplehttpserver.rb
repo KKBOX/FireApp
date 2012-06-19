@@ -5,10 +5,9 @@ require "webrick"
 require 'serve'
 require 'slim'
 require 'tilt'
+require "kramdown"
 require 'serve/application'
-require 'sass'
 require 'sass/plugin/rack'
-require 'compass'
 require 'rack/coffee'
 
 class SimpleHTTPServer
@@ -26,9 +25,6 @@ class SimpleHTTPServer
       use Rack::CommonLogger
       use Rack::ShowStatus
       use Rack::ShowExceptions
-
-      puts File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')
-      puts File.exists?( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')).inspect
 
       if File.exists?( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb'))
         eval(File.read( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')))
