@@ -583,14 +583,14 @@ class Tray
         if App::CONFIG['services'].include?( :http )
           @simplehttpserver_thread = Thread.new do
             require "simplehttpserver"
-            SimpleHTTPServer.instance.start(dir, :Port =>  App::CONFIG['services_http_port'])
+            SimpleHTTPServer.instance.start(Compass.configuration.project_path, :Port =>  App::CONFIG['services_http_port'])
           end
         end
 
         if App::CONFIG['services'].include?( :livereload )
           @simplelivereload_thread = Thread.new do
             require "livereload"
-            SimpleLivereload.instance.watch(dir, { :port => App::CONFIG["services_livereload_port"] }) 
+            SimpleLivereload.instance.watch(Compass.configuration.project_path, { :port => App::CONFIG["services_livereload_port"] }) 
           end
         end
 
