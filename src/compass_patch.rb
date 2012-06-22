@@ -226,7 +226,6 @@ module Compass
       
       # PATCH: write wordlist File
       sass_filename_str = sass_filename.gsub(/[^a-z0-9]/i, '_')
-      puts File.join( App::AUTOCOMPLTETE_CACHE_DIR, sass_filename_str + "_project" )
       File.open( File.join( App::AUTOCOMPLTETE_CACHE_DIR, sass_filename_str + "_project" ), 'w' ) do |f|
         f.write Compass.configuration.project_path
       end
