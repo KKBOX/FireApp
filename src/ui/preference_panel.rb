@@ -162,7 +162,7 @@ class PreferencePanel
     end)
 
     layoutdata = Swt::Layout::FormData.new(150, Swt::SWT::DEFAULT)
-    layoutdata.right = Swt::Layout::FormAttachment.new( livereload_service_help_info, 0, Swt::SWT::RIGHT )
+    layoutdata.left = Swt::Layout::FormAttachment.new( livereload_service_help_info, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( livereload_service_help_info, 10, Swt::SWT::BOTTOM)
     @services_apply_button = Swt::Widgets::Button.new( composite,  Swt::SWT::PUSH )
     @services_apply_button.setLayoutData(layoutdata)
