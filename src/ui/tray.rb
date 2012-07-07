@@ -347,6 +347,7 @@ class Tray
 
   def build_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
+      ENV["RACK_ENV"] = "production"
       App.try do 
 
         project_path = File.expand_path(Compass.configuration.project_path)
@@ -451,6 +452,7 @@ class Tray
         end_build_project=Time.now
         report_window.append "Done!" 
       end
+      ENV["RACK_ENV"] = "development"
     end
 
   end
