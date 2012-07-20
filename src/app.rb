@@ -115,7 +115,7 @@ module App
         App.save_config
       end
       
-      compass_gems_path = File.join(LIB_PATH, "ruby", "compass_0.12")
+      compass_gems_path = File.join(LIB_PATH, "ruby", "compass_#{App::CONFIG['use_version']}")
 
       scan_library(compass_gems_path)
 
