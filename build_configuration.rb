@@ -18,7 +18,7 @@ configuration do |c|
 	# default value: "main"
 	#
 	#c.main_ruby_file = "main"
-  c.main_ruby_file = "src/main"
+  c.main_ruby_file = File.expand_path(File.join( File.dirname(__FILE__), "src", "main"))
 
 	# The fully-qualified name of the main Java file used to initiate the application.
 	# default value: "org.monkeybars.rawr.Main"
@@ -85,7 +85,7 @@ configuration do |c|
 	# Undocumented option 'mac_do_not_generate_plist'
 	# default value: nil
 	#
-	c.mac_do_not_generate_plist = true
+	#c.mac_do_not_generate_plist = nil
 
 	# working directory specified in plist file
 	# default value: "$APP_PACKAGE"
