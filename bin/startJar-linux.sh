@@ -1,6 +1,6 @@
 #!/bin/sh
-rake rawr:clean
-rake rawr:jar
+bundle exec rake rawr:clean
+bundle exec rake rawr:jar
 
 #"-Djruby.compat.version=1.9" \
 #java -verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Djruby.reify.classes=true  \
