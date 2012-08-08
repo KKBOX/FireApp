@@ -1,0 +1,17 @@
+GIT
+  remote: git://github.com/rawr/rawr.git
+  revision: 9164e420e6802aafb52e30cab7f1f866e6334b18
+  specs:
+    rawr (1.6.4)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (0.9.2.2)
+
+PLATFORMS
+  java
+
+DEPENDENCIES
+  rake
+  rawr (= 1.6.4)!
