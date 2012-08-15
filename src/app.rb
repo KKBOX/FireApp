@@ -71,7 +71,8 @@ module App
       "services_http_port" => 24681,
       "services_livereload_port" => 35729,
       "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,coffee,markdown,mkd,md",
-      "preferred_syntax" => "scss"
+      "preferred_syntax" => "scss",
+      "force_enable_fsevent" => false
     }
 
     config.merge!(x)
