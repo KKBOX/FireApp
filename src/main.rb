@@ -31,14 +31,12 @@ begin
 
   require 'em-websocket'
   require 'json'
-  begin
-    require "ninesixty"
-    require "html5-boilerplate"
-    require "compass-h5bp"
-    require "bootstrap-sass"
-    require "fireapp-example"
-    
-  rescue LoadError
+
+  %w{ninesixty html5-boilerplate compass-h5bp bootstrap-sass susy zurb-foundation fireapp-example}.each do |x|
+    begin
+      require x
+    rescue LoadError
+    end
   end
 
   
