@@ -28,6 +28,17 @@ require "app.rb"
 
 begin
   App.require_compass
+ 
+  begin
+    $LOAD_PATH.unshift('src')
+    require 'execjs'
+    require "fsevent_patch" if OS == 'darwin'
+    require "coffee_compiler.rb"
+    require "compass_patch.rb"
+    require "sass_patch.rb"
+  rescue ExecJS::RuntimeUnavailable => e
+    raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
+  end
 
   require 'em-websocket'
   require 'json'
@@ -44,11 +55,6 @@ begin
     WelcomeWindow.new
   end
 
-  begin
-    require 'execjs'
-  rescue ExecJS::RuntimeUnavailable => e
-    App.report( "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager", nil, {:show_reset_button => true} )
-  end
 
   App.clear_autocomplete_cache
 
