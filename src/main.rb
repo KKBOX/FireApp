@@ -32,7 +32,7 @@ begin
   begin
     $LOAD_PATH.unshift('src')
     require 'execjs'
-    require "fsevent_patch" if OS == 'darwin'
+    require "fsevent_patch" if App::OS == 'darwin'
     require "coffee_compiler.rb"
     require "compass_patch.rb"
     require "sass_patch.rb"
