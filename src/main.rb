@@ -28,17 +28,26 @@ require "app.rb"
 
 begin
   App.require_compass
+ 
+  begin
+    $LOAD_PATH.unshift('src')
+    require 'execjs'
+    require "fsevent_patch" if App::OS == 'darwin'
+    require "coffee_compiler.rb"
+    require "compass_patch.rb"
+    require "sass_patch.rb"
+  rescue ExecJS::RuntimeUnavailable => e
+    raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
+  end
 
   require 'em-websocket'
   require 'json'
-  begin
-    require "ninesixty"
-    require "html5-boilerplate"
-    require "compass-h5bp"
-    require "bootstrap-sass"
-    require "fireapp-example"
-    
-  rescue LoadError
+
+  %w{ninesixty html5-boilerplate compass-h5bp bootstrap-sass susy zurb-foundation fireapp-example}.each do |x|
+    begin
+      require x
+    rescue LoadError
+    end
   end
 
   
@@ -46,11 +55,6 @@ begin
     WelcomeWindow.new
   end
 
-  begin
-    require 'execjs'
-  rescue ExecJS::RuntimeUnavailable => e
-    App.report( "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager", nil, {:show_reset_button => true} )
-  end
 
   App.clear_autocomplete_cache
 

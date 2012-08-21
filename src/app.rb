@@ -4,7 +4,7 @@ module App
   extend self
 
   include CompileVersion
-  VERSION = "1.3"
+  VERSION = "1.4"
   OS = org.jruby.platform.Platform::OS 
   OS_VERSION = java.lang.System.getProperty("os.version")
 
@@ -71,7 +71,8 @@ module App
       "services_http_port" => 24681,
       "services_livereload_port" => 35729,
       "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,coffee,markdown,mkd,md",
-      "preferred_syntax" => "scss"
+      "preferred_syntax" => "scss",
+      "force_enable_fsevent" => false
     }
 
     config.merge!(x)
@@ -126,11 +127,6 @@ module App
       require "compass/exec"
     end
 
-    $LOAD_PATH.unshift('.')
-    require "fsevent_patch" if OS == 'darwin'
-    require "coffee_compiler.rb"
-    require "compass_patch.rb"
-    require "sass_patch.rb"
   end
 
   def save_config
