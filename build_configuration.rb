@@ -18,7 +18,6 @@ configuration do |c|
 	# default value: "main"
 	#
 	#c.main_ruby_file = "main"
-  c.main_ruby_file = File.expand_path(File.join( File.dirname(__FILE__), "src", "main"))
 
 	# The fully-qualified name of the main Java file used to initiate the application.
 	# default value: "org.monkeybars.rawr.Main"

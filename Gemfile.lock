@@ -21,6 +21,7 @@ GEM
 
 PLATFORMS
   java
+  ruby
 
 DEPENDENCIES
   rake

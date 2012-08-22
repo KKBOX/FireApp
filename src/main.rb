@@ -2,12 +2,7 @@ INITAT=Time.now
 
 $LOAD_PATH << 'src'
 
-ruby_lib_path = File.join(File.dirname(File.dirname(File.dirname(File.dirname(__FILE__)))), "ruby").to_s()[5..-1] 
-if File.exists?( ruby_lib_path ) 
-  LIB_PATH = File.expand_path File.join(File.dirname(File.dirname(File.dirname(File.dirname(__FILE__))))).to_s()[5..-1] 
-else 
-  LIB_PATH = File.expand_path 'lib' 
-end
+LIB_PATH = File.expand_path 'lib' 
 
 require "swt_wrapper"
 require "ui/splash_window"
