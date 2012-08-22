@@ -2,7 +2,12 @@ INITAT=Time.now
 
 $LOAD_PATH << 'src'
 
-LIB_PATH = File.expand_path 'lib' 
+resources_dir = File.dirname(File.dirname(File.dirname('/Users/tka/FireApp/packages/osx/Fire.app/Contents/Resources/Java/fire-app.jar!/main.rb')))
+if File.exists?( File.join(resources_dir, 'lib','ruby'))
+  LIB_PATH = File.join(resources_dir, 'lib')
+else
+  LIB_PATH = File.expand_path 'lib' 
+end
 
 require "swt_wrapper"
 require "ui/splash_window"

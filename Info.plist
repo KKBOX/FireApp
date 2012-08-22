@@ -24,10 +24,10 @@
     <string>icon-osx.icns</string>
     <key>Java</key>
     <dict>
-        <key>MainClass</key>
-        <string>org.rubyforge.rawr.Main</string>
         <key>JVMVersion</key>
         <string>1.6*</string>
+        <key>MainClass</key>
+        <string>com.handlino.fireapp.Main</string>
         <key>ClassPath</key>
             <array>
                 <string>$JAVAROOT/fire-app.jar</string>
