@@ -11,7 +11,7 @@
     <key>CFBundleAllowMixedLocalizations</key>
     <string>true</string>
     <key>CFBundleExecutable</key>
-    <string>JavaApplicationStub</string>
+    <string>JavaAppLauncher</string>
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundlePackageType</key>
@@ -22,29 +22,11 @@
     <string>6.0</string>
     <key>CFBundleIconFile</key>
     <string>icon-osx.icns</string>
-    <key>Java</key>
-    <dict>
-        <key>JVMVersion</key>
-        <string>1.6*</string>
-        <key>MainClass</key>
-        <string>com.handlino.fireapp.Main</string>
-        <key>ClassPath</key>
-            <array>
-                <string>$JAVAROOT/fire-app.jar</string>
-            </array>
-        <key>Properties</key>
-        <dict>
-            <key>apple.laf.useScreenMenuBar</key>
-            <string>true</string>
-        </dict>
-        <key>StartOnMainThread</key> 
-         <string>true</string>
-        <key>VMOptions</key>
-          <array>
-           <string>-Dfile.encoding=utf8</string>
-            <string>-Xverify:none</string>
-            <string>-Xbootclasspath/p:$APP_PACKAGE/Contents/Resources/Java/lib/java/jruby-complete.jar</string>
-          </array>
-    </dict>
+    <key>JVMMainClassName</key>
+    <string>com.handlino.fireapp.Main</string>
+    <key>JVMOptions</key>
+    <array>
+      <key>-XstartOnFirstThread</key> 
+    </array>
 </dict>
 </plist>
