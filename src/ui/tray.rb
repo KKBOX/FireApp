@@ -51,6 +51,7 @@ class Tray
 
     add_menu_item( "App Version: #{App.version}",                          nil, Swt::SWT::PUSH, item.menu)
     add_menu_item( App.compile_version, nil, Swt::SWT::PUSH, item.menu)
+    add_menu_item( "Java System Properties", show_system_properties_handler, Swt::SWT::PUSH, item.menu)
 
     add_menu_item( "Quit",      exit_handler)
   end
@@ -207,6 +208,16 @@ class Tray
       add_compass_item(dir)
     end
     App.set_histoy(@history_dirs[0,5])
+  end
+
+  def show_system_properties_handler
+    Swt::Widgets::Listener.impl do |method, evt|
+      str=[]
+      java.lang.System.getProperties.each do |key, value|
+        str << "#{key.strip} =>  #{value.strip}"
+      end
+      App.report( str.join("\n\n"))
+    end
   end
 
   def create_project_handler
