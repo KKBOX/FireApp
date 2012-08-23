@@ -1,8 +1,8 @@
 INITAT=Time.now
 
 $LOAD_PATH << 'src'
-
-resources_dir = File.dirname(File.dirname(File.dirname('/Users/tka/FireApp/packages/osx/Fire.app/Contents/Resources/Java/fire-app.jar!/main.rb')))
+require 'uri'
+resources_dir = File.dirname(File.dirname(File.dirname( URI.parse(__FILE__).path )))
 if File.exists?( File.join(resources_dir, 'lib','ruby'))
   LIB_PATH = File.join(resources_dir, 'lib')
 else
