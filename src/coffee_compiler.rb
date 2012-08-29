@@ -6,7 +6,7 @@ require 'json'
 class CoffeeCompiler
 
   def self.log(type, msg)
-    msg = msg.gsub(/#{File.expand_path(Compass.configuration.project_path)}/, '')[1..-1] if defined?(Tray) 
+    msg = msg.sub(File.expand_path(Compass.configuration.project_path), '')[1..-1] if defined?(Tray) 
 
     if defined?(Tray) && Tray.instance.logger
       Tray.instance.logger.record type, msg
@@ -48,7 +48,7 @@ class CoffeeCompiler
 
   def self.get_new_js_path(coffeescripts_dir, full_path, javascripts_dir)
     full_path=File.expand_path(full_path)
-    new_dir  = File.dirname(full_path.gsub(/#{coffeescripts_dir}/, ''))
+    new_dir  = File.dirname(full_path.to_s.sub(coffeescripts_dir, ''))
     new_file = File.basename(full_path).gsub(/\.coffee/,".js").gsub(/js\.js/,'js')
     return  File.join(javascripts_dir, new_dir, new_file)
   end
