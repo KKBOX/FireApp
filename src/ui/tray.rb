@@ -426,15 +426,6 @@ class Tray
           blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
         end
         
-        #copy compass asset folder
-        %w{images css javascripts}.each do |asset|
-          asset_path = File.expand_path( Compass.configuration.send("#{asset}_path") )
-          FileUtils.cp_r(asset_path, release_dir) if File.exists?(asset_path)
-          asset_path_basename = File.basename(asset_path)
-          blacklist << "#{asset_path_basename}/*"
-          report_window.append "Copy directory: #{asset_path_basename}"
-        end
-        
         blacklist.uniq!
         blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
 
