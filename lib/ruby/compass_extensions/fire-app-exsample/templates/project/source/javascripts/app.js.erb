@@ -13,7 +13,8 @@ scripts = [	'jquery.js',
 			'bootstrap-button.js',
 			'bootstrap-collapse.js',
 			'bootstrap-carousel.js',
-			'bootstrap-typeahead.js'];
+			'bootstrap-typeahead.js',
+			'scripts.js'];
 scripts.each do |script| %>
 /* <%= script.to_s %> */
 <%= minify_js("../javascripts/#{script.to_s}") %>

@@ -86,7 +86,8 @@
 						'bootstrap-button.js',
 						'bootstrap-collapse.js',
 						'bootstrap-carousel.js',
-						'bootstrap-typeahead.js'];
+						'bootstrap-typeahead.js',
+						'scripts.js'];
 		scripts.each do |script| %>
 			<%= javascript_include_tag(script.to_s) unless ENV["RACK_ENV"] == "production" %>
  		<% end %>
