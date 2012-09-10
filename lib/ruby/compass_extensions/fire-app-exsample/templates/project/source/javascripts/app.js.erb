@@ -1,0 +1,20 @@
+<% #ENV["RACK_ENV"] = "production" %>
+<%
+# PRODUCTION JAVASCRIPTS
+scripts = [	'jquery.js',
+			'bootstrap-transition.js',
+			'bootstrap-alert.js',
+			'bootstrap-modal.js',
+			'bootstrap-dropdown.js',
+			'bootstrap-scrollspy.js',
+			'bootstrap-tab.js',
+			'bootstrap-tooltip.js',
+			'bootstrap-popover.js',
+			'bootstrap-button.js',
+			'bootstrap-collapse.js',
+			'bootstrap-carousel.js',
+			'bootstrap-typeahead.js'];
+scripts.each do |script| %>
+/* <%= script.to_s %> */
+<%= minify_js("../javascripts/#{script.to_s}") %>
+<% end %>
