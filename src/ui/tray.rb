@@ -376,22 +376,9 @@ class Tray
         # rebuild sass & coffeescript
         Compass::Commands::UpdateProject.new( project_path, {}).perform
 
-        #build html 
-        Dir.glob( File.join(project_path, '**', "[^_]*.html.*") ) do |file|
-          if file =~ /build_\d{14}/ || file.index(release_dir)
-            next 
-          end
-          extname=File.extname(file)
-          if Tilt[ extname[1..-1] ]
-            request_path = file[project_path.length ... (-1*extname.size)]
-            write_dynamaic_file(release_dir, request_path)
-            report_window.append "Create: #{request_path}"
-          end
-        end
-
+       
 
         blacklist = []
-        Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? }
 
         build_ignore_file = "build_ignore.txt"
 
@@ -429,6 +416,29 @@ class Tray
         blacklist.uniq!
         blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
 
+        #build html 
+        Dir.glob( File.join(project_path, '**', "[^_]*.html.*") ) do |file|
+          if file =~ /build_\d{14}/ || file.index(release_dir)
+            next 
+          end
+          extname=File.extname(file)
+          if Tilt[ extname[1..-1] ]
+            request_path = file[project_path.length ... (-1*extname.size)]
+            pass = false
+            blacklist.each do |pattern|
+                if File.fnmatch(pattern, request_path[1..-1])
+                  pass = true
+                  break
+                end
+            end
+            next if pass
+
+            write_dynamaic_file(release_dir, request_path)
+            report_window.append "Create: #{request_path}"
+          end
+        end
+
+        Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? }
 
         #copy static file
         Dir.glob( File.join(project_path, '**', '*') ) do |file|
@@ -437,6 +447,7 @@ class Tray
           pass = false
           
           blacklist.each do |pattern|
+            puts path,pattern if path =~ /proxy/
             if File.fnmatch(pattern, path)
               pass = true
               break
