@@ -23,10 +23,34 @@ require "yaml"
   require "ui/#{f}"
 end
 
-require "app.rb"
+require 'optparse'
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: example.rb [options]"
+  
+  options[:config_dir] = File.join( java.lang.System.getProperty("user.home") , '.fire-app' )
+  opts.on("-c PATH", "--config-dir PATH", "config dir path") do |v|
+    options[:config_dir] = v
+  end
 
+  options[:watch] = nil
+  opts.on("-w PATH", "--watch-dir PATH",  "default watch path") do |v|
+    options[:watch_dir] = v
+  end
+
+end.parse!
+puts options.inspect
 
 begin
+  # TODO: dirty, need refactor
+  if File.directory?(File.dirname(options[:config_dir])) && File.writable?(File.dirname(options[:config_dir])) 
+    CONFIG_DIR = options[:config_dir]
+  else
+    CONFIG_DIR = File.join(Dir.pwd, 'config')
+    Alert.new("Can't Create #{options[:config_dir]}, just put config folder to #{CONFIG_DIR}")
+  end
+
+  require "app.rb"
   App.require_compass
  
   begin
@@ -58,7 +82,7 @@ begin
 
   App.clear_autocomplete_cache
 
-  Tray.instance.run(:watch => ARGV[0])
+  Tray.instance.run(:watch => options[:watch_dir])
 
 rescue Exception => e
   puts e.message
