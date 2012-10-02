@@ -220,11 +220,10 @@ module Compass
 end
 
 
-default_path = File.join( java.lang.System.getProperty("user.home"), '.compass','extensions' )
 
-if File.exists?( default_path ) 
-  App.scan_library( default_path )
-  Compass::Frameworks.discover( default_path ) 
+if File.exists?( App.shared_extensions_path ) 
+  App.scan_library( App.shared_extensions_path )
+  Compass::Frameworks.discover( App.shared_extensions_path ) 
 end 
 
 

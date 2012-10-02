@@ -38,6 +38,7 @@ class Tray
     item.menu = Swt::Widgets::Menu.new( @menu )
     build_compass_framework_menuitem( item.menu, create_project_handler )
 
+    item =  add_menu_item( "Open Extensions Folder", open_extensions_folder_handler, Swt::SWT::PUSH)
     item =  add_menu_item( "Preference...", preference_handler, Swt::SWT::PUSH)
 
     item =  add_menu_item( "About", open_about_link_handler, Swt::SWT::CASCADE)
@@ -155,6 +156,18 @@ class Tray
       end
     end
   end
+
+  def open_extensions_folder_handler
+    Swt::Widgets::Listener.impl do |method, evt|
+        if !File.exists?(App.shared_extensions_path)
+          FileUtils.mkdir_p(App.shared_extensions_path)
+          FileUtils.cp(File.join(LIB_PATH, "documents", "extensions_readme.txt"), File.join(App.shared_extensions_path, "readme.txt") )
+        end
+
+        Swt::Program.launch(App.shared_extensions_path)
+    end
+  end
+
   def open_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
         Swt::Program.launch(@watching_dir)
