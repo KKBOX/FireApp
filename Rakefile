@@ -87,7 +87,7 @@ INFO_ENDL
       
       %x{mv package/jar package/fire.app}
       File.open('package/fire.app/run.sh','w') do |f|
-        f.write("#!/usr/bin/env bash\ncd $(dirname $0)\njava -client -jar fire-app.jar $1")
+        f.write("#!/usr/bin/env bash\ncd $(dirname $0)\njava -client -jar fire-app.jar $@")
       end
       %x{chmod +x package/fire.app/run.sh}
       Dir.chdir 'package'

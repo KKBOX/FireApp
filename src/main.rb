@@ -39,7 +39,6 @@ OptionParser.new do |opts|
   end
 
 end.parse!
-puts options.inspect
 
 begin
   # TODO: dirty, need refactor
