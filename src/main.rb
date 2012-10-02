@@ -86,7 +86,7 @@ begin
 rescue Exception => e
   puts e.message
   puts e.backtrace
-  App.report( e.message + "\n" + e.backtrace.join("\n"), nil, {:show_reset_button => true} )
-  App.display.dispose
+  Report.new( e.message + "\n" + e.backtrace.join("\n"), nil, {:show_reset_button => true} )
+  #App.display.dispose
 
 end
