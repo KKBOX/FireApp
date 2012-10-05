@@ -9,7 +9,9 @@ require "kramdown"
 require 'serve/application'
 require 'sass/plugin/rack'
 require 'rack/coffee'
-
+require 'haml'
+require 'haml/filters'
+require 'haml_patch.rb'
 class SimpleHTTPServer
   include Singleton
   def start(dir, options)
