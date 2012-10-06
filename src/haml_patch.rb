@@ -2,11 +2,19 @@
 # But Fire.app use kramdown
 module Haml
   module Filters
+    
     module Markdown
-      puts 'zzzzzz'
       def render(text)
-        ::Kramdown::Document.new(text).to_html
+        ::Kramdown::Document.new(text, :input => 'markdown').to_html
       end 
     end 
+
+    module Kramdown
+      include Base
+      def render(text)
+        ::Kramdown::Document.new(text).to_html
+      end
+    end
+
   end
 end
