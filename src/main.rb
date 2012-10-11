@@ -1,8 +1,9 @@
 INITAT=Time.now
 
 $LOAD_PATH << 'src'
-require 'uri'
-resources_dir = File.dirname(File.dirname(File.dirname( URI.parse(__FILE__).path )))
+require 'pathname'
+resources_dir =  Pathname.new(__FILE__).dirname().dirname().dirname().to_s()[5..-1]
+puts resources_dir
 if File.exists?( File.join(resources_dir, 'lib','ruby'))
   LIB_PATH = File.join(resources_dir, 'lib')
 else
