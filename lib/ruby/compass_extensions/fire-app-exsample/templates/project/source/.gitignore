@@ -6,3 +6,5 @@ compass_app_log.txt
 document_root
 tmp
 .bundle
+/.coffeescript-cache/
+/stylesheets/

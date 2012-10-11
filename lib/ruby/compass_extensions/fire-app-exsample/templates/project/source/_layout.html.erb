@@ -18,7 +18,7 @@
                 padding: 9px 0;
             }
         </style>
-        <%= stylesheet_link_tag 'bootstrap-responsive' %>
+        <%= stylesheet_link_tag 'responsive' %>
 
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -72,19 +72,27 @@
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-        <script src="/javascripts/jquery.js"></script>
-        <script src="/javascripts/bootstrap-transition.js"></script>
-        <script src="/javascripts/bootstrap-alert.js"></script>
-        <script src="/javascripts/bootstrap-modal.js"></script>
-        <script src="/javascripts/bootstrap-dropdown.js"></script>
-        <script src="/javascripts/bootstrap-scrollspy.js"></script>
-        <script src="/javascripts/bootstrap-tab.js"></script>
-        <script src="/javascripts/bootstrap-tooltip.js"></script>
-        <script src="/javascripts/bootstrap-popover.js"></script>
-        <script src="/javascripts/bootstrap-button.js"></script>
-        <script src="/javascripts/bootstrap-collapse.js"></script>
-        <script src="/javascripts/bootstrap-carousel.js"></script>
-        <script src="/javascripts/bootstrap-typeahead.js"></script>
-        <%= livereload_js %>
+		<%
+		# DEVELOPMENT JAVASCRIPTS
+		scripts = [	'jquery.js',
+						'bootstrap-transition.js',
+						'bootstrap-alert.js',
+						'bootstrap-modal.js',
+						'bootstrap-dropdown.js',
+						'bootstrap-scrollspy.js',
+						'bootstrap-tab.js',
+						'bootstrap-tooltip.js',
+						'bootstrap-popover.js',
+						'bootstrap-button.js',
+						'bootstrap-collapse.js',
+						'bootstrap-carousel.js',
+						'bootstrap-typeahead.js',
+						'scripts.js'];
+		scripts.each do |script| %>
+			<%= javascript_include_tag(script.to_s) unless ENV["RACK_ENV"] == "production" %>
+ 		<% end %>
+		<%= livereload_js unless ENV["RACK_ENV"] == "production" %>
+
+		<%= javascript_include_tag('app.js') if ENV["RACK_ENV"] == "production" %>
     </body>
 </html>
