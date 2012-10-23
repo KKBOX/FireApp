@@ -1,7 +1,6 @@
 #!/bin/sh
-if [ "$1" = "full" ]; then
-  bundle exec rake rawr:clean
-fi
+bundle exec rake rawr:clean
+bundle exec rake rawr:bundle:write_version_info
 bundle exec rake rawr:jar
 #java -verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDetails \
 #  -Xms128m  -Xmn32m -Xmx128m \

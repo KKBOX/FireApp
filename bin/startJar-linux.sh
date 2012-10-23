@@ -1,5 +1,6 @@
 #!/bin/sh
 bundle exec rake rawr:clean
+bundle exec rake rawr:bundle:write_version_info
 bundle exec rake rawr:jar
 
 #"-Djruby.compat.version=1.9" \
