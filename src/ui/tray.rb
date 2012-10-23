@@ -430,7 +430,7 @@ class Tray
         blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
 
         #build html 
-        Dir.glob( File.join(project_path, '**', "[^_]*.html.*") ) do |file|
+        Dir.glob( File.join(project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
           if file =~ /build_\d{14}/ || file.index(release_dir)
             next 
           end
