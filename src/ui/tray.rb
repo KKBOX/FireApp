@@ -387,9 +387,12 @@ class Tray
         FileUtils.mkdir_p( release_dir)
 
         # rebuild sass & coffeescript
-        Compass::Commands::UpdateProject.new( project_path, {}).perform
-
-       
+        is_compass_project = false
+        x = Compass::Commands::UpdateProject.new( project_path, {})
+        if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
+          x.perform
+          is_compass_project = true
+        end
 
         blacklist = []
 
@@ -417,12 +420,12 @@ class Tray
             "view_helpers.rb",
             "Gemfile",
             "Gemfile.lock",
-            "config.ru",
-            File.basename(Compass.detect_configuration_file)
+            "config.ru"
           ]
+          blacklist << File.basename(Compass.detect_configuration_file) if is_compass_project
         end
        
-        if Compass.configuration.fireapp_build_path 
+        if is_compass_project && Compass.configuration.fireapp_build_path 
           blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
         end
         
@@ -564,16 +567,23 @@ class Tray
       Compass.reset_configuration!
       Dir.chdir(dir)
       x = Compass::Commands::UpdateProject.new( dir, {})
-      if !x.new_compiler_instance.sass_files.empty? # make sure we watch a compass project
+      
+      if !x.new_compiler_instance.sass_files.empty? # if we watch a compass project
         stop_watch
         
         @logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
         
         x.perform
 
+        Thread.abort_on_exception = true
+        @compass_thread = Thread.new do
+          Compass.reset_configuration!
+          Compass::Commands::WatchProject.new( dir, { :logger => @logger  }).execute
+        end
+      end
         @tray_item.image = @watching_icon
-        
-       
+
+
         @watching_dir = dir
         
 
@@ -632,17 +642,9 @@ class Tray
 
         current_display = App.display
 
-        Thread.abort_on_exception = true
-        @compass_thread = Thread.new do
-          Compass.reset_configuration!
-          Compass::Commands::WatchProject.new( dir, { :logger => @logger  }).execute
-        end
-
+  
         return true
 
-      else
-        App.notify( dir +": Nothing to compile. If you're trying to start a new project, you have left off the directory argument")
-      end
     end
 
     return false
