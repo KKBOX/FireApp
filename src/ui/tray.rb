@@ -9,9 +9,16 @@ class Tray
     @logger = nil
     @history_dirs  = App.get_history
     @shell    = App.create_shell(Swt::SWT::ON_TOP | Swt::SWT::MODELESS)
-    @standby_icon = App.create_image("icon/16_dark.png")
-    @active_icon = App.create_image("icon/16_white.png")
-    @watching_icon = App.create_image("icon/16.png")
+    
+    if org.jruby.platform.Platform::IS_MAC
+      @standby_icon = App.create_image("icon/16_dark@2x.png")
+      @active_icon = App.create_image("icon/16_white@2x.png")
+      @watching_icon = App.create_image("icon/16@2x.png")
+    else 
+      @standby_icon = App.create_image("icon/16_dark.png")
+      @active_icon = App.create_image("icon/16_white.png")
+      @watching_icon = App.create_image("icon/16.png")
+    end
 
     @tray_item = Swt::Widgets::TrayItem.new( App.display.system_tray, Swt::SWT::NONE)
     @tray_item.image = @standby_icon
