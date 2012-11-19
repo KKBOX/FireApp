@@ -1,5 +1,5 @@
 	module CompileVersion
-	REVISION = '2ac8a97d94'
-	COMPILE_TIME = '201211191827'
+	REVISION = '47434e5b7d'
+	COMPILE_TIME = '201211191853'
   UPDATE_URL = ''
 	end
