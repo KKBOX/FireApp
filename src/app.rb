@@ -60,6 +60,7 @@ module App
 
     x.delete("services_http_port") unless x["services_http_port"].to_i > 0
     x.delete("services_livereload_port") unless x["services_livereload_port"].to_i > 0
+    x.delete("num_of_history") unless x["num_of_history"].to_i > 0
                                 
     config={
       "show_welcome" => true,
@@ -72,7 +73,8 @@ module App
       "services_livereload_port" => 35729,
       "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,coffee,markdown,mkd,md",
       "preferred_syntax" => "scss",
-      "force_enable_fsevent" => false
+      "force_enable_fsevent" => false,
+      "num_of_history" => 5
     }
 
     config.merge!(x)

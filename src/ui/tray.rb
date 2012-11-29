@@ -227,7 +227,7 @@ class Tray
     @history_dirs.reverse.each do | dir |
       add_compass_item(dir)
     end
-    App.set_histoy(@history_dirs[0,5])
+    App.set_histoy(@history_dirs[0, App::CONFIG["num_of_history"]])
   end
 
   def show_system_properties_handler
@@ -338,7 +338,7 @@ class Tray
   def exit_handler
     Swt::Widgets::Listener.impl do |method, evt|
       stop_watch
-      App.set_histoy(@history_dirs[0,5])
+      App.set_histoy(@history_dirs[0,App::CONFIG["num_of_history"]])
       @shell.close
     end
   end
