@@ -101,7 +101,7 @@ class SimpleLivereload
 
 
   def send_livereload_msg( base, relative )
-    data = JSON.dump( ['refresh', { :path => File.join(base, relative),
+    data = JSON.dump( ['refresh', { :path => URI.escape(File.join(base, relative)),
                      :apply_js_live  => true,
                      :apply_css_live => true,
                      :apply_images_live => true }] )
