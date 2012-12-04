@@ -1,6 +1,6 @@
 module Compass
   module H5bp
-    VERSION = "0.0.5"
-    HTML5_BOILERPLATE_VERSION = "3.0.2"
+    VERSION = "0.1.0"
+    HTML5_BOILERPLATE_VERSION = "4.0.0"
   end
 end

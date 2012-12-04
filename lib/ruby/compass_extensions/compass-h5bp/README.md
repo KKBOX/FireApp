@@ -1,10 +1,7 @@
 Compass H5bp
 =========================
 
-This is a Compass extension of Html5 mixins extracted from v3 on Html5 Boilerplate
-by Paul Irish and Divya Manian. This gem provides only the CSS mixins and not the
-html or javascript templates.  This makes sense because any implementation of
-Html5 Boilerplate should be specific to the language and framework it's built on.
+This is a Compass extension of Html5 mixins extracted from v4 of [Html5 Boilerplate](http://html5boilerplate.com). This gem provides only the CSS mixins and not the html or javascript templates.  This makes sense because any implementation of Html5 Boilerplate should be specific to the language and framework it's built on.
 
 Browse [html5boilerplate.com](http://html5boilerplate.com) for the full workup.
 
@@ -36,8 +33,13 @@ compass library before you can use any of the mixins:
 Then include the mixins that make up the Normalize portion of Html5
 Boilerplate's styles. http://necolas.github.com/normalize.css
 
+You can include all of Normalize at once:
+
+    @include h5bp-normalize;
+
+ Or pull in only the portions of Normalize you want:
+
     @include h5bp-display;
-    @include h5bp-selection;
     @include h5bp-base;
     @include h5bp-links;
     @include h5bp-typography;
@@ -47,15 +49,19 @@ Boilerplate's styles. http://necolas.github.com/normalize.css
     @include h5bp-forms;
     @include h5bp-tables;
 
+Next you can include the opinionated default base styles:
+
+    @include h5bp-base-styles;
+
+You can include the default Html5 Boilerplate Chrome Frame notification styling:
+
+    @include h5bp-chromeframe;
+
 Now you can define your own custom CSS here.
 
 Then (optionally) let H5bp define some semantic helper classes. (e.g. `.clearfix`):
 
     @include h5bp-helpers;
-
-You can include the default Html5 Boilerplate Chrome Frame notification styling:
-
-    @include h5bp-chromeframe;
 
 Finally, you can include H5bp's predefined print style media query:
 

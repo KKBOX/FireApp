@@ -1,7 +1,2 @@
-//
-// Chrome Frame Prompt
-//
-
-@mixin h5bp-chromeframe {
-  .chromeframe { margin: 0.2em 0; background: #ccc; color: black; padding: 0.2em 0; }
-}
+// Deprecation warning
+@warn "The chromeframe mixin has moved to _main.scss file starting with Boilerplate version 4.0";
