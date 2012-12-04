@@ -374,7 +374,7 @@ class Tray
     new_file = File.join(release_dir, request_path)
     FileUtils.mkdir_p( File.dirname(  new_file ))
     puts request_path
-    File.open(new_file, 'w') {|f| f.write( open("http://127.0.0.1:#{App::CONFIG['services_http_port']}#{request_path}").read ) } 
+    File.open(new_file, 'w') {|f| f.write( open("http://127.0.0.1:#{App::CONFIG['services_http_port']}#{URI.escape(request_path)}").read ) } 
   end 
 
   def build_project_handler
