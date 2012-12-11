@@ -145,7 +145,7 @@ class Tray
 
   def compass_switch_handler
     Swt::Widgets::Listener.impl do |method, evt|
-      if @compass_thread
+      if @watching_dir
         stop_watch
       end
       watch(evt.widget.text)
@@ -154,7 +154,7 @@ class Tray
 
   def open_dir_handler
     Swt::Widgets::Listener.impl do |method, evt|
-      if @compass_thread
+      if @watching_dir
         stop_watch
       else
         dia = Swt::Widgets::DirectoryDialog.new(@shell)
