@@ -67,7 +67,7 @@ configuration do |c|
 	# Undocumented option 'jvm_arguments'
 	# default value: ""
 	#
-	c.jvm_arguments = "-Xss1m"
+	c.jvm_arguments = "-Xss1m -Dfile.encoding=utf8 "
 
 	# Undocumented option 'java_library_path'
 	# default value: ""
