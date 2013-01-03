@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
 <plist version="0.9">
+<<<<<<< HEAD
     <dict>
         <key>NSUIElement</key>
         <string>1</string>
@@ -49,4 +50,34 @@
             </array>
         </dict>
     </dict>
+=======
+<dict>
+    <key>NSUIElement</key>
+    <string>1</string>
+    <key>CFBundleName</key>
+    <string>Fire.app</string>
+    <key>CFBundleVersion</key>
+    <string>1.0.0</string>
+    <key>CFBundleAllowMixedLocalizations</key>
+    <string>true</string>
+    <key>CFBundleExecutable</key>
+    <string>JavaAppLauncher</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleIconFile</key>
+    <string>icon-osx.icns</string>
+    <key>JVMMainClassName</key>
+    <string>com.handlino.fireapp.Main</string>
+    <key>JVMOptions</key>
+    <array>
+      <key>-XstartOnFirstThread</key> 
+    </array>
+</dict>
+>>>>>>> java7
 </plist>

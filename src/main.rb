@@ -8,6 +8,7 @@ $LOAD_PATH << 'src'
 require 'pathname'
 resources_dir =  Pathname.new(__FILE__).dirname().dirname().dirname().to_s()[5..-1]
 puts resources_dir
+
 if File.exists?( File.join(resources_dir, 'lib','ruby'))
   LIB_PATH = File.join(resources_dir, 'lib')
 else

@@ -45,6 +45,11 @@ INFO_ENDL
       %w{ruby images applescript documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib }
       end
+
+      %x{rm #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/MacOS/JavaApplicationStub }
+      %x{cp lib/java-appbundler/JavaAppLauncher #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/MacOS }
+      %x{mv #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/Java #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Java  }
+
       Dir.chdir CONFIG.osx_output_dir
       %x{mv #{CONFIG.project_name}.app Fire.app;}
       @osx_bundle_file="fire.app.osx.#{@compile_time}-#{@revision}.zip"
