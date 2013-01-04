@@ -19,7 +19,7 @@ class SimpleHTTPServer
     options={
       :Port => 24681
     }.merge(options)
-    
+
     stop 
 
     app = Rack::Builder.new do
@@ -37,13 +37,13 @@ class SimpleHTTPServer
 
       if( File.exists?(views_dir) && File.exists?(public_dir))
         run Rack::Cascade.new([
-          Serve::RackAdapter.new( views_dir ),
-          Rack::Directory.new( public_dir)
+                              Serve::RackAdapter.new( views_dir ),
+                              Rack::Directory.new( public_dir)
         ]) 
       else 
         run Rack::Cascade.new([
-          Serve::RackAdapter.new( dir ),
-          Rack::Directory.new( dir )
+                              Serve::RackAdapter.new( dir ),
+                              Rack::Directory.new( dir )
         ]) 
       end
     end
@@ -61,7 +61,7 @@ class SimpleHTTPServer
     @webrick_server.shutdown if @webrick_server
     @webrick_server = nil
     @http_server_thread.kill if @http_server_thread && @http_server_thread.alive?
+    sleep 1 if org.jruby.platform.Platform::IS_WINDOWS # windows need time to release port end
+
   end
-
 end
-

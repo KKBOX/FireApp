@@ -658,9 +658,14 @@ class Tray
   end
 
   def stop_watch
+
+    SimpleLivereload.instance.unwatch if defined?(SimpleLivereload)
+    SimpleHTTPServer.instance.stop if defined?(SimpleHTTPServer)
+    FSEvent.stop_all_instances if Object.const_defined?("FSEvent") && FSEvent.methods.map{|x| x.to_sym}.include?(:stop_all_instances)
     [@simplelivereload_thread, @simplehttpserver_thread, @compass_thread].each do |x|
       x.kill if x && x.alive?
     end
+
     @logger = nil
     @compass_thread = nil
     @simplehttpserver_thread = nil
@@ -674,9 +679,6 @@ class Tray
     @changeoptions_item.dispose()   if @changeoptions_item && !@changeoptions_item.isDisposed
     @watching_dir = nil
     @tray_item.image = @standby_icon
-    SimpleLivereload.instance.unwatch if defined?(SimpleLivereload)
-    SimpleHTTPServer.instance.stop if defined?(SimpleHTTPServer)
-    FSEvent.stop_all_instances if Object.const_defined?("FSEvent") && FSEvent.methods.map{|x| x.to_sym}.include?(:stop_all_instances)
   end
 
 end
