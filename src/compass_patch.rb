@@ -16,6 +16,10 @@ module Compass
     "coffeescripts"
   end
 
+  Configuration.add_configuration_property(:fireapp_coffeescript_options, nil) do
+    {}
+  end
+
   module Commands
     class WatchProject 
 
@@ -55,15 +59,15 @@ module Compass
                 path.glob '**/*.coffee'
                 path.update do |base, relative|
                   puts ">>> Change detected to: #{relative}"
-                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
                 end
                 path.create do |base, relative|
                   puts ">>> New file detected: #{relative}"
-                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
                 end
                 path.delete do |base, relative|
                   puts ">>> File Removed: #{relative}"
-                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
                 end
               end
             end 
@@ -99,7 +103,7 @@ module Compass
     class UpdateProject
       def perform
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-          CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+          CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
         end
 
         compiler = new_compiler_instance
