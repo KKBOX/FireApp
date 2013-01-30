@@ -60,6 +60,7 @@ begin
     require "coffee_compiler.rb"
     require "compass_patch.rb"
     require "sass_patch.rb"
+    require "the_hold_uploader.rb"
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
   end
