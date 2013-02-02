@@ -505,9 +505,14 @@ class Tray
       App.try do 
         options = Compass.configuration.the_hold_options
         temp_build_folder = File.join(Dir.tmpdir, "fireapp", rand.to_s)
-        TheHoldUploader.upload_patch(build_project(temp_build_folder, {:headless => true}), options)
-        host=URI(options[:host]).host
-        Swt::Program.launch("http://#{options[:project]}.#{options[:login]}.#{host}")
+        respone = TheHoldUploader.upload_patch(build_project(temp_build_folder, {:headless => true}), options)
+        if respone.code == "200"
+          host=URI(options[:host]).host
+          Swt::Program.launch("http://#{options[:project]}.#{options[:login]}.#{host}")
+          App.alert("done")
+        else
+          App.alert(respone.body)
+        end
       end
     end
   end

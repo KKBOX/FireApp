@@ -58,13 +58,15 @@ class TheHoldUploader
     req = Net::HTTP::Post::Multipart.new url.path,
       "patch_file" => UploadIO.new(tempfile_io, "application/zip", "patch_file.zip"),
       "login"      => options[:login],
-      "key"        => options[:key],
+      "token"        => options[:token],
       "project"    => options[:project]
-    res = Net::HTTP.start(url.host, url.port) do |http|
+    respone = Net::HTTP.start(url.host, url.port) do |http|
       http.request(req)
     end
     tempfile_io.close
     File.unlink(tempfile)
+    puts respone.inspect
+    respone
   end
 
 end 
