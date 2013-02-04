@@ -107,7 +107,7 @@ class TheHoldApp
     end
     
     auth_yaml_file = File.join( "current", "AUTH")
-    if File.exists?( auth_yaml_file ) && File.size(auth_yaml) < 8192
+    if File.exists?( auth_yaml_file ) && File.size(auth_yaml_file) < 8192
       auth_yaml = YAML.load_file( auth_yaml_file )
       valid_yaml = {}
       auth_yaml.each{|id, pw| valid_yaml[id] = pw if id.is_a?(String) && pw.is_a?(String)}
