@@ -22,11 +22,11 @@ class TheHoldApp
  
     site_key = "site-" + env["HTTP_HOST"].split(/:/).first
     site   = @redis.hgetall(site_key)
-    return upload_file(req.params) if env["PATH_INFO"] == '/upload'
+    return upload_file(req.params) if env["PATH_INFO"] == '/upload' && req.post?
     return not_found               if !( site["login"] && site["project"] && env["PATH_INFO"] != '/AUTH' )
        
     current_project_path = File.join(@base_path, site["login"], site["project"], "current")
-    if site["auth_yaml"]
+    if site["auth_yaml"] && env["PATH_INFO"] != "/manifest.json"
       auth_yaml = YAML.load( site["auth_yaml"] )
       if req.post? && req.params["login"] && req.params["password"]
         if auth_yaml[ req.params["login"] ] && auth_yaml[ req.params["login"] ] == req.params["password"]
@@ -34,19 +34,18 @@ class TheHoldApp
           env["rack.session"]["login"]= req.params["login"]
         end
       end
-      if auth_yaml[ env["rack.session"]["login"] ] == env["rack.session"]["password"]
+      unless auth_yaml[ env["rack.session"]["login"] ] && auth_yaml[ env["rack.session"]["login"] ] == env["rack.session"]["password"]
         return login(env)
       end
     end
     
     path_info    = env["PATH_INFO"][-1] == '/' ? "#{env["PATH_INFO"]}index.html" : env["PATH_INFO"]
 
-    if File.extname(path_info) == ""
+    if File.extname(path_info) == "" 
       path_info += "/index.html" if File.directory?(  File.join( File.dirname(__FILE__), current_project_path,  path_info ) )
     end
 
     redirect_url = File.join(  "/", current_project_path,  path_info )
-
     mime_type = Rack::Mime.mime_type(File.extname(redirect_url), "text/html")
     [200, {"Cache-Control" => "no-cache, no-store", 'Content-Type' => mime_type, 'X-Accel-Redirect' => redirect_url }, []]
   end
@@ -82,8 +81,7 @@ class TheHoldApp
         to_filename   = File.expand_path( filename )
         if form_filename.index(project_folder) && to_filename.index(project_folder)
           next if !File.exists?(form_filename)
-          link_cmd = "ln -P '#{form}/#{filename}' '#{filename}'"
-          %x{#{link_cmd}}
+          File.link(form_filename, filename)
         end 
       end 
     end
@@ -111,9 +109,11 @@ class TheHoldApp
       auth_yaml = YAML.load_file( auth_yaml_file )
       valid_yaml = {}
       auth_yaml.each{|id, pw| valid_yaml[id] = pw if id.is_a?(String) && pw.is_a?(String)}
-      @redis.hset("site-#{cname}", "auth_yaml", YAML.dump(auth_yaml) );
+      @redis.hset("site-#{cname}", "auth_yaml", YAML.dump(valid_yaml) ) if cname
+      @redis.hset("site-#{project_hostname}", "auth_yaml", YAML.dump(valid_yaml) );
     else
-      @redis.hdel("site-#{cname}", "auth_yaml" );
+      @redis.hdel("site-#{cname}", "auth_yaml" ) if cname
+      @redis.hdel("site-#{project_hostname}", 'auth_yaml');
     end
 
     [200, {"Content-Type" => "text/plain"}, ["ok"]]
@@ -146,7 +146,8 @@ EOL
 
 end
 
-use Rack::Session::Cookie, :secret => '12345'
+use Rack::Session::Cookie, :secret => 'SECRET TOKEN'
+raise "replace SECRET TOKEN"
 
 run TheHoldApp.new
 

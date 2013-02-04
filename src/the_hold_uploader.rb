@@ -28,11 +28,12 @@ class TheHoldUploader
   def self.upload_patch(to_folder, options)
 
     begin 
-      form = JSON.load( open("http://#{options[:project]}.#{options[:login]}.#{options[:host]}/manifest.json",'r'){|f| f.read} )
+      uri = URI(options[:host])
+      puts "#{uri.scheme}://#{options[:project]}.#{options[:login]}.#{uri.host}/manifest.json"
+      form = JSON.load( open("#{uri.scheme}://#{options[:project]}.#{options[:login]}.#{uri.host}/manifest.json",'r'){|f| f.read} )
     rescue
       form = {}
     end
-
     self.build_manifest(to_folder)
 
     to_json_file = File.join(to_folder, 'manifest.json')
