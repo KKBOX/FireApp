@@ -22,8 +22,8 @@ class TheHoldApp
  
     site_key = "site-" + env["HTTP_HOST"].split(/:/).first
     site   = @redis.hgetall(site_key)
-    return not_found               if !( site["login"] && site["project"] && env["PATH_INFO"] != '/AUTH' )
     return upload_file(req.params) if env["PATH_INFO"] == '/upload'
+    return not_found               if !( site["login"] && site["project"] && env["PATH_INFO"] != '/AUTH' )
        
     current_project_path = File.join(@base_path, site["login"], site["project"], "current")
     if site["auth_yaml"]
