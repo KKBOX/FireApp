@@ -22,11 +22,10 @@ class TheHoldApp
  
     site_key = "site-" + env["HTTP_HOST"].split(/:/).first
     site   = @redis.hgetall(site_key)
-    current_project_path = File.join(@base_path, site["login"], site["project"], "current")
-    
     return not_found               if !( site["login"] && site["project"] && env["PATH_INFO"] != '/AUTH' )
     return upload_file(req.params) if env["PATH_INFO"] == '/upload'
        
+    current_project_path = File.join(@base_path, site["login"], site["project"], "current")
     if site["auth_yaml"]
       auth_yaml = YAML.load( site["auth_yaml"] )
       if req.post? && req.params["login"] && req.params["password"]
