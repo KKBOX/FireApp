@@ -19,14 +19,15 @@ class TheHoldApp
 
   def call(env)
     req = Rack::Request.new(env)
+
+    return upload_file(req.params) if req.path == '/upload' && req.post?
+ 
     patten = Regexp.new("(?<version>\\d{8}-\\d{6})?\\.?(?<project>.+?)\\.(?<login>.+)\\.#{@cname_domain}$")   
     project_route = req.host.match(patten)
     
     site_key = "site-#{project_route[:project]}.#{project_route[:login]}.#{@cname_domain}"
     site   = @redis.hgetall(site_key)
-
-    return upload_file(req.params) if req.path == '/upload' && req.post?
-    
+   
     return not_found               if !( site["login"] && site["project"] )
 
     return login(env)              if need_auth?(env, req, site)
