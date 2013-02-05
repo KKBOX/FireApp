@@ -19,8 +19,10 @@ class TheHoldApp
 
   def call(env)
     req = Rack::Request.new(env)
- 
-    site_key = "site-" + env["HTTP_HOST"].split(/:/).first
+    patten = Regexp.new("(?<version>\\d{8}-\\d{6})?\\.?(?<project>.+?)\\.(?<login>.+)\\.#{@cname_domain}$")   
+    project_route = req.host.match(patten)
+    
+    site_key = "site-#{project_route[:project]}.#{project_route[:login]}.#{@cname_domain}"
     site   = @redis.hgetall(site_key)
 
     return upload_file(req.params) if req.path == '/upload' && req.post?
@@ -31,7 +33,7 @@ class TheHoldApp
     
     return versions(site)          if req.path == '/versions'
 
-    current_project_path = File.join(@base_path, site["login"], site["project"], "current")
+    current_project_path = File.join(@base_path, site["login"], site["project"], project_route[:version] || "current")
     path_info    = env["PATH_INFO"][-1] == '/' ? "#{env["PATH_INFO"]}index.html" : env["PATH_INFO"]
     if File.extname(path_info) == ""
       path_info += "/index.html" if File.directory?(  File.join( File.dirname(__FILE__), current_project_path,  path_info ) )
@@ -62,7 +64,7 @@ class TheHoldApp
     
     lis = Dir.glob("#{project_folder}/2*").to_a.sort.map{|d| 
       d = File.basename(d)
-      "<li><a href=\"https://#{d}.#{project_hostname}\">#{d}</a></li>"
+      "<li><a href=\"http://#{d}.#{project_hostname}\">#{d}</a></li>"
     }
     body = "<ul>#{lis.join}</ul>"
     [200, {"Content-Type" => "text/html"}, [body]]
@@ -80,7 +82,7 @@ class TheHoldApp
     
 
     tempfile_path  = params["patch_file"][:tempfile].path
-    to_folder = File.join( project_folder, Time.now.strftime("%Y%m%d%H%M%S") )
+    to_folder = File.join( project_folder, Time.now.strftime("%Y%m%d-%H%M%S") )
     %x{unzip #{tempfile_path} -d #{to_folder}}
   
     to_json_file = File.join(to_folder, 'manifest.json')
