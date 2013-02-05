@@ -12,9 +12,9 @@ require 'json'
 
 class TheHoldApp
   def initialize
-    @redis = Redis.new
     @base_path = "user_sites"
-    @cname_domain = "localhost"   
+    @cname_domain = "the-hold.handlino.com"   
+    @redis = Redis.new
   end
 
   def call(env)
@@ -26,22 +26,20 @@ class TheHoldApp
     return not_found               if !( site["login"] && site["project"] && env["PATH_INFO"] != '/AUTH' )
        
     current_project_path = File.join(@base_path, site["login"], site["project"], "current")
-    if site["auth_yaml"] && env["PATH_INFO"] != "/manifest.json"
-      auth_yaml = YAML.load( site["auth_yaml"] )
-      if req.post? && req.params["login"] && req.params["password"]
-        if auth_yaml[ req.params["login"] ] && auth_yaml[ req.params["login"] ] == req.params["password"]
+    if site["project_site_password"] && env["PATH_INFO"] != "/manifest.json"
+
+      if req.post? && site["project_site_password"] == req.params["password"]
           env["rack.session"]["password"]= req.params["password"]
-          env["rack.session"]["login"]= req.params["login"]
-        end
       end
-      unless auth_yaml[ env["rack.session"]["login"] ] && auth_yaml[ env["rack.session"]["login"] ] == env["rack.session"]["password"]
+
+      if site["project_site_password"] != env["rack.session"]["password"]
         return login(env)
       end
     end
     
     path_info    = env["PATH_INFO"][-1] == '/' ? "#{env["PATH_INFO"]}index.html" : env["PATH_INFO"]
 
-    if File.extname(path_info) == "" 
+    if File.extname(path_info) == ""
       path_info += "/index.html" if File.directory?(  File.join( File.dirname(__FILE__), current_project_path,  path_info ) )
     end
 
@@ -104,16 +102,13 @@ class TheHoldApp
       end
     end
     
-    auth_yaml_file = File.join( "current", "AUTH")
-    if File.exists?( auth_yaml_file ) && File.size(auth_yaml_file) < 8192
-      auth_yaml = YAML.load_file( auth_yaml_file )
-      valid_yaml = {}
-      auth_yaml.each{|id, pw| valid_yaml[id] = pw if id.is_a?(String) && pw.is_a?(String)}
-      @redis.hset("site-#{cname}", "auth_yaml", YAML.dump(valid_yaml) ) if cname
-      @redis.hset("site-#{project_hostname}", "auth_yaml", YAML.dump(valid_yaml) );
+    if params["project_site_password"]
+      password = params["project_site_password"][0,64]
+      @redis.hset("site-#{cname}", "project_site_password", password ) if cname
+      @redis.hset("site-#{project_hostname}", 'project_site_password', password);
     else
-      @redis.hdel("site-#{cname}", "auth_yaml" ) if cname
-      @redis.hdel("site-#{project_hostname}", 'auth_yaml');
+      @redis.hdel("site-#{cname}", "project_site_password" ) if cname
+      @redis.hdel("site-#{project_hostname}", 'project_site_password');
     end
 
     [200, {"Content-Type" => "text/plain"}, ["ok"]]
@@ -131,10 +126,7 @@ class TheHoldApp
     [200, { "Content-Type" => "text/html" }, [<<EOL
       <html>
       <body>
-      <h1>Login</h1>
       <form action="#{env["PATH_INFO"]}" method="post">
-    login:<input type="text" name="login">
-
     password:<input type="password" name="password">
     <input type="submit">
     </form>
