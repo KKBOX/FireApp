@@ -22,23 +22,17 @@ class TheHoldApp
  
     site_key = "site-" + env["HTTP_HOST"].split(/:/).first
     site   = @redis.hgetall(site_key)
-    return upload_file(req.params) if env["PATH_INFO"] == '/upload' && req.post?
-    return not_found               if !( site["login"] && site["project"] && env["PATH_INFO"] != '/AUTH' )
-       
-    current_project_path = File.join(@base_path, site["login"], site["project"], "current")
-    if site["project_site_password"] && env["PATH_INFO"] != "/manifest.json"
 
-      if req.post? && site["project_site_password"] == req.params["password"]
-          env["rack.session"]["password"]= req.params["password"]
-      end
-
-      if site["project_site_password"] != env["rack.session"]["password"]
-        return login(env)
-      end
-    end
+    return upload_file(req.params) if req.path == '/upload' && req.post?
     
-    path_info    = env["PATH_INFO"][-1] == '/' ? "#{env["PATH_INFO"]}index.html" : env["PATH_INFO"]
+    return not_found               if !( site["login"] && site["project"] )
 
+    return login(env)              if need_auth?(env, req, site)
+    
+    return versions(site)          if req.path == '/versions'
+
+    current_project_path = File.join(@base_path, site["login"], site["project"], "current")
+    path_info    = env["PATH_INFO"][-1] == '/' ? "#{env["PATH_INFO"]}index.html" : env["PATH_INFO"]
     if File.extname(path_info) == ""
       path_info += "/index.html" if File.directory?(  File.join( File.dirname(__FILE__), current_project_path,  path_info ) )
     end
@@ -48,6 +42,31 @@ class TheHoldApp
     [200, {"Cache-Control" => "no-cache, no-store", 'Content-Type' => mime_type, 'X-Accel-Redirect' => redirect_url }, []]
   end
 
+  def need_auth?(env, req, site)
+    return false if req.path == '/manifest.json'
+    return false if site["project_site_password"] == env["rack.session"]["password"]
+    return false if !site["project_site_password"] || site["project_site_password"].empty? 
+
+    if req.post? && site["project_site_password"] == req.params["password"]
+      env["rack.session"]["password"]= req.params["password"]
+      return false
+    end
+
+    return true
+
+  end
+
+  def  versions(site)
+    project_hostname = "#{site["project"]}.#{site["login"]}.#{@cname_domain}"
+    project_folder = File.join( @base_path, site["login"], site["project"])
+    
+    lis = Dir.glob("#{project_folder}/2*").to_a.sort.map{|d| 
+      d = File.basename(d)
+      "<li><a href=\"https://#{d}.#{project_hostname}\">#{d}</a></li>"
+    }
+    body = "<ul>#{lis.join}</ul>"
+    [200, {"Content-Type" => "text/html"}, [body]]
+  end
 
   def upload_file(params)
     user_token_key = "user-#{params["login"]}"
