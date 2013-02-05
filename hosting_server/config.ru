@@ -13,7 +13,7 @@ require 'json'
 class TheHoldApp
   def initialize
     @base_path = "user_sites"
-    @cname_domain = "the-hold.handlino.com"   
+    @cname_domain = "localhost"   
     @redis = Redis.new
   end
 
@@ -54,44 +54,39 @@ class TheHoldApp
     user_token  = @redis.get(user_token_key)
     return forbidden  unless user_token && user_token  == params["token"]
 
-    Dir.chdir( File.dirname(__FILE__) )
-    tempfile_path  = params["patch_file"][:tempfile].path
     project_folder = File.join( @base_path, params["login"], params["project"])
     project_folder = File.expand_path(project_folder)
-    
     FileUtils.mkdir_p(project_folder)
-    Dir.chdir(project_folder )
+    project_current_folder = File.join(project_folder, "current")
+    
 
-    to_folder = File.expand_path( Time.now.strftime("%Y%m%d%H%M%S") )
-    FileUtils.mkdir(to_folder)
-    FileUtils.cp(tempfile_path, File.join(to_folder, "_patch.zip"))
-    Dir.chdir(to_folder)
-    %x{unzip _patch.zip}
-
-    to_json_file = 'manifest.json'
+    tempfile_path  = params["patch_file"][:tempfile].path
+    to_folder = File.join( project_folder, Time.now.strftime("%Y%m%d%H%M%S") )
+    %x{unzip #{tempfile_path} -d #{to_folder}}
+  
+    to_json_file = File.join(to_folder, 'manifest.json')
     to_json_data = open(to_json_file,'r'){|f| f.read}
     to = JSON.load( to_json_data )
-
+    
     to.each do |filename, md5| 
-      if !File.exists?(filename)
-        FileUtils.mkdir_p(File.dirname(filename))
-        form_filename = File.expand_path( File.join("../current", filename) )
-        to_filename   = File.expand_path( filename )
+      to_filename = File.join(to_folder, filename)
+      if !File.exists?(to_filename)
+        FileUtils.mkdir_p(File.dirname(to_filename))
+        form_filename = File.join( project_current_folder, filename )
         if form_filename.index(project_folder) && to_filename.index(project_folder)
           next if !File.exists?(form_filename)
-          File.link(form_filename, filename)
+          File.link(form_filename, to_filename)
         end 
       end 
     end
-    FileUtils.rm("_patch.zip")
-    Dir.chdir( project_folder )
-    File.unlink("current") if File.exists?("current")
-    File.symlink(to_folder, "current")
+
+    File.unlink( project_current_folder ) if File.exists?( project_current_folder )
+    File.symlink(to_folder, project_current_folder )
 
     project_hostname = "#{params["project"]}.#{params["login"]}.#{@cname_domain}"
     @redis.hmset("site-#{project_hostname}", :login, params["login"], :project, params["project"] );
 
-    if params["cname"]
+    if params["cname"] && !params["cname"].empty?
       cname = params["cname"]
       begin 
         dns = Resolv::DNS.new
@@ -102,7 +97,7 @@ class TheHoldApp
       end
     end
     
-    if params["project_site_password"]
+    if params["project_site_password"] && !params["project_site_password"].empty?
       password = params["project_site_password"][0,64]
       @redis.hset("site-#{cname}", "project_site_password", password ) if cname
       @redis.hset("site-#{project_hostname}", 'project_site_password', password);
