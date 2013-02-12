@@ -58,7 +58,8 @@ begin
     require 'execjs'
     require "fsevent_patch" if App::OS == 'darwin'
     require "coffee_compiler.rb"
-    require "compass_patch_#{App::CONFIG['use_version']}.rb"
+    require "app_watcher.rb"
+    require "compass_patch.rb"
     require "sass_patch.rb"
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"

@@ -41,7 +41,7 @@ module Compass
         compiler_opts
       end
 
-      def create_compiler 
+      def create_compiler
         @memory_store.reset!
         Compass::Compiler.new(
           working_path,
