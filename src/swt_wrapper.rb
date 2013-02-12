@@ -1,3 +1,4 @@
+require 'java'
 SWT_LIB_PATH ="#{LIB_PATH}/swt"
 
 if org.jruby.platform.Platform::IS_MAC  

@@ -4,7 +4,7 @@ $LOAD_PATH << 'src'
 require 'pathname'
 resources_dir =  Pathname.new(__FILE__).dirname().dirname().dirname().to_s()[5..-1]
 puts resources_dir
-if File.exists?( File.join(resources_dir, 'lib','ruby'))
+if resources_dir && File.exists?( File.join(resources_dir, 'lib','ruby'))
   LIB_PATH = File.join(resources_dir, 'lib')
 else
   LIB_PATH = File.expand_path 'lib' 
@@ -58,7 +58,7 @@ begin
     require 'execjs'
     require "fsevent_patch" if App::OS == 'darwin'
     require "coffee_compiler.rb"
-    require "compass_patch.rb"
+    require "compass_patch_#{App::CONFIG['use_version']}.rb"
     require "sass_patch.rb"
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
