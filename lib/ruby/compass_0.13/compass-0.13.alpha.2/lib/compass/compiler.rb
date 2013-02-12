@@ -50,7 +50,7 @@ module Compass
     end
 
     def css_files
-      @css_files ||= sass_files.map{|sass_file| corresponding_css_file(sass_file)}
+      @css_files = sass_files.map{|sass_file| corresponding_css_file(sass_file)}
     end
 
     def corresponding_css_file(sass_file)
