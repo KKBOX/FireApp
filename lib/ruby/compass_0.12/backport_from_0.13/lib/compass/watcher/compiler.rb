@@ -16,7 +16,8 @@ module Compass
 
       def compile
         @memory_cache.reset! if @memory_cache
-        compiler.reset_staleness_checker!
+        #compiler.reset_staleness_checker! #compass 0.12 compiler without reset_staleness_checker
+        compiler.staleness_checker = Sass::Plugin::StalenessChecker.new(compiler.sass_options)
         if file = compiler.out_of_date?
           begin
             time = Time.now.strftime("%T")
