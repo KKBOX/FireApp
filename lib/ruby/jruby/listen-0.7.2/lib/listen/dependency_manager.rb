@@ -87,7 +87,7 @@ module Listen
       @_dependencies.each do |dependency|
         begin
           next if DependencyManager.already_loaded?(dependency)
-          gem(dependency.name, dependency.version)
+          # gem(dependency.name, dependency.version) # Fire.app dont use rubygem
           require(dependency.name)
           DependencyManager.add_loaded(dependency)
           @_dependencies.delete(dependency)
