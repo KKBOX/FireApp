@@ -43,8 +43,6 @@ class SimpleLivereload
   end
 
   def watch(dir, options)
-    unwatch
-    start_watch_project(dir)
     start_websocket_server(options)
   end
 
@@ -96,9 +94,11 @@ class SimpleLivereload
     if @livereload_thread && @livereload_thread.alive?
       EventMachine::WebSocket.stop
     end
-    @watch_project_thread.kill if @watch_project_thread && @watch_project_thread.alive?
   end
 
+  def alive?
+    @livereload_thread && @livereload_thread.alive?
+  end
 
   def send_livereload_msg( base, relative )
     data = JSON.dump( ['refresh', { :path => URI.escape(File.join(base, relative)),
@@ -112,40 +112,6 @@ class SimpleLivereload
     end 
   end 
 
-  def start_watch_project(dir)
-    tray = Tray.instance
-    @watch_project_thread = Thread.new do
-      FSSM.monitor do |monitor|
-        monitor.path dir do |path|
-
-          if defined?(::App) 
-            extensions = ::App::CONFIG["services_livereload_extensions"]
-          else
-            extensions = "css,png,jpg,gif,html,erb,haml"
-          end
-
-          path.glob "**/*.{#{extensions}}"
-
-          path.update do |base, relative|
-            puts ">>> Change detected to: #{relative}"
-            SimpleLivereload.instance.send_livereload_msg( base, relative )
-            if defined?(App) && App::CONFIG["notifications"].include?(:overwrite) 
-              App.notifications << "Changed: #{relative}"
-              tray.shell.display.wake if tray.shell
-            end
-          end 
-          path.create do |base, relative|
-            puts ">>> New file detected: #{relative}"
-            SimpleLivereload.instance.send_livereload_msg( base, relative )
-          end 
-          path.delete do |base, relative|
-            puts ">>> File Removed: #{relative}"
-            SimpleLivereload.instance.send_livereload_msg( base, relative )
-          end 
-        end 
-      end 
-    end 
-  end 
 
 end
 
