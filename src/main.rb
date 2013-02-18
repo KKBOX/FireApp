@@ -4,7 +4,7 @@ $LOAD_PATH << 'src'
 require 'pathname'
 resources_dir =  Pathname.new(__FILE__).dirname().dirname().dirname().to_s()[5..-1]
 puts resources_dir
-if File.exists?( File.join(resources_dir, 'lib','ruby'))
+if resources_dir && File.exists?( File.join(resources_dir, 'lib','ruby'))
   LIB_PATH = File.join(resources_dir, 'lib')
 else
   LIB_PATH = File.expand_path 'lib' 
@@ -58,6 +58,7 @@ begin
     require 'execjs'
     require "fsevent_patch" if App::OS == 'darwin'
     require "coffee_compiler.rb"
+    require "app_watcher.rb"
     require "compass_patch.rb"
     require "sass_patch.rb"
   rescue ExecJS::RuntimeUnavailable => e

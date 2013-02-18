@@ -98,8 +98,11 @@ module App
       # make sure use java version library, ex json-java, eventmachine-java
       jruby_gems_path = File.join(LIB_PATH, "ruby", "jruby" )
       scan_library( jruby_gems_path )
-      require "fssm" if (OS == 'darwin' && OS_VERSION.to_f >= 10.6 ) || OS == 'linux' || OS == 'windows'
       
+      require 'rb-fsevent' if OS == 'darwin' && App::CONFIG['force_enable_fsevent'] 
+      require 'rb-inotify' if OS == 'linux' 
+      require 'listen'
+
       require "compass"
       require "compass/exec"
       
@@ -154,8 +157,8 @@ module App
     return []
   end 
 
-  def display
-    Swt::Widgets::Display.get_current
+  def display 
+    @display ||= Swt::Widgets::Display.get_current
   end
 
   def create_shell(style = nil)

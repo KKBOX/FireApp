@@ -574,83 +574,75 @@ class Tray
       Compass.reset_configuration!
       Dir.chdir(dir)
       x = Compass::Commands::UpdateProject.new( dir, {})
-      
+
       if !x.new_compiler_instance.sass_files.empty? # if we watch a compass project
         stop_watch
-        
+
         @logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
-        
-        x.perform
 
         Thread.abort_on_exception = true
         @compass_thread = Thread.new do
-          Compass.reset_configuration!
-          Compass::Commands::WatchProject.new( dir, { :logger => @logger  }).execute
+          Compass::Watcher::AppWatcher.new(dir, Compass.configuration.watches).watch!
         end
       end
-        @tray_item.image = @watching_icon
+
+      @tray_item.image = @watching_icon
+      @watching_dir = dir
+      @menu.items.each do |item|
+        item.dispose if @history_dirs.include?(item.text)
+      end
+      @history_dirs.delete_if { |x| x == dir }
+      @history_dirs.unshift(dir)
+      build_history_menuitem
 
 
-        @watching_dir = dir
-        
+      @watch_item.text="Stop watching " + dir
 
-        @menu.items.each do |item|
-          item.dispose if @history_dirs.include?(item.text)
-        end
-        @history_dirs.delete_if { |x| x == dir }
-        @history_dirs.unshift(dir)
-        build_history_menuitem
+      @open_project_item =  add_menu_item( "Open Project Folder", 
+                                          open_project_handler, 
+                                          Swt::SWT::PUSH,
+                                          @menu, 
+                                          @menu.indexOf(@watch_item) +1 )
 
-
-        @watch_item.text="Stop watching " + dir
-
-        @open_project_item =  add_menu_item( "Open Project Folder", 
-                                             open_project_handler, 
-                                             Swt::SWT::PUSH,
-                                             @menu, 
-                                             @menu.indexOf(@watch_item) +1 )
-
-        @install_item =  add_menu_item( "Install...", 
-                                       install_project_handler, 
-                                       Swt::SWT::CASCADE,
-                                       @menu, 
-                                       @menu.indexOf(@open_project_item) +1 )
-
-        @install_item.menu = Swt::Widgets::Menu.new( @menu )
-        build_compass_framework_menuitem( @install_item.menu, install_project_handler )
-        build_change_options_menuitem( @menu.indexOf(@install_item) +1 )
-        @clean_item =  add_menu_item( "Clean && Compile", 
-                                     clean_project_handler, 
-                                     Swt::SWT::PUSH,
+      @install_item =  add_menu_item( "Install...", 
+                                     install_project_handler, 
+                                     Swt::SWT::CASCADE,
                                      @menu, 
-                                     @menu.indexOf(@changeoptions_item) +1 )
+                                     @menu.indexOf(@open_project_item) +1 )
 
-        @build_project_item =  add_menu_item( "Build Project", 
-                                             build_project_handler, 
-                                             Swt::SWT::PUSH,
-                                             @menu, 
-                                             @menu.indexOf(@clean_item) +1 )
-        if @menu.items[ @menu.indexOf(@build_project_item)+1 ].getStyle != Swt::SWT::SEPARATOR
-          add_menu_separator(@menu, @menu.indexOf(@build_project_item) + 1 )
+      @install_item.menu = Swt::Widgets::Menu.new( @menu )
+      build_compass_framework_menuitem( @install_item.menu, install_project_handler )
+      build_change_options_menuitem( @menu.indexOf(@install_item) +1 )
+      @clean_item =  add_menu_item( "Clean && Compile", 
+                                   clean_project_handler, 
+                                   Swt::SWT::PUSH,
+                                   @menu, 
+                                   @menu.indexOf(@changeoptions_item) +1 )
+
+      @build_project_item =  add_menu_item( "Build Project", 
+                                           build_project_handler, 
+                                           Swt::SWT::PUSH,
+                                           @menu, 
+                                           @menu.indexOf(@clean_item) +1 )
+      if @menu.items[ @menu.indexOf(@build_project_item)+1 ].getStyle != Swt::SWT::SEPARATOR
+        add_menu_separator(@menu, @menu.indexOf(@build_project_item) + 1 )
+      end
+
+      if App::CONFIG['services'].include?( :http )
+        @simplehttpserver_thread = Thread.new do
+          require "simplehttpserver"
+          SimpleHTTPServer.instance.start(Compass.configuration.project_path, :Port =>  App::CONFIG['services_http_port'])
         end
-        if App::CONFIG['services'].include?( :http )
-          @simplehttpserver_thread = Thread.new do
-            require "simplehttpserver"
-            SimpleHTTPServer.instance.start(Compass.configuration.project_path, :Port =>  App::CONFIG['services_http_port'])
-          end
+      end
+
+      if App::CONFIG['services'].include?( :livereload )
+        @simplelivereload_thread = Thread.new do
+          require "livereload"
+          SimpleLivereload.instance.watch(Compass.configuration.project_path, { :port => App::CONFIG["services_livereload_port"] }) 
         end
+      end
 
-        if App::CONFIG['services'].include?( :livereload )
-          @simplelivereload_thread = Thread.new do
-            require "livereload"
-            SimpleLivereload.instance.watch(Compass.configuration.project_path, { :port => App::CONFIG["services_livereload_port"] }) 
-          end
-        end
-
-        current_display = App.display
-
-  
-        return true
+      return true
 
     end
 
