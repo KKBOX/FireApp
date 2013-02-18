@@ -214,12 +214,12 @@ class Tray
     Compass::Frameworks::ALL.each do | framework |
       next if framework.name =~ /^_/
       next if framework.template_directories.empty?
-    item = add_menu_item( framework.name, handler, Swt::SWT::CASCADE, submenu)
-    framework_submenu = Swt::Widgets::Menu.new( submenu )
-    item.menu = framework_submenu
-    framework.template_directories.each do | dir |
-      add_menu_item( dir, handler, Swt::SWT::PUSH, framework_submenu)
-    end
+      item = add_menu_item( framework.name, handler, Swt::SWT::CASCADE, submenu)
+      framework_submenu = Swt::Widgets::Menu.new( submenu )
+      item.menu = framework_submenu
+      framework.template_directories.each do | dir |
+        add_menu_item( dir, handler, Swt::SWT::PUSH, framework_submenu)
+      end
     end
   end
 
@@ -631,7 +631,18 @@ class Tray
                                      install_project_handler, 
                                      Swt::SWT::CASCADE,
                                      @menu, 
-                                     @menu.indexOf(@changeoptions_item) +1 )
+                                     @menu.indexOf(@open_project_item) +1 )
+      @install_item.menu = Swt::Widgets::Menu.new( @menu )
+      build_compass_framework_menuitem( @install_item.menu, install_project_handler )
+      
+      build_change_options_menuitem( @menu.indexOf(@install_item) +1 )
+
+      @clean_item =  add_menu_item( "Clean && Compile", 
+                                   clean_project_handler, 
+                                   Swt::SWT::PUSH,
+                                   @menu, 
+                                   @menu.indexOf(@changeoptions_item) +1 )
+
 
       @build_project_item =  add_menu_item( "Build Project", 
                                            build_project_handler, 
