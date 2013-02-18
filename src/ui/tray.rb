@@ -9,7 +9,7 @@ class Tray
     @logger = nil
     @history_dirs  = App.get_history
     @shell    = App.create_shell(Swt::SWT::ON_TOP | Swt::SWT::MODELESS)
-    
+
     if org.jruby.platform.Platform::IS_MAC
       @standby_icon = App.create_image("icon/16_dark@2x.png")
       @active_icon = App.create_image("icon/16_white@2x.png")
@@ -72,9 +72,9 @@ class Tray
     if(options[:watch])
       watch(options[:watch])
     end
-    
+
     SplashWindow.instance.dispose
-    
+
     while(! @shell.is_disposed) do
       App.display.sleep if(!App.display.read_and_dispatch) 
       App.show_and_clean_notifications
@@ -166,18 +166,18 @@ class Tray
 
   def open_extensions_folder_handler
     Swt::Widgets::Listener.impl do |method, evt|
-        if !File.exists?(App.shared_extensions_path)
-          FileUtils.mkdir_p(App.shared_extensions_path)
-          FileUtils.cp(File.join(LIB_PATH, "documents", "extensions_readme.txt"), File.join(App.shared_extensions_path, "readme.txt") )
-        end
+      if !File.exists?(App.shared_extensions_path)
+        FileUtils.mkdir_p(App.shared_extensions_path)
+        FileUtils.cp(File.join(LIB_PATH, "documents", "extensions_readme.txt"), File.join(App.shared_extensions_path, "readme.txt") )
+      end
 
-        Swt::Program.launch(App.shared_extensions_path)
+      Swt::Program.launch(App.shared_extensions_path)
     end
   end
 
   def open_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
-        Swt::Program.launch(@watching_dir)
+      Swt::Program.launch(@watching_dir)
     end
   end
 
@@ -214,7 +214,7 @@ class Tray
     Compass::Frameworks::ALL.each do | framework |
       next if framework.name =~ /^_/
       next if framework.template_directories.empty?
-      item = add_menu_item( framework.name, handler, Swt::SWT::CASCADE, submenu)
+    item = add_menu_item( framework.name, handler, Swt::SWT::CASCADE, submenu)
     framework_submenu = Swt::Widgets::Menu.new( submenu )
     item.menu = framework_submenu
     framework.template_directories.each do | dir |
@@ -379,119 +379,142 @@ class Tray
 
   def build_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
-      ENV["RACK_ENV"] = "production"
-      App.try do 
+      build_project
+    end
+  end 
+  def build_project(target_path=nil, options={})
+    ENV["RACK_ENV"] = "production"
 
-        project_path = File.expand_path(Compass.configuration.project_path)
- 
-        release_dir = File.expand_path( Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
-  
+    project_path = File.expand_path(Compass.configuration.project_path)
+    release_dir = File.expand_path( target_path || Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
+
+    App.try do 
+
+      report_window = nil
+      if !options[:headless]
         report_window = App.report('Start build project!') do
           Swt::Program.launch(release_dir)
         end
-        
-        FileUtils.rm_r( release_dir) if File.exists?(release_dir)
-        FileUtils.mkdir_p( release_dir)
+      end
 
-        # rebuild sass & coffeescript
-        is_compass_project = false
-        x = Compass::Commands::UpdateProject.new( project_path, {})
-        if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
-          x.perform
-          is_compass_project = true
-        end
+      FileUtils.rm_r( release_dir) if File.exists?(release_dir)
+      FileUtils.mkdir_p( release_dir)
 
-        blacklist = []
+      # rebuild sass & coffeescript
+      is_compass_project = false
+      x = Compass::Commands::UpdateProject.new( project_path, {})
+      if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
+        x.perform
+        is_compass_project = true
+      end
 
-        build_ignore_file = "build_ignore.txt"
+      blacklist = []
 
-        if File.exists?(File.join( project_path, build_ignore_file))
-          blacklist << build_ignore_file
-          blacklist += File.open( File.join( project_path, build_ignore_file) ).readlines.map{|p|
-            p.strip
-          }
-        else
-          blacklist += [
-            "*.swp",
-            "*.layout",
-            "*~",
-            "*/.DS_Store",
-            "*/.git",
-            "*/.gitignore",
-            "*.svn",
-            "*/Thumbs.db",
-            "*/.sass-cache",
-            "*/.coffeescript-cache",
-            "*/compass_app_log.txt",
-            "*/fire_app_log.txt",
-            "view_helpers.rb",
-            "Gemfile",
-            "Gemfile.lock",
-            "config.ru"
-          ]
-          blacklist << File.basename(Compass.detect_configuration_file) if is_compass_project
-        end
-       
-        if is_compass_project && Compass.configuration.fireapp_build_path 
-          blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
-        end
-        
-        blacklist.uniq!
-        blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
+      build_ignore_file = "build_ignore.txt"
 
-        #build html 
-        Dir.glob( File.join(project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
-          if file =~ /build_\d{14}/ || file.index(release_dir)
-            next 
-          end
-          extname=File.extname(file)
-          if Tilt[ extname[1..-1] ]
-            request_path = file[project_path.length ... (-1*extname.size)]
-            pass = false
-            blacklist.each do |pattern|
-                if File.fnmatch(pattern, request_path[1..-1])
-                  pass = true
-                  break
-                end
-            end
-            next if pass
+      if File.exists?(File.join( project_path, build_ignore_file))
+        blacklist << build_ignore_file
+        blacklist += File.open( File.join( project_path, build_ignore_file) ).readlines.map{|p|
+          p.strip
+        }
+      else
+        blacklist += [
+          "*.swp",
+          "*.layout",
+          "*~",
+          "*/.DS_Store",
+          "*/.git",
+          "*/.gitignore",
+          "*.svn",
+          "*/Thumbs.db",
+          "*/.sass-cache",
+          "*/.coffeescript-cache",
+          "*/compass_app_log.txt",
+          "*/fire_app_log.txt",
+          "view_helpers.rb",
+          "Gemfile",
+          "Gemfile.lock",
+          "config.ru"
+        ]
+        blacklist << File.basename(Compass.detect_configuration_file) if is_compass_project
+      end
 
-            write_dynamaic_file(release_dir, request_path)
-            report_window.append "Create: #{request_path}"
+      if is_compass_project && Compass.configuration.fireapp_build_path 
+        blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
+      end
+
+      blacklist.uniq!
+      blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
+
+      #build html 
+      Dir.glob( File.join(project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
+      if file =~ /build_\d{14}/ || file.index(release_dir)
+        next 
+      end
+      extname=File.extname(file)
+      if Tilt[ extname[1..-1] ]
+        request_path = file[project_path.length ... (-1*extname.size)]
+        pass = false
+        blacklist.each do |pattern|
+          if File.fnmatch(pattern, request_path[1..-1])
+            pass = true
+            break
           end
         end
+        next if pass
 
-        Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? }
+        write_dynamaic_file(release_dir, request_path)
+        report_window.append "Create: #{request_path}" if report_window
+      end
+      end
 
-        #copy static file
-        Dir.glob( File.join(project_path, '**', '*') ) do |file|
-          path = file[(project_path.length+1) .. -1]
-          next if path =~ /build_\d{14}/
+      Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? }
+
+      #copy static file
+      Dir.glob( File.join(project_path, '**', '*') ) do |file|
+        path = file[(project_path.length+1) .. -1]
+        next if path =~ /build_\d{14}/
           pass = false
-          
-          blacklist.each do |pattern|
-            puts path,pattern if path =~ /proxy/
+
+        blacklist.each do |pattern|
+          puts path,pattern if path =~ /proxy/
             if File.fnmatch(pattern, path)
               pass = true
               break
             end
-          end
-          next if pass
-
-          new_file = File.join(release_dir, path)
-          if File.file? file
-            FileUtils.mkdir_p( File.dirname(  new_file ))
-            FileUtils.cp( file, new_file )
-            report_window.append "Copy: #{file.gsub(/#{project_path}/,'')}"
-          end
         end
+        next if pass
 
-        end_build_project=Time.now
-        report_window.append "Done!" 
+        new_file = File.join(release_dir, path)
+        if File.file? file
+          FileUtils.mkdir_p( File.dirname(  new_file ))
+          FileUtils.cp( file, new_file )
+          report_window.append "Copy: #{file.gsub(/#{project_path}/,'')}" if report_window
+        end
       end
-      ENV["RACK_ENV"] = "development"
-    end
 
+      end_build_project=Time.now
+      report_window.append "Done!"  if report_window
+    end
+    ENV["RACK_ENV"] = "development"
+    return release_dir
+  end
+
+  def deploy_project_handler
+    Swt::Widgets::Listener.impl do |method, evt|
+      App.try do 
+        options = Compass.configuration.the_hold_options
+        temp_build_folder = File.join(Dir.tmpdir, "fireapp", rand.to_s)
+        respone = TheHoldUploader.upload_patch(build_project(temp_build_folder, {:headless => true}), options)
+        if respone.code == "200"
+          host=URI(options[:host]).host
+          Swt::Program.launch("http://#{options[:project]}.#{options[:login]}.#{host}")
+          App.alert("done")
+        else
+          App.alert(respone.body)
+        end
+      end
+    end
   end
 
   def clean_project(show_report = false)
@@ -608,24 +631,25 @@ class Tray
                                      install_project_handler, 
                                      Swt::SWT::CASCADE,
                                      @menu, 
-                                     @menu.indexOf(@open_project_item) +1 )
-
-      @install_item.menu = Swt::Widgets::Menu.new( @menu )
-      build_compass_framework_menuitem( @install_item.menu, install_project_handler )
-      build_change_options_menuitem( @menu.indexOf(@install_item) +1 )
-      @clean_item =  add_menu_item( "Clean && Compile", 
-                                   clean_project_handler, 
-                                   Swt::SWT::PUSH,
-                                   @menu, 
-                                   @menu.indexOf(@changeoptions_item) +1 )
+                                     @menu.indexOf(@changeoptions_item) +1 )
 
       @build_project_item =  add_menu_item( "Build Project", 
                                            build_project_handler, 
                                            Swt::SWT::PUSH,
                                            @menu, 
                                            @menu.indexOf(@clean_item) +1 )
-      if @menu.items[ @menu.indexOf(@build_project_item)+1 ].getStyle != Swt::SWT::SEPARATOR
-        add_menu_separator(@menu, @menu.indexOf(@build_project_item) + 1 )
+      last_item = @build_project_item
+      if Compass.configuration.the_hold_options
+        @deploy_project_item =  add_menu_item( "Deploy Project", 
+                                              deploy_project_handler, 
+                                              Swt::SWT::PUSH,
+                                              @menu, 
+                                              @menu.indexOf(@build_project_item) +1 )
+        last_item = @deploy_project_item
+      end
+
+      if @menu.items[ @menu.indexOf(last_item)+1 ].getStyle != Swt::SWT::SEPARATOR
+        add_menu_separator(@menu, @menu.indexOf(last_item) + 1 )
       end
 
       if App::CONFIG['services'].include?( :http )
@@ -667,8 +691,9 @@ class Tray
     @install_item.dispose() if @install_item && !@install_item.isDisposed
     @clean_item.dispose()   if @clean_item && !@clean_item.isDisposed
     @open_project_item.dispose()   if @open_project_item && !@open_project_item.isDisposed
-    @build_project_item.dispose()   if @build_project_item && !@build_project_item.isDisposed
-    @changeoptions_item.dispose()   if @changeoptions_item && !@changeoptions_item.isDisposed
+    @build_project_item.dispose()  if @build_project_item && !@build_project_item.isDisposed
+    @deploy_project_item.dispose() if @deploy_project_item && !@deploy_project_item.isDisposed
+    @changeoptions_item.dispose()  if @changeoptions_item && !@changeoptions_item.isDisposed
     @watching_dir = nil
     @tray_item.image = @standby_icon
   end

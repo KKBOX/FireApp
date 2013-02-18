@@ -19,6 +19,10 @@ module Compass
   Configuration.add_configuration_property(:fireapp_coffeescript_options, nil) do
     {}
   end
+ 
+  Configuration.add_configuration_property(:the_hold_options, nil) do
+    nil
+  end
 
   module Commands
     class UpdateProject
