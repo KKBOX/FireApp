@@ -91,13 +91,13 @@ module Listen
           require(dependency.name)
           DependencyManager.add_loaded(dependency)
           @_dependencies.delete(dependency)
-        rescue Gem::LoadError
+        rescue LoadError
           args = [dependency.name, dependency.version]
           command = if running_under_bundler?
-            BUNDLER_DECLARE_GEM % args
-          else
-            GEM_INSTALL_COMMAND % args.reverse
-          end
+                      BUNDLER_DECLARE_GEM % args
+                    else
+                      GEM_INSTALL_COMMAND % args.reverse
+                    end
           message = GEM_LOAD_MESSAGE % args
 
           raise Error.new(message + command)

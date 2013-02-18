@@ -157,8 +157,8 @@ module App
     return []
   end 
 
-  def display
-    Swt::Widgets::Display.get_current
+  def display 
+    @display ||= Swt::Widgets::Display.get_current
   end
 
   def create_shell(style = nil)
