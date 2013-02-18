@@ -653,14 +653,18 @@ class Tray
                                              Swt::SWT::PUSH,
                                              @menu, 
                                              @menu.indexOf(@clean_item) +1 )
-        @deploy_project_item =  add_menu_item( "Deploy Project", 
-                                             deploy_project_handler, 
-                                             Swt::SWT::PUSH,
-                                             @menu, 
-                                             @menu.indexOf(@build_project_item) +1 )
+        last_item = @build_project_item
+        if Compass.configuration.the_hold_options
+          @deploy_project_item =  add_menu_item( "Deploy Project", 
+                                                deploy_project_handler, 
+                                                Swt::SWT::PUSH,
+                                                @menu, 
+                                                @menu.indexOf(@build_project_item) +1 )
+          last_item = @deploy_project_item
+        end
 
-        if @menu.items[ @menu.indexOf(@deploy_project_item)+1 ].getStyle != Swt::SWT::SEPARATOR
-          add_menu_separator(@menu, @menu.indexOf(@deploy_project_item) + 1 )
+        if @menu.items[ @menu.indexOf(last_item)+1 ].getStyle != Swt::SWT::SEPARATOR
+          add_menu_separator(@menu, @menu.indexOf(last_item) + 1 )
         end
         if App::CONFIG['services'].include?( :http )
           @simplehttpserver_thread = Thread.new do
