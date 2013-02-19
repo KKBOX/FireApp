@@ -37,13 +37,25 @@ module ExecJS
       :runner_path => ExecJS.root + "/support/spidermonkey_runner.js",
       :deprecated  => true
     )
-
+=begin
+    # PATCHED 
+    # ExecJS::RuntimeError in rails 3.2.8 engine on Windows 8 - compatiblity issue
+    # https://github.com/sstephenson/execjs/issues/111
     JScript = ExternalRuntime.new(
       :name        => "JScript",
       :command     => "cscript //E:jscript //Nologo //U",
       :runner_path => ExecJS.root + "/support/jscript_runner.js",
       :encoding    => 'UTF-16LE' # CScript with //U returns UTF-16LE
     )
+=end    
+
+    JScript = ExternalRuntime.new(
+      :name        => "JScript",
+      :command     => "cscript //E:jscript //Nologo",
+      :runner_path => ExecJS.root + "/support/jscript_runner.js",
+      :encoding    => 'UTF-8' # CScript with //U returns UTF-16LE
+    )
+
 
 
     def self.autodetect
