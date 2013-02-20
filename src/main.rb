@@ -10,6 +10,11 @@ else
   LIB_PATH = File.expand_path 'lib' 
 end
 
+# bundle nodejs for windows so we need add node.exe path to ENV['PATH']
+if org.jruby.platform.Platform::IS_WINDOWS
+  ENV['PATH'] = File.join(LIB_PATH,'nodejs')+File::PATH_SEPARATOR+ENV['PATH']
+end
+
 require "swt_wrapper"
 require "ui/splash_window"
 SplashWindow.instance.replace('Loading...')
