@@ -105,7 +105,6 @@ module Compass
   end
 
   class Compiler
-
     # Compile one Sass file
     def compile(sass_filename, css_filename)
       start_time = end_time = nil 
@@ -142,6 +141,13 @@ module Compass
         end
       end
     end 
+
+    # monkey patch for compass issue 
+    # https://github.com/chriseppstein/compass/issues/1168
+    def css_files
+      @css_files = sass_files.map{|sass_file| corresponding_css_file(sass_file)}
+    end 
+
   end
 end
 
