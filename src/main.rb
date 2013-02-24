@@ -1,18 +1,19 @@
 INITAT=Time.now
 
-# set default encoding
-Encoding.default_external = Encoding::UTF_8
-#Encoding.default_internal = Encoding::UTF_8
-
 $LOAD_PATH << 'src'
 require 'pathname'
 resources_dir =  Pathname.new(__FILE__).dirname().dirname().dirname().to_s()[5..-1]
 puts resources_dir
 
-if File.exists?( File.join(resources_dir, 'lib','ruby'))
+if resources_dir && File.exists?( File.join(resources_dir, 'lib','ruby'))
   LIB_PATH = File.join(resources_dir, 'lib')
 else
   LIB_PATH = File.expand_path 'lib' 
+end
+
+# bundle nodejs for windows so we need add node.exe path to ENV['PATH']
+if org.jruby.platform.Platform::IS_WINDOWS
+  ENV['PATH'] = File.join(LIB_PATH,'nodejs')+File::PATH_SEPARATOR+ENV['PATH']
 end
 
 require "swt_wrapper"
@@ -63,8 +64,10 @@ begin
     require 'execjs'
     require "fsevent_patch" if App::OS == 'darwin'
     require "coffee_compiler.rb"
+    require "app_watcher.rb"
     require "compass_patch.rb"
     require "sass_patch.rb"
+    require "the_hold_uploader.rb"
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
   end

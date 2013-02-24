@@ -1,3 +1,4 @@
+
 require 'time'
 require 'pathname'
 require 'coffee_script'
@@ -15,7 +16,7 @@ class CoffeeCompiler
     end
   end
 
-  def self.compile_folder( coffeescripts_dir, javascripts_dir )
+  def self.compile_folder( coffeescripts_dir, javascripts_dir, options={} )
     coffeescripts_dir = File.expand_path(coffeescripts_dir)
     javascripts_dir = File.expand_path(javascripts_dir)
     
@@ -24,7 +25,7 @@ class CoffeeCompiler
 
       new_js_path = get_new_js_path(coffeescripts_dir, full_path, javascripts_dir)
 
-      CoffeeCompiler.new(full_path, new_js_path, get_cache_dir(coffeescripts_dir) ).compile
+      CoffeeCompiler.new(full_path, new_js_path, get_cache_dir(coffeescripts_dir), options ).compile
     end
   end
 
@@ -53,10 +54,11 @@ class CoffeeCompiler
     return  File.join(javascripts_dir, new_dir, new_file)
   end
 
-  def initialize(coffeescript_path, javascript_path, cache_dir=nil)
+  def initialize(coffeescript_path, javascript_path, cache_dir=nil, options={})
     @coffeescript_path = Pathname.new(coffeescript_path)
     @javascript_path   = Pathname.new(javascript_path)
     @cache_dir   = cache_dir ? Pathname.new(cache_dir) : nil
+    @compile_options = options
   end
 
   def compile()
@@ -96,7 +98,7 @@ class CoffeeCompiler
 
   def get_js
     begin
-      CoffeeScript.compile @coffeescript_path.read
+      CoffeeScript.compile @coffeescript_path.read, @compile_options
     rescue Exception=>e
       "document.write("+ "#{@coffeescript_path}: #{e.message}".to_json + ")"
     end

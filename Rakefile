@@ -66,6 +66,9 @@ INFO_ENDL
 
       %x{mkdir -p  #{CONFIG.windows_output_dir}/lib/swt}
       %x{cp -R lib/swt/swt_win* #{CONFIG.windows_output_dir}/lib/swt}
+      
+      %x{mkdir -p  #{CONFIG.windows_output_dir}/lib/nodejs}
+      %x{cp -R lib/nodejs/node-win* #{CONFIG.windows_output_dir}/lib/nodejs/node.exe}
 
       %w{ruby images documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} #{CONFIG.windows_output_dir}/lib }

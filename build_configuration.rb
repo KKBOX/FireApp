@@ -62,12 +62,12 @@ configuration do |c|
 	# Undocumented option 'target_jvm_version'
 	# default value: 1.6
 	#
-	c.target_jvm_version = 1.7
+	c.target_jvm_version = 1.6
 
 	# Undocumented option 'jvm_arguments'
 	# default value: ""
 	#
-	c.jvm_arguments = "-Xss1m -Dfile.encoding=utf8 "
+	c.jvm_arguments = "-Xss1m"
 
 	# Undocumented option 'java_library_path'
 	# default value: ""

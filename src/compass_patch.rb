@@ -1,5 +1,5 @@
 module Compass
-  
+
   # for add fireapp_build_path configuration property
   module Configuration
     def self.strip_trailing_separator(*args)
@@ -11,95 +11,24 @@ module Compass
   Configuration.add_configuration_property(:fireapp_build_path, nil) do
     nil
   end
-  
+
   Configuration.add_configuration_property(:fireapp_coffeescripts_dir, nil) do
     "coffeescripts"
   end
 
+  Configuration.add_configuration_property(:fireapp_coffeescript_options, nil) do
+    {}
+  end
+ 
+  Configuration.add_configuration_property(:the_hold_options, nil) do
+    nil
+  end
+
   module Commands
-    class WatchProject 
-
-      def perform # we remove  Signal.trap("INT"), add version check on configuration.watches
-        check_for_sass_files!(new_compiler_instance)
-        recompile
-        require 'fssm'
-        if options[:poll]
-          require "fssm/backends/polling"
-          # have to silence the ruby warning about chaning a constant.
-          stderr, $stderr = $stderr, StringIO.new
-          FSSM::Backends.const_set("Default", FSSM::Backends::Polling)
-          $stderr = stderr
-        end
-
-        action = FSSM::Backends::Default.to_s == "FSSM::Backends::Polling" ? "polling" : "watching"
-
-        puts ">>> Compass is #{action} for changes. Press Ctrl-C to Stop."
-
-        begin
-          FSSM.monitor do |monitor|
-            Compass.configuration.sass_load_paths.each do |load_path|
-              load_path = load_path.root if load_path.respond_to?(:root)
-              next unless load_path.is_a? String
-              monitor.path load_path do |path|
-                path.glob '**/*.s[ac]ss'
-
-                path.update &method(:recompile)
-                path.delete {|base, relative| remove_obsolete_css(base,relative); recompile(base, relative)}
-                path.create &method(:recompile)
-              end
-            end
-            
-            # for coffeescripts
-            if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-              monitor.path Compass.configuration.fireapp_coffeescripts_dir do |path|
-                path.glob '**/*.coffee'
-                path.update do |base, relative|
-                  puts ">>> Change detected to: #{relative}"
-                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
-                end
-                path.create do |base, relative|
-                  puts ">>> New file detected: #{relative}"
-                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
-                end
-                path.delete do |base, relative|
-                  puts ">>> File Removed: #{relative}"
-                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
-                end
-              end
-            end 
-            Compass.configuration.watches.each do |glob, callback|
-              monitor.path Compass.configuration.project_path do |path|
-                path.glob glob
-                path.update do |base, relative|
-                  puts ">>> Change detected to: #{relative}"
-                  callback.call(base, relative)
-                end
-                path.create do |base, relative|
-                  puts ">>> New file detected: #{relative}"
-                  callback.call(base, relative)
-                end
-                path.delete do |base, relative|
-                  puts ">>> File Removed: #{relative}"
-                  callback.call(base, relative)
-                end
-              end
-            end
-
-          end
-        rescue FSSM::CallbackError => e
-          # FSSM catches exit? WTF.
-          if e.message =~ /exit/
-            exit
-          end
-        end
-
-      end
-    end
-
     class UpdateProject
       def perform
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-          CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+          CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
         end
 
         compiler = new_compiler_instance
@@ -168,18 +97,14 @@ module Compass
     def log(msg)
       puts msg
       if App::CONFIG["save_notification_to_file"] && @log_dir
-        @logfile = open(@log_dir + '/fire_app_log.txt','a+') unless @logfile
-        @logfile.puts Time.now.strftime("%Y-%m-%d %H:%M:%S") + " " + msg
-        @logfile.flush
-      else
-        @logfile.close if @logfile
-        @logfile = nil
+        open(@log_dir + '/fire_app_log.txt','a+') do |f| 
+          f.puts Time.now.strftime("%Y-%m-%d %H:%M:%S") + " " + msg
+        end
       end
     end
   end
 
   class Compiler
-
     # Compile one Sass file
     def compile(sass_filename, css_filename)
       start_time = end_time = nil 
@@ -190,9 +115,9 @@ module Compass
       end 
       duration = options[:time] ? "(#{(css_content.__duration * 1000).round / 1000.0}s)" : ""
       write_file(css_filename, css_content, options.merge(:force => true, :extra => duration))
-     
+
       Compass.configuration.run_stylesheet_saved(css_filename)
-      
+
       # PATCH: write wordlist File
       sass_filename_str = sass_filename.gsub(/[^a-z0-9]/i, '_')
       File.open( File.join( App::AUTOCOMPLTETE_CACHE_DIR, sass_filename_str + "_project" ), 'w' ) do |f|
@@ -216,6 +141,13 @@ module Compass
         end
       end
     end 
+
+    # monkey patch for compass issue 
+    # https://github.com/chriseppstein/compass/issues/1168
+    def css_files
+      @css_files = sass_files.map{|sass_file| corresponding_css_file(sass_file)}
+    end 
+
   end
 end
 
