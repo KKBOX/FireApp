@@ -1,5 +1,6 @@
 INITAT=Time.now
 
+require 'java'
 $LOAD_PATH << 'src'
 require 'pathname'
 resources_dir =  Pathname.new(__FILE__).dirname().dirname().dirname().to_s()[5..-1]
