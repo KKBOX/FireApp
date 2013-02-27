@@ -32,8 +32,8 @@ class TheHoldApp
 
     return login(env)              if need_auth?(env, req, site)
 
-    return versions(site)          if req.path == '/versions'
-    return versions_json(site)          if req.path == '/versions.json'
+    return versions(site)          if req.path == '/__versions'
+    return versions_json(site)          if req.path == '/__versions.json'
 
     current_project_path = File.join(@base_path, site["login"], site["project"], project_route[:version] || "current")
     path_info    = env["PATH_INFO"][-1] == '/' ? "#{env["PATH_INFO"]}index.html" : env["PATH_INFO"]
@@ -149,7 +149,7 @@ $(function() {
     var i,
         opstr = '';
 
-    $.getJSON('/versions.json')
+    $.getJSON('/__versions.json')
         .success(function(versions) {
             for (i = 0; i < versions.length; i++) {
                 opstr += '<option value="' + versions[i].url + '">' + versions[i].name + '</option>';
