@@ -33,6 +33,7 @@ class TheHoldApp
     return login(env)              if need_auth?(env, req, site)
 
     return versions(site)          if req.path == '/versions'
+    return versions_json(site)          if req.path == '/versions.json'
 
     current_project_path = File.join(@base_path, site["login"], site["project"], project_route[:version] || "current")
     path_info    = env["PATH_INFO"][-1] == '/' ? "#{env["PATH_INFO"]}index.html" : env["PATH_INFO"]
@@ -59,7 +60,7 @@ class TheHoldApp
 
   end
 
-  def  versions(site)
+  def versions(site)
     project_hostname = "#{site["project"]}.#{site["login"]}.#{@cname_domain}"
     project_folder = File.join( @base_path, site["login"], site["project"])
 
@@ -68,6 +69,20 @@ class TheHoldApp
       "<li><a href=\"http://#{d}.#{project_hostname}\">#{d}</a></li>"
     }
     body = "<ul>#{lis.join}</ul>"
+    [200, {"Content-Type" => "text/html"}, [body]]
+  end
+
+  def versions_json(site)
+    project_hostname = "#{site["project"]}.#{site["login"]}.#{@cname_domain}"
+    project_folder = File.join( @base_path, site["login"], site["project"])
+
+    list = Dir.glob("#{project_folder}/2*").to_a.sort.map{|d|
+      d = File.basename(d)
+      { name: Time.parse( d.gsub('-','') ).strftime('%Y/%m/%d %H:%M:%S'), 
+        url:  "http://#{d}.#{project_hostname}" }
+    }
+    
+    body = JSON.dump(list)
     [200, {"Content-Type" => "text/html"}, [body]]
   end
 
