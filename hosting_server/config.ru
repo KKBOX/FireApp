@@ -35,7 +35,6 @@ end
 class TheHoldApp
   def initialize
     @base_path = "user_sites"
-    DOMAIN = "localhost"
     @redis = Redis.new
   end
 
