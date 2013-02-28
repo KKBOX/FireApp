@@ -5,15 +5,37 @@ Bundler.require
 require 'rack'
 require 'rack/mime'
 require 'rack/contrib'
+require 'rack/session/cookie'
 require 'redis'
 require 'yaml'
 require 'json'
 
+DOMAIN = "the-hold.handlino.com"
+
+module Rack
+  module Session
+    module Abstract
+      class ID
+        def set_cookie(env, headers, cookie)
+          request = Rack::Request.new(env)
+          if request.cookies[@key] != cookie[:value] || cookie[:expires]
+
+            patten = Regexp.new("(?<version>\\d{8}-\\d{6})?\\.?(?<project>.+?)\\.(?<login>.+)\\.#{DOMAIN}$")
+            project_route = request.host.match(patten)
+            cookie[:domain] = ".#{project_route[:project]}.#{project_route[:login]}.#{DOMAIN}"
+
+            Utils.set_cookie_header!(headers, @key, cookie)
+          end
+        end
+      end
+    end
+  end
+end
 
 class TheHoldApp
   def initialize
     @base_path = "user_sites"
-    @cname_domain = "localhost"
+    DOMAIN = "localhost"
     @redis = Redis.new
   end
 
@@ -22,10 +44,10 @@ class TheHoldApp
 
     return upload_file(req.params) if req.path == '/upload' && req.post?
 
-    patten = Regexp.new("(?<version>\\d{8}-\\d{6})?\\.?(?<project>.+?)\\.(?<login>.+)\\.#{@cname_domain}$")
+    patten = Regexp.new("(?<version>\\d{8}-\\d{6})?\\.?(?<project>.+?)\\.(?<login>.+)\\.#{DOMAIN}$")
     project_route = req.host.match(patten)
 
-    site_key = "site-#{project_route[:project]}.#{project_route[:login]}.#{@cname_domain}"
+    site_key = "site-#{project_route[:project]}.#{project_route[:login]}.#{DOMAIN}"
     site   = @redis.hgetall(site_key)
 
     return not_found               if !( site["login"] && site["project"] )
@@ -61,7 +83,7 @@ class TheHoldApp
   end
 
   def versions(site)
-    project_hostname = "#{site["project"]}.#{site["login"]}.#{@cname_domain}"
+    project_hostname = "#{site["project"]}.#{site["login"]}.#{DOMAIN}"
     project_folder = File.join( @base_path, site["login"], site["project"])
 
     lis = Dir.glob("#{project_folder}/2*").to_a.sort.map{|d|
@@ -73,7 +95,7 @@ class TheHoldApp
   end
 
   def versions_json(site)
-    project_hostname = "#{site["project"]}.#{site["login"]}.#{@cname_domain}"
+    project_hostname = "#{site["project"]}.#{site["login"]}.#{DOMAIN}"
     project_folder = File.join( @base_path, site["login"], site["project"])
 
     list = Dir.glob("#{project_folder}/2*").to_a.sort.map{|d|
@@ -120,7 +142,7 @@ class TheHoldApp
     File.unlink( project_current_folder ) if File.exists?( project_current_folder )
     File.symlink(to_folder, project_current_folder )
 
-    project_hostname = "#{params["project"]}.#{params["login"]}.#{@cname_domain}"
+    project_hostname = "#{params["project"]}.#{params["login"]}.#{DOMAIN}"
     @redis.hmset("site-#{project_hostname}", :login, params["login"], :project, params["project"] );
 
     if params["cname"] && !params["cname"].empty?
