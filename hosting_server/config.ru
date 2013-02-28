@@ -54,8 +54,8 @@ class TheHoldApp
 
     return login(env)              if need_auth?(env, req, site)
 
-    return versions(site)          if req.path == '/versions'
-    return versions_json(site)          if req.path == '/versions.json'
+    return versions(site)          if req.path == '/__versions'
+    return versions_json(site)          if req.path == '/__versions.json'
 
     current_project_path = File.join(@base_path, site["login"], site["project"], project_route[:version] || "current")
     path_info    = env["PATH_INFO"][-1] == '/' ? "#{env["PATH_INFO"]}index.html" : env["PATH_INFO"]
@@ -91,7 +91,131 @@ class TheHoldApp
       "<li><a href=\"http://#{d}.#{project_hostname}\">#{d}</a></li>"
     }
     body = "<ul>#{lis.join}</ul>"
-    [200, {"Content-Type" => "text/html"}, [body]]
+    #[200, {"Content-Type" => "text/html"}, [body]]
+    [200, { "Content-Type" => "text/html" }, [<<EOL
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Password Restricted Project</title>
+<style>
+html {
+font-family: sans-serif;
+-webkit-text-size-adjust: 100%;
+-ms-text-size-adjust: 100%;
+}
+html,body {
+margin: 0;
+padding: 0;
+background: #f1f1f1;
+}
+.frames {
+    position: relative;
+}
+.frame {
+    float: left;
+    width: 100%;
+    height: 100%;
+}
+.frame iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.frames-split .frame {
+    width: 50%;
+}
+.frames-split .frame {
+}
+.frames-overlay .frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+}
+.fireapp-toolbar {
+    background: #e1e1e1;
+    border-bottom: 1px solid #ddd;
+    padding: 5px;
+}
+.overlap, .frame-2 {
+    display: none;
+}
+.brand {
+}
+</style>
+</head>
+<body>
+    <div id="fireapp-toolbar" class="fireapp-toolbar">
+        <span class="brand">#{site["project"]}</span>
+        <label>version:</label>
+        <select id="version-1">
+        </select>
+        <select id="version-2">
+            <option value="disable">&mdash;</option>
+        </select>
+        <label id="overlap" class="overlap"><input type="checkbox" name="overlap" value="1"> overlap</label>
+    </div>
+    <div id="frames" class="frames">
+        <div id="frame-1" class="frame">
+            <iframe src="http://cutmela.handlino.the-hold.handlino.com/" class="iframe-left"></iframe>
+        </div>
+        <div id="frame-2" class="frame">
+            <iframe class="iframe-right"></iframe>
+        </div>
+    </div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+$(function() {
+    var i,
+        opstr = '';
+
+    $.getJSON('/__versions.json')
+        .success(function(versions) {
+            for (i = 0; i < versions.length; i++) {
+                opstr += '<option value="' + versions[i].url + '">' + versions[i].name + '</option>';
+            }
+            $('.fireapp-toolbar select').append(opstr);
+        });
+
+
+    $('#frame-2').hide();
+    $('.frames').css("height", parseInt($(window).height(), 10) - parseInt($('#fireapp-toolbar').outerHeight(), 10) );
+
+    $('#version-1').on('change', function() {
+        $('#frame-1 iframe').attr('src', this.value);
+    });
+    $('#version-2').on('change', function() {
+        if (this.value == 'disable') {
+            $('#frame-2, #overlap').hide();
+        } else {
+            if ( !$('#frames').hasClass('frames-overlay') ) {
+                $('#frames').addClass('frames-split');
+            }
+            $('#frame-2 iframe').attr('src', this.value);
+            $('#frame-2, #overlap').show();
+        }
+    });
+
+    $('#overlap input').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('.frames').removeClass('frames-split');
+            $('.frames').addClass('frames-overlay');
+        } else {
+            $('.frames').addClass('frames-split');
+            $('.frames').removeClass('frames-overlay');
+        }
+    });
+
+});
+
+</script>
+</body>
+</html>
+
+EOL
+    ]]
   end
 
   def versions_json(site)
@@ -100,10 +224,10 @@ class TheHoldApp
 
     list = Dir.glob("#{project_folder}/2*").to_a.sort.map{|d|
       d = File.basename(d)
-      { name: Time.parse( d.gsub('-','') ).strftime('%Y/%m/%d %H:%M:%S'), 
+      { name: Time.parse( d.gsub('-','') ).strftime('%Y/%m/%d %H:%M:%S'),
         url:  "http://#{d}.#{project_hostname}" }
     }
-    
+
     body = JSON.dump(list)
     [200, {"Content-Type" => "text/html"}, [body]]
   end
