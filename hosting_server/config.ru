@@ -157,7 +157,7 @@ background: #f1f1f1;
     </div>
     <div id="frames" class="frames">
         <div id="frame-1" class="frame">
-            <iframe src="http://cutmela.handlino.the-hold.handlino.com/" class="iframe-left"></iframe>
+            <iframe class="iframe-left"></iframe>
         </div>
         <div id="frame-2" class="frame">
             <iframe class="iframe-right"></iframe>
@@ -169,15 +169,6 @@ background: #f1f1f1;
 $(function() {
     var i,
         opstr = '';
-
-    $.getJSON('/__versions.json')
-        .success(function(versions) {
-            for (i = 0; i < versions.length; i++) {
-                opstr += '<option value="' + versions[i].url + '">' + versions[i].name + '</option>';
-            }
-            $('.fireapp-toolbar select').append(opstr);
-        });
-
 
     $('#frame-2').hide();
     $('.frames').css("height", parseInt($(window).height(), 10) - parseInt($('#fireapp-toolbar').outerHeight(), 10) );
@@ -207,6 +198,14 @@ $(function() {
         }
     });
 
+    $.getJSON('/__versions.json')
+        .success(function(versions) {
+            for (i = 0; i < versions.length; i++) {
+                opstr += '<option value="' + versions[i].url + '">' + versions[i].name + '</option>';
+            }
+            $('.fireapp-toolbar select').append(opstr);
+            $('#version-1').val( $('#version-1 option:first').val() ).trigger('change');
+        });
 });
 
 </script>
