@@ -104,9 +104,8 @@ font-family: sans-serif;
 -ms-text-size-adjust: 100%;
 }
 html,body {
-margin: 0;
-padding: 0;
-background: #f1f1f1;
+    margin: 0;
+    padding: 0;
 }
 .frames {
     position: relative;
@@ -130,26 +129,36 @@ background: #f1f1f1;
     position: absolute;
     top: 0;
     left: 0;
-    opacity: 0.5;
+    opacity: 0.9;
 }
 .fireapp-toolbar {
     background: #e1e1e1;
     border-bottom: 1px solid #ddd;
-    padding: 5px;
+    line-height: 30px;
 }
 .overlap, .frame-2 {
     display: none;
 }
 .brand {
+    display: block;
+    float: left;
+    height: 30px;
+    line-height: 30px;
+    margin-right: 20px;
+    background: #000;
+    color: #fff;
+    padding: 0 20px;
 }
 </style>
 </head>
 <body>
     <div id="fireapp-toolbar" class="fireapp-toolbar">
         <span class="brand">#{site["project"]}</span>
-        <label>version:</label>
+        <label>choose:</label>
         <select id="version-1">
         </select>
+        <button type="button" id="btn-openwin" class="btn-openwin">open in new window</button>
+        <label>compare with:</label>
         <select id="version-2">
             <option value="disable">&mdash;</option>
         </select>
@@ -196,6 +205,10 @@ $(function() {
             $('.frames').addClass('frames-split');
             $('.frames').removeClass('frames-overlay');
         }
+    });
+
+    $('#btn-openwin').on('click', function() {
+        window.open($('#version-1').val());
     });
 
     $.getJSON('/__versions.json')
