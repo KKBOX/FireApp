@@ -166,10 +166,8 @@ html,body {
     </div>
     <div id="frames" class="frames">
         <div id="frame-1" class="frame">
-            <iframe class="iframe-left"></iframe>
         </div>
         <div id="frame-2" class="frame">
-            <iframe class="iframe-right"></iframe>
         </div>
     </div>
 
@@ -183,7 +181,7 @@ $(function() {
     $('.frames').css("height", parseInt($(window).height(), 10) - parseInt($('#fireapp-toolbar').outerHeight(), 10) );
 
     $('#version-1').on('change', function() {
-        $('#frame-1 iframe').attr('src', this.value);
+        $('#frame-1').empty().html('<iframe src="' + this.value + '"></iframe>');
     });
     $('#version-2').on('change', function() {
         if (this.value == 'disable') {
@@ -192,7 +190,7 @@ $(function() {
             if ( !$('#frames').hasClass('frames-overlay') ) {
                 $('#frames').addClass('frames-split');
             }
-            $('#frame-2 iframe').attr('src', this.value);
+            $('#frame-2').empty().html('<iframe src="' + this.value + '"></iframe>');
             $('#frame-2, #overlap').show();
         }
     });
