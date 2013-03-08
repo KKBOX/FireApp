@@ -65,7 +65,7 @@ class SimpleLivereload
     options={
       :host => '0.0.0.0', 
       :port => 35729,
-      :debug => true
+      :debug => false
     }.merge(options)
 
 
