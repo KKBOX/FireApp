@@ -104,9 +104,8 @@ font-family: sans-serif;
 -ms-text-size-adjust: 100%;
 }
 html,body {
-margin: 0;
-padding: 0;
-background: #f1f1f1;
+    margin: 0;
+    padding: 0;
 }
 .frames {
     position: relative;
@@ -130,26 +129,36 @@ background: #f1f1f1;
     position: absolute;
     top: 0;
     left: 0;
-    opacity: 0.5;
+    opacity: 0.9;
 }
 .fireapp-toolbar {
     background: #e1e1e1;
     border-bottom: 1px solid #ddd;
-    padding: 5px;
+    line-height: 30px;
 }
 .overlap, .frame-2 {
     display: none;
 }
 .brand {
+    display: block;
+    float: left;
+    height: 30px;
+    line-height: 30px;
+    margin-right: 20px;
+    background: #000;
+    color: #fff;
+    padding: 0 20px;
 }
 </style>
 </head>
 <body>
     <div id="fireapp-toolbar" class="fireapp-toolbar">
         <span class="brand">#{site["project"]}</span>
-        <label>version:</label>
+        <label>choose:</label>
         <select id="version-1">
         </select>
+        <button type="button" id="btn-openwin" class="btn-openwin">open in new window</button>
+        <label>compare with:</label>
         <select id="version-2">
             <option value="disable">&mdash;</option>
         </select>
@@ -157,10 +166,8 @@ background: #f1f1f1;
     </div>
     <div id="frames" class="frames">
         <div id="frame-1" class="frame">
-            <iframe class="iframe-left"></iframe>
         </div>
         <div id="frame-2" class="frame">
-            <iframe class="iframe-right"></iframe>
         </div>
     </div>
 
@@ -174,7 +181,7 @@ $(function() {
     $('.frames').css("height", parseInt($(window).height(), 10) - parseInt($('#fireapp-toolbar').outerHeight(), 10) );
 
     $('#version-1').on('change', function() {
-        $('#frame-1 iframe').attr('src', this.value);
+        $('#frame-1').empty().html('<iframe src="' + this.value + '"></iframe>');
     });
     $('#version-2').on('change', function() {
         if (this.value == 'disable') {
@@ -183,7 +190,7 @@ $(function() {
             if ( !$('#frames').hasClass('frames-overlay') ) {
                 $('#frames').addClass('frames-split');
             }
-            $('#frame-2 iframe').attr('src', this.value);
+            $('#frame-2').empty().html('<iframe src="' + this.value + '"></iframe>');
             $('#frame-2, #overlap').show();
         }
     });
@@ -196,6 +203,10 @@ $(function() {
             $('.frames').addClass('frames-split');
             $('.frames').removeClass('frames-overlay');
         }
+    });
+
+    $('#btn-openwin').on('click', function() {
+        window.open($('#version-1').val());
     });
 
     $.getJSON('/__versions.json')
