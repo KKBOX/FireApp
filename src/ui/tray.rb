@@ -606,7 +606,8 @@ class Tray
 
         Thread.abort_on_exception = true
         @compass_thread = Thread.new do
-          Compass::Watcher::AppWatcher.new(dir, Compass.configuration.watches, {:logger=> logger}).watch!
+          Thread.current[:watcher]=Compass::Watcher::AppWatcher.new(dir, Compass.configuration.watches, {:logger=> logger})
+          Thread.current[:watcher].watch!
         end
       end
 
@@ -689,6 +690,11 @@ class Tray
     SimpleLivereload.instance.unwatch if defined?(SimpleLivereload)
     SimpleHTTPServer.instance.stop if defined?(SimpleHTTPServer)
     FSEvent.stop_all_instances if Object.const_defined?("FSEvent") && FSEvent.methods.map{|x| x.to_sym}.include?(:stop_all_instances)
+
+    if @compass_thread
+      @compass_thread[:watcher].stop
+    end
+
     [@simplelivereload_thread, @simplehttpserver_thread, @compass_thread].each do |x|
       x.kill if x && x.alive?
     end
