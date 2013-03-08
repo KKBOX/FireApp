@@ -72,7 +72,6 @@ begin
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
   end
 
-  require 'em-websocket'
   require 'json'
 
   %w{ninesixty html5-boilerplate compass-h5bp bootstrap-sass susy zurb-foundation fireapp-example}.each do |x|
