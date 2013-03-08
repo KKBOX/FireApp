@@ -231,7 +231,7 @@ EOL
     project_hostname = "#{site["project"]}.#{site["login"]}.#{DOMAIN}"
     project_folder = File.join( @base_path, site["login"], site["project"])
 
-    list = Dir.glob("#{project_folder}/2*").to_a.sort.map{|d|
+    list = Dir.glob("#{project_folder}/2*").to_a.sort.reverse.map{|d|
       d = File.basename(d)
       { name: Time.parse( d.gsub('-','') ).strftime('%Y/%m/%d %H:%M:%S'),
         url:  "http://#{d}.#{project_hostname}" }
