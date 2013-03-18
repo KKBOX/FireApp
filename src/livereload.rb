@@ -1,4 +1,7 @@
+require "singleton"
 require 'em-websocket'
+require 'json'
+
 module EventMachine
   module WebSocket
     class Connection
@@ -75,7 +78,7 @@ class SimpleLivereload
         ws.onopen do
           begin
             puts "Browser connected."; 
-            ws.send "!!ver:#{1.6}";
+            #ws.send "!!ver:#{1.6}";
             SimpleLivereload.instance.clients << ws
           rescue
             puts $!
@@ -84,6 +87,17 @@ class SimpleLivereload
         end
         ws.onmessage do |msg|
           puts "Browser URL: #{msg}"
+          begin
+            msg = JSON.parse(msg)
+            if msg["command"]=='hello'
+              ws.send JSON.dump({
+                "command"    => 'hello',
+                "protocols"  => ['http://livereload.com/protocols/official-7'],
+                "serverName" => "Fire.app"
+              })
+            end
+          rescue
+          end
         end
 
         ws.onclose do
@@ -105,10 +119,11 @@ class SimpleLivereload
   end
 
   def send_livereload_msg( base, relative )
-    data = JSON.dump( ['refresh', { :path => URI.escape(File.join(base, relative)),
-                     :apply_js_live  => true,
-                     :apply_css_live => true,
-                     :apply_images_live => true }] )
+    data = JSON.dump( {
+      :command => "reload",
+      :path    => URI.escape(File.join(base, relative)),
+      :liveCSS => true,
+    } )
     @clients.each do |ws|
       EM::next_tick do
         ws.send(data)
