@@ -595,20 +595,16 @@ class Tray
   def watch(dir)
     dir.gsub!('\\','/') if org.jruby.platform.Platform::IS_WINDOWS
     App.try do 
+      stop_watch
       logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
       Compass.reset_configuration!
       Dir.chdir(dir)
       x = Compass::Commands::UpdateProject.new( dir, {:logger => logger})
 
-      if !x.new_compiler_instance.sass_files.empty? # if we watch a compass project
-        stop_watch
-
-
-        Thread.abort_on_exception = true
-        @compass_thread = Thread.new do
-          Thread.current[:watcher]=Compass::Watcher::AppWatcher.new(dir, Compass.configuration.watches, {:logger=> logger})
-          Thread.current[:watcher].watch!
-        end
+      Thread.abort_on_exception = true
+      @compass_thread = Thread.new do
+        Thread.current[:watcher]=Compass::Watcher::AppWatcher.new(dir, Compass.configuration.watches, {:logger=> logger})
+        Thread.current[:watcher].watch!
       end
 
       @tray_item.image = @watching_icon
