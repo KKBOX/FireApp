@@ -186,6 +186,11 @@ class Tray
     Compass.add_project_configuration(file_name)
   end
 
+  def build_change_options_panel( index )
+    @changeoptions_item = add_menu_item( "Change Sass Options...", change_options_handler , Swt::SWT::PUSH, @menu, index)
+    
+  end
+
   def build_change_options_menuitem( index )
 
     @changeoptions_item = add_menu_item( "Change Sass Options...", empty_handler , Swt::SWT::CASCADE, @menu, index)
@@ -296,6 +301,13 @@ class Tray
         App.report( actual)
       end
 
+    end
+  end
+
+  def change_options_handler 
+    Swt::Widgets::Listener.impl do |method, evt|
+      ChangeOptionsPanel.instance.compass_project_config = compass_project_config
+      ChangeOptionsPanel.instance.open
     end
   end
 
@@ -633,7 +645,8 @@ class Tray
       @install_item.menu = Swt::Widgets::Menu.new( @menu )
       build_compass_framework_menuitem( @install_item.menu, install_project_handler )
       
-      build_change_options_menuitem( @menu.indexOf(@install_item) +1 )
+      #build_change_options_menuitem( @menu.indexOf(@install_item) +1 )
+      build_change_options_panel(@menu.indexOf(@install_item) +1 )
 
       @clean_item =  add_menu_item( "Clean && Compile", 
                                    clean_project_handler, 
