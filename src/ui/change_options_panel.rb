@@ -22,7 +22,7 @@ class ChangeOptionsPanel
     @shell = Swt::Widgets::Shell.new(@display, Swt::SWT::DIALOG_TRIM)
     @shell.setText("Change Options")
     @shell.setBackgroundMode(Swt::SWT::INHERIT_DEFAULT)
-    @shell.setSize(550,300)
+    #@shell.setSize(550,300)
     
     layout = Swt::Layout::FormLayout.new
     layout.marginWidth = layout.marginHeight = 15
@@ -39,11 +39,11 @@ class ChangeOptionsPanel
     font=Swt::Graphics::Font.new(@display, font_data)
     panel_title_label.setFont(font)
     panel_title_label.setText("Project Options")
-    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     panel_title_label.setLayoutData( layoutdata )
 
     horizontal_separator = Swt::Widgets::Label.new(@shell, Swt::SWT::SEPARATOR | Swt::SWT::HORIZONTAL)
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(360, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( panel_title_label, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( panel_title_label, 10, Swt::SWT::BOTTOM)
     horizontal_separator.setLayoutData( layoutdata )
@@ -51,7 +51,7 @@ class ChangeOptionsPanel
     @sass_group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     @sass_group.setText("Sass")
 
-    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( horizontal_separator, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( horizontal_separator, 10, Swt::SWT::BOTTOM)
     @sass_group.setLayoutData( layoutdata )
@@ -82,7 +82,7 @@ class ChangeOptionsPanel
     @output_style_combo.setText(@compass_project_config.output_style.to_s)
 
 
-    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( output_style_label, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( output_style_label, 10, Swt::SWT::BOTTOM)
     @line_comments_button = Swt::Widgets::Button.new(@sass_group, Swt::SWT::CHECK )
@@ -91,7 +91,7 @@ class ChangeOptionsPanel
     @line_comments_button.setLayoutData( layoutdata )
 
 
-    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( @line_comments_button, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( @line_comments_button, 10, Swt::SWT::BOTTOM)
     @degub_info_button = Swt::Widgets::Button.new(@sass_group, Swt::SWT::CHECK )
@@ -107,7 +107,7 @@ class ChangeOptionsPanel
     @coffeescript_group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     @coffeescript_group.setText("CoffeeScript")
 
-    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( @sass_group, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( @sass_group, 10, Swt::SWT::BOTTOM)
     @coffeescript_group.setLayoutData( layoutdata )
@@ -116,7 +116,7 @@ class ChangeOptionsPanel
     layout.marginWidth = layout.marginHeight = 5
     @coffeescript_group.setLayout( layout )
 
-    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     @bare_button = Swt::Widgets::Button.new(@coffeescript_group, Swt::SWT::CHECK )
     @bare_button.setText( 'Bare' )
     #@bare_button.setSelection( @compass_project_config.line_comments )
@@ -128,7 +128,7 @@ class ChangeOptionsPanel
     @thehold_group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     @thehold_group.setText('TheHold')
 
-    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( @coffeescript_group, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( @coffeescript_group, 10, Swt::SWT::BOTTOM)
     @thehold_group.setLayoutData( layoutdata )
