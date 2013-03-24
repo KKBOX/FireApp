@@ -24,22 +24,37 @@ class ChangeOptionsPanel
     @shell.setBackgroundMode(Swt::SWT::INHERIT_DEFAULT)
     @shell.setSize(550,300)
     
-    layout = Swt::Layout::RowLayout.new(Swt::SWT::VERTICAL)
+    layout = Swt::Layout::FormLayout.new
     layout.marginWidth = layout.marginHeight = 15
     #layout.marginLeft = 10
-    layout.spacing = 15
+    #layout.spacing = 15
     @shell.layout = layout
 
+    panel_title_label = Swt::Widgets::Label.new(@shell, Swt::SWT::LEFT)
+    font_data=panel_title_label.getFont().getFontData()
+    font_data.each do |fd|
+      fd.setStyle(Swt::SWT::BOLD)
+      fd.setHeight(14)
+    end
+    font=Swt::Graphics::Font.new(@display, font_data)
+    panel_title_label.setFont(font)
+    panel_title_label.setText("Project Options")
+    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    panel_title_label.setLayoutData( layoutdata )
 
     horizontal_separator = Swt::Widgets::Label.new(@shell, Swt::SWT::SEPARATOR | Swt::SWT::HORIZONTAL)
-    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
-    #horizontal_separator.setLayoutData( layoutdata )
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( panel_title_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( panel_title_label, 10, Swt::SWT::BOTTOM)
+    horizontal_separator.setLayoutData( layoutdata )
 
     @sass_group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     @sass_group.setText("Sass")
 
     layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
-    #@sass_group.setLayoutData( layoutdata )
+    layoutdata.left = Swt::Layout::FormAttachment.new( horizontal_separator, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( horizontal_separator, 10, Swt::SWT::BOTTOM)
+    @sass_group.setLayoutData( layoutdata )
 
     #rowlayout = Swt::Layout::RowLayout.new(Swt::SWT::VERTICAL) 
     #rowlayout.marginBottom = 0;
@@ -49,7 +64,7 @@ class ChangeOptionsPanel
 
     layout = Swt::Layout::FormLayout.new
     layout.marginWidth = layout.marginHeight = 5
-    @sass_group.setLayout( layout );
+    @sass_group.setLayout( layout )
 
     output_style_label = Swt::Widgets::Label.new(@sass_group, Swt::SWT::PUSH)
     #output_style_label.setLocation(50, 50)
@@ -86,6 +101,34 @@ class ChangeOptionsPanel
 
 
     @sass_group.pack
+
+
+
+    @coffeescript_group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
+    @coffeescript_group.setText("CoffeeScript")
+
+    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( @sass_group, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @sass_group, 10, Swt::SWT::BOTTOM)
+    @coffeescript_group.setLayoutData( layoutdata )
+
+    layout = Swt::Layout::FormLayout.new
+    layout.marginWidth = layout.marginHeight = 5
+    @coffeescript_group.setLayout( layout )
+
+    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    @bare_button = Swt::Widgets::Button.new(@coffeescript_group, Swt::SWT::CHECK )
+    @bare_button.setText( 'Bare' )
+    #@bare_button.setSelection( @compass_project_config.line_comments )
+    @bare_button.setLayoutData( layoutdata )
+
+    @coffeescript_group.pack
+
+
+
+ 
+
+
 
 =begin    
     @tabFolder = Swt::Widgets::TabFolder.new(@shell, Swt::SWT::BORDER);
