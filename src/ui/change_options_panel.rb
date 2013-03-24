@@ -198,6 +198,21 @@ class ChangeOptionsPanel
     @thehold_group.pack
 
     
+    save_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
+    save_btn.setText('Save')
+    layoutdata = Swt::Layout::FormData.new(100, Swt::SWT::DEFAULT)
+    layoutdata.right = Swt::Layout::FormAttachment.new( @thehold_group, 0, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @thehold_group, 10, Swt::SWT::BOTTOM)
+    save_btn.setLayoutData( layoutdata )
+
+    cancel_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
+    cancel_btn.setText('Cancel')
+    layoutdata = Swt::Layout::FormData.new(90, Swt::SWT::DEFAULT)
+    layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, 5, Swt::SWT::LEFT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
+    cancel_btn.setLayoutData( layoutdata )
+
+
 
 =begin    
     @tabFolder = Swt::Widgets::TabFolder.new(@shell, Swt::SWT::BORDER);
