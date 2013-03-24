@@ -125,10 +125,79 @@ class ChangeOptionsPanel
     @coffeescript_group.pack
 
 
+    @thehold_group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
+    @thehold_group.setText('TheHold')
 
- 
+    layoutdata = Swt::Layout::FormData.new(370, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( @coffeescript_group, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @coffeescript_group, 10, Swt::SWT::BOTTOM)
+    @thehold_group.setLayoutData( layoutdata )
+
+    layout = Swt::Layout::FormLayout.new
+    layout.marginWidth = layout.marginHeight = 5
+    @thehold_group.setLayout( layout )
 
 
+    api_key_label = Swt::Widgets::Label.new(@thehold_group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    api_key_label.setLayoutData( layoutdata )
+    api_key_label.setText("Api Key:")
+    api_key_label.pack
+
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( api_key_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( api_key_label, 0, Swt::SWT::CENTER)
+    @api_key_text  = Swt::Widgets::Text.new(@thehold_group, Swt::SWT::BORDER)
+    @api_key_text.setLayoutData( layoutdata )
+    #@output_style_combo.setText(@compass_project_config.output_style.to_s)
+
+    user_name_label = Swt::Widgets::Label.new(@thehold_group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( api_key_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( api_key_label, 10, Swt::SWT::BOTTOM)
+    user_name_label.setLayoutData( layoutdata )
+    user_name_label.setText("User Name:")
+    user_name_label.pack
+
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( user_name_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( user_name_label, 0, Swt::SWT::CENTER)
+    @user_name_text  = Swt::Widgets::Text.new(@thehold_group, Swt::SWT::BORDER)
+    @user_name_text.setLayoutData( layoutdata )
+
+
+    project_name_label = Swt::Widgets::Label.new(@thehold_group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( user_name_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( user_name_label, 10, Swt::SWT::BOTTOM)
+    project_name_label.setLayoutData( layoutdata )
+    project_name_label.setText("Project Name:")
+    project_name_label.pack
+
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( project_name_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( project_name_label, 0, Swt::SWT::CENTER)
+    @project_name_text  = Swt::Widgets::Text.new(@thehold_group, Swt::SWT::BORDER)
+    @project_name_text.setLayoutData( layoutdata )
+
+
+    project_password_label = Swt::Widgets::Label.new(@thehold_group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( project_name_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( project_name_label, 10, Swt::SWT::BOTTOM)
+    project_password_label.setLayoutData( layoutdata )
+    project_password_label.setText("Project Password:")
+    project_password_label.pack
+
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( project_password_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( project_password_label, 0, Swt::SWT::CENTER)
+    @project_password_text  = Swt::Widgets::Text.new(@thehold_group, Swt::SWT::BORDER)
+    @project_password_text.setLayoutData( layoutdata )
+
+    @thehold_group.pack
+
+    
 
 =begin    
     @tabFolder = Swt::Widgets::TabFolder.new(@shell, Swt::SWT::BORDER);
