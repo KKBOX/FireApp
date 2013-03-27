@@ -64,7 +64,7 @@ class TheHoldApp
 
     redirect_url = File.join(  "/", current_project_path,  path_info )
     mime_type = Rack::Mime.mime_type(File.extname(redirect_url), "text/html")
-    [200, {"Cache-Control" => "no-cache, no-store", 'Content-Type' => mime_type, 'X-Accel-Redirect' => redirect_url }, []]
+    [200, {"Cache-Control" => "public, must-revalidate, max-age=0, post-check=0, pre-check=30", 'Content-Type' => mime_type, 'X-Accel-Redirect' => redirect_url }, []]
   end
 
   def need_auth?(env, req, site)
