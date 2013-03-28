@@ -90,7 +90,7 @@ class ChangeOptionsPanel
     end
     @output_style_combo.setText(@compass_project_config.output_style.to_s)
 
-    # -- line comments button --
+    # -- line comments checkbox --
     layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( output_style_label, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( output_style_label, 10, Swt::SWT::BOTTOM)
@@ -99,7 +99,7 @@ class ChangeOptionsPanel
     @line_comments_button.setSelection( @compass_project_config.line_comments )
     @line_comments_button.setLayoutData( layoutdata )
 
-    # -- debug info button --
+    # -- debug info checkbox --
     layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( @line_comments_button, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( @line_comments_button, 10, Swt::SWT::BOTTOM)
@@ -126,6 +126,7 @@ class ChangeOptionsPanel
     layout.marginWidth = layout.marginHeight = 5
     group.setLayout( layout )
 
+    # -- bare checkbox --
     layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     @bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
     @bare_button.setText( 'Bare' )
@@ -150,13 +151,14 @@ class ChangeOptionsPanel
     layout.marginWidth = layout.marginHeight = 5
     group.setLayout( layout )
 
-
+    # -- api key label --
     api_key_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
     layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
     api_key_label.setLayoutData( layoutdata )
     api_key_label.setText("Api Key:")
     api_key_label.pack
 
+    # -- api key text --
     layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( api_key_label, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( api_key_label, 0, Swt::SWT::CENTER)
@@ -164,6 +166,7 @@ class ChangeOptionsPanel
     @api_key_text.setLayoutData( layoutdata )
     #@output_style_combo.setText(@compass_project_config.output_style.to_s)
 
+    # -- user name label --
     user_name_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
     layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( api_key_label, 0, Swt::SWT::LEFT )
@@ -172,13 +175,14 @@ class ChangeOptionsPanel
     user_name_label.setText("User Name:")
     user_name_label.pack
 
+    # -- user name text --
     layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( user_name_label, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( user_name_label, 0, Swt::SWT::CENTER)
     @user_name_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @user_name_text.setLayoutData( layoutdata )
 
-
+    # -- project name label --
     project_name_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
     layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( user_name_label, 0, Swt::SWT::LEFT )
@@ -187,13 +191,14 @@ class ChangeOptionsPanel
     project_name_label.setText("Project Name:")
     project_name_label.pack
 
+    # -- project name text --
     layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( project_name_label, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( project_name_label, 0, Swt::SWT::CENTER)
     @project_name_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @project_name_text.setLayoutData( layoutdata )
 
-
+    # -- project password label --
     project_password_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
     layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( project_name_label, 0, Swt::SWT::LEFT )
@@ -202,6 +207,7 @@ class ChangeOptionsPanel
     project_password_label.setText("Project Password:")
     project_password_label.pack
 
+    # -- project password text --
     layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( project_password_label, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( project_password_label, 0, Swt::SWT::CENTER)
@@ -214,6 +220,7 @@ class ChangeOptionsPanel
   end
 
   def create_control_button(behind)
+    # -- save button --
     save_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
     save_btn.setText('Save')
     layoutdata = Swt::Layout::FormData.new(100, Swt::SWT::DEFAULT)
@@ -221,6 +228,7 @@ class ChangeOptionsPanel
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     save_btn.setLayoutData( layoutdata )
 
+    # -- cancel button --
     cancel_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
     cancel_btn.setText('Cancel')
     layoutdata = Swt::Layout::FormData.new(90, Swt::SWT::DEFAULT)
@@ -228,5 +236,8 @@ class ChangeOptionsPanel
     layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
     cancel_btn.setLayoutData( layoutdata )
   end
+
+
+
 
 end
