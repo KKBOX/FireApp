@@ -235,8 +235,14 @@ class ChangeOptionsPanel
     layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, 5, Swt::SWT::LEFT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
     cancel_btn.setLayoutData( layoutdata )
+    cancel_btn.addListener(Swt::SWT::Selection, cancel_handler)
   end
 
+  def cancel_handler
+    Swt::Widgets::Listener.impl do |method, evt|   
+        evt.widget.shell.dispose();
+    end
+  end
 
 
 
