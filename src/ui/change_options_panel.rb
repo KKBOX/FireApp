@@ -3,7 +3,6 @@ require 'singleton'
 class ChangeOptionsPanel
   include Singleton
 
-  attr_accessor :compass_project_config
 
   def initialize()
     @display = Swt::Widgets::Display.get_current
@@ -88,7 +87,7 @@ class ChangeOptionsPanel
     %W{nested expanded compact compressed}.each do |output_style|
       @output_style_combo.add(output_style)
     end
-    @output_style_combo.setText(@compass_project_config.output_style.to_s)
+    @output_style_combo.setText( Tray.instance.compass_project_config.output_style.to_s )
 
     # -- line comments checkbox --
     layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
@@ -96,8 +95,8 @@ class ChangeOptionsPanel
     layoutdata.top  = Swt::Layout::FormAttachment.new( output_style_label, 10, Swt::SWT::BOTTOM)
     @line_comments_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
     @line_comments_button.setText( 'Line Comments' )
-    @line_comments_button.setSelection( @compass_project_config.line_comments )
     @line_comments_button.setLayoutData( layoutdata )
+    @line_comments_button.setSelection(true) if Tray.instance.compass_project_config.line_comments
 
     # -- debug info checkbox --
     layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
@@ -105,8 +104,8 @@ class ChangeOptionsPanel
     layoutdata.top  = Swt::Layout::FormAttachment.new( @line_comments_button, 10, Swt::SWT::BOTTOM)
     @debug_info_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
     @debug_info_button.setText( 'Debug Info' )
-    @debug_info_button.setSelection( @compass_project_config.line_comments )
     @debug_info_button.setLayoutData( layoutdata )
+    @debug_info_button.setSelection(true) if Tray.instance.compass_project_config.sass_options && Tray.instance.compass_project_config.sass_options[:debug_info] 
 
     group.pack
 
@@ -227,6 +226,7 @@ class ChangeOptionsPanel
     layoutdata.right = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     save_btn.setLayoutData( layoutdata )
+    save_btn.addListener(Swt::SWT::Selection, save_handler)
 
     # -- cancel button --
     cancel_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
@@ -244,6 +244,32 @@ class ChangeOptionsPanel
     end
   end
 
+  def save_handler
+    Swt::Widgets::Listener.impl do |method, evt|
 
+        puts @output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s
+        puts @line_comments_button.getSelection
+        puts @debug_info_button.getSelection
+
+
+        # -- update output style --
+        Tray.instance.update_config( "output_style", ":"+@output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s )
+
+        # -- update line comments --
+        Tray.instance.update_config( "line_comments", @line_comments_button.getSelection )
+
+        # -- update sass options --
+        sass_options = Tray.instance.compass_project_config.sass_options
+        sass_options = {} if !sass_options.is_a? Hash
+        sass_options[:debug_info] = evt.widget.getSelection
+        Tray.instance.update_config( "sass_options", @debug_info_button.getSelection )
+
+        Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
+        Tray.instance.clean_project
+        evt.widget.shell.dispose();
+    end
+  end
+
+  
 
 end

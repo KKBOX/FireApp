@@ -2,6 +2,7 @@ require "singleton"
 class Tray
   include Singleton
   attr_reader :logger
+  attr_reader :watching_dir
   def initialize()
     @http_server = nil
     @compass_thread = nil
@@ -191,6 +192,7 @@ class Tray
     
   end
 
+#=begin
   def build_change_options_menuitem( index )
 
     @changeoptions_item = add_menu_item( "Change Sass Options...", empty_handler , Swt::SWT::CASCADE, @menu, index)
@@ -214,6 +216,7 @@ class Tray
     debuginfo_item    = add_menu_item( "Debug Info",   debuginfo_handler,   Swt::SWT::CHECK, submenu )
     debuginfo_item.setSelection(true) if compass_project_config.sass_options && compass_project_config.sass_options[:debug_info] 
   end
+#=end
 
   def build_compass_framework_menuitem( submenu, handler )
     Compass::Frameworks::ALL.each do | framework |
@@ -306,7 +309,6 @@ class Tray
 
   def change_options_handler 
     Swt::Widgets::Listener.impl do |method, evt|
-      ChangeOptionsPanel.instance.compass_project_config = compass_project_config
       ChangeOptionsPanel.instance.open
     end
   end
@@ -545,6 +547,7 @@ class Tray
     watch(dir)
   end
 
+
   def update_config(need_clean_attr, value)
     new_config_str = "\n#{need_clean_attr} = #{value} # by Fire.app "
 
@@ -574,9 +577,11 @@ class Tray
     end
   end
 
+#=begin
   def outputstyle_handler
     Swt::Widgets::Listener.impl do |method, evt|
       if evt.widget.getSelection 
+        puts "output_style "+ ":#{evt.widget.text}"
         update_config( "output_style", ":#{evt.widget.text}" )
         clean_project
       end
@@ -585,6 +590,7 @@ class Tray
 
   def linecomments_handler
     Swt::Widgets::Listener.impl do |method, evt|
+      puts "line_comments "+ evt.widget.getSelection.to_s
       update_config( "line_comments", evt.widget.getSelection.to_s )
       clean_project
     end
@@ -603,6 +609,7 @@ class Tray
       clean_project
     end
   end 
+#=end
 
   def watch(dir)
     dir.gsub!('\\','/') if org.jruby.platform.Platform::IS_WINDOWS
@@ -611,6 +618,7 @@ class Tray
       logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
       Compass.reset_configuration!
       Dir.chdir(dir)
+
       x = Compass::Commands::UpdateProject.new( dir, {:logger => logger})
 
       Thread.abort_on_exception = true
