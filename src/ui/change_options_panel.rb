@@ -22,14 +22,12 @@ class ChangeOptionsPanel
     @shell = Swt::Widgets::Shell.new(@display, Swt::SWT::DIALOG_TRIM)
     @shell.setText("Change Options")
     @shell.setBackgroundMode(Swt::SWT::INHERIT_DEFAULT)
-    #@shell.setSize(550,300)
-    
+   
     layout = Swt::Layout::FormLayout.new
     layout.marginWidth = layout.marginHeight = 15
-    #layout.marginLeft = 10
-    #layout.spacing = 15
     @shell.layout = layout
 
+    # -- panel title label --
     panel_title_label = Swt::Widgets::Label.new(@shell, Swt::SWT::LEFT)
     font_data=panel_title_label.getFont().getFontData()
     font_data.each do |fd|
@@ -42,6 +40,7 @@ class ChangeOptionsPanel
     layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     panel_title_label.setLayoutData( layoutdata )
 
+    # -- horizontal separator --
     horizontal_separator = Swt::Widgets::Label.new(@shell, Swt::SWT::SEPARATOR | Swt::SWT::HORIZONTAL)
     layoutdata = Swt::Layout::FormData.new(360, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( panel_title_label, 0, Swt::SWT::LEFT )
@@ -49,30 +48,16 @@ class ChangeOptionsPanel
     horizontal_separator.setLayoutData( layoutdata )
 
 
-
+    # -- context group --
     @sass_group = create_sass_group(horizontal_separator)
-
     @coffeescript_group = create_coffeescript_group(@sass_group)
-
     @thehold_group = create_thehold_group(@coffeescript_group)
 
-    
+    # -- control button --
+    create_control_button(@thehold_group)
 
     
-    save_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
-    save_btn.setText('Save')
-    layoutdata = Swt::Layout::FormData.new(100, Swt::SWT::DEFAULT)
-    layoutdata.right = Swt::Layout::FormAttachment.new( @thehold_group, 0, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( @thehold_group, 10, Swt::SWT::BOTTOM)
-    save_btn.setLayoutData( layoutdata )
-
-    cancel_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
-    cancel_btn.setText('Cancel')
-    layoutdata = Swt::Layout::FormData.new(90, Swt::SWT::DEFAULT)
-    layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, 5, Swt::SWT::LEFT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
-    cancel_btn.setLayoutData( layoutdata )
-
+    
     @shell.pack
   end
 
@@ -226,6 +211,22 @@ class ChangeOptionsPanel
     group.pack
 
     group
+  end
+
+  def create_control_button(behind)
+    save_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
+    save_btn.setText('Save')
+    layoutdata = Swt::Layout::FormData.new(100, Swt::SWT::DEFAULT)
+    layoutdata.right = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
+    save_btn.setLayoutData( layoutdata )
+
+    cancel_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
+    cancel_btn.setText('Cancel')
+    layoutdata = Swt::Layout::FormData.new(90, Swt::SWT::DEFAULT)
+    layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, 5, Swt::SWT::LEFT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
+    cancel_btn.setLayoutData( layoutdata )
   end
 
 end
