@@ -49,19 +49,19 @@ class ChangeOptionsPanel
 
 
     # -- context group --
-    @sass_group = create_sass_group(horizontal_separator)
-    @coffeescript_group = create_coffeescript_group(@sass_group)
-    @thehold_group = create_thehold_group(@coffeescript_group)
+    @sass_group = build_sass_group(horizontal_separator)
+    @coffeescript_group = build_coffeescript_group(@sass_group)
+    @thehold_group = build_thehold_group(@coffeescript_group)
 
     # -- control button --
-    create_control_button(@thehold_group)
+    build_control_button(@thehold_group)
 
     
     
     @shell.pack
   end
 
-  def create_sass_group(behind)
+  def build_sass_group(behind)
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     group.setText("Sass")
 
@@ -113,7 +113,7 @@ class ChangeOptionsPanel
     group
   end
 
-  def create_coffeescript_group(behind)
+  def build_coffeescript_group(behind)
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     group.setText("CoffeeScript")
 
@@ -138,7 +138,7 @@ class ChangeOptionsPanel
     group
   end
 
-  def create_thehold_group(behind)
+  def build_thehold_group(behind)
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     group.setText('TheHold')
 
@@ -219,7 +219,7 @@ class ChangeOptionsPanel
     group
   end
 
-  def create_control_button(behind)
+  def build_control_button(behind)
     # -- save button --
     save_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
     save_btn.setText('Save')
