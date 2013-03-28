@@ -129,8 +129,11 @@ class ChangeOptionsPanel
     layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
     @bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
     @bare_button.setText( 'Bare' )
-    #@bare_button.setSelection( @compass_project_config.line_comments )
     @bare_button.setLayoutData( layoutdata )
+
+    #puts 'fireapp_coffeescript_options: '+Tray.instance.compass_project_config.fireapp_coffeescript_options.to_s
+    #puts Tray.instance.compass_project_config.fireapp_coffeescript_options.is_a?(Hash)
+    @bare_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_coffeescript_options[:bare]
 
     group.pack
 
@@ -261,8 +264,13 @@ class ChangeOptionsPanel
         # -- update sass options --
         sass_options = Tray.instance.compass_project_config.sass_options
         sass_options = {} if !sass_options.is_a? Hash
-        sass_options[:debug_info] = evt.widget.getSelection
-        Tray.instance.update_config( "sass_options", @debug_info_button.getSelection )
+        sass_options[:debug_info] = @debug_info_button.getSelection
+        Tray.instance.update_config( "sass_options", sass_options.inspect )
+
+        # -- update coffeescript bare -- 
+        fireapp_coffeescript_options = Tray.instance.compass_project_config.fireapp_coffeescript_options
+        fireapp_coffeescript_options.update({:bare => @bare_button.getSelection })
+        Tray.instance.update_config( "fireapp_coffeescript_options", fireapp_coffeescript_options.inspect)
 
         Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
         Tray.instance.clean_project

@@ -577,7 +577,7 @@ class Tray
     end
   end
 
-#=begin
+=begin
   def outputstyle_handler
     Swt::Widgets::Listener.impl do |method, evt|
       if evt.widget.getSelection 
@@ -609,7 +609,7 @@ class Tray
       clean_project
     end
   end 
-#=end
+=end
 
   def watch(dir)
     dir.gsub!('\\','/') if org.jruby.platform.Platform::IS_WINDOWS
