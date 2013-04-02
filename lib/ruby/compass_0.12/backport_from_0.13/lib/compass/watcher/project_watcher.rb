@@ -75,7 +75,12 @@ module Compass
         # run watchers
         sass_watchers.each do |watcher|
           files.each do |file|
-            watcher.run_callback(project_path, file, action) if watcher.match?(file)
+            if watcher.is_a? Array # for compass 0.12 watcher format
+              glob,callback = watcher
+              callback.call(project_path, file, action) if File.fnmatch(glob, file)
+            else
+              watcher.run_callback(project_path, file, action) if watcher.match?(file)
+            end
           end
         end
       end
