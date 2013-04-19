@@ -166,7 +166,8 @@ class ChangeOptionsPanel
     layoutdata.top  = Swt::Layout::FormAttachment.new( api_key_label, 0, Swt::SWT::CENTER)
     @api_key_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @api_key_text.setLayoutData( layoutdata )
-    #@output_style_combo.setText(@compass_project_config.output_style.to_s)
+    text = Tray.instance.compass_project_config.the_hold_options[:token]
+    @api_key_text.setText( text ) if text
 
     # -- user name label --
     user_name_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -183,6 +184,9 @@ class ChangeOptionsPanel
     layoutdata.top  = Swt::Layout::FormAttachment.new( user_name_label, 0, Swt::SWT::CENTER)
     @user_name_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @user_name_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.the_hold_options[:login]
+    @user_name_text.setText( text ) if text
+
 
     # -- project name label --
     project_name_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -199,6 +203,8 @@ class ChangeOptionsPanel
     layoutdata.top  = Swt::Layout::FormAttachment.new( project_name_label, 0, Swt::SWT::CENTER)
     @project_name_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @project_name_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.the_hold_options[:project]
+    @project_name_text.setText( text ) if text
 
     # -- project password label --
     project_password_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -215,6 +221,8 @@ class ChangeOptionsPanel
     layoutdata.top  = Swt::Layout::FormAttachment.new( project_password_label, 0, Swt::SWT::CENTER)
     @project_password_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @project_password_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.the_hold_options[:project_site_password]
+    @project_password_text.setText( text ) if text
 
     group.pack
 
@@ -243,38 +251,45 @@ class ChangeOptionsPanel
 
   def cancel_handler
     Swt::Widgets::Listener.impl do |method, evt|   
-        evt.widget.shell.dispose();
+      evt.widget.shell.dispose();
     end
   end
 
   def save_handler
     Swt::Widgets::Listener.impl do |method, evt|
+      evt.widget.shell.setVisible( false )
 
-        puts @output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s
-        puts @line_comments_button.getSelection
-        puts @debug_info_button.getSelection
+      # -- update output style --
+      Tray.instance.update_config( "output_style", ":"+@output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s )
+
+      # -- update line comments --
+      Tray.instance.update_config( "line_comments", @line_comments_button.getSelection )
+
+      # -- update sass options --
+      sass_options = Tray.instance.compass_project_config.sass_options
+      sass_options = {} if !sass_options.is_a? Hash
+      sass_options[:debug_info] = @debug_info_button.getSelection
+      Tray.instance.update_config( "sass_options", sass_options.inspect )
+
+      # -- update coffeescript bare -- 
+      fireapp_coffeescript_options = Tray.instance.compass_project_config.fireapp_coffeescript_options
+      fireapp_coffeescript_options.update({:bare => @bare_button.getSelection })
+      Tray.instance.update_config( "fireapp_coffeescript_options", fireapp_coffeescript_options.inspect)
 
 
-        # -- update output style --
-        Tray.instance.update_config( "output_style", ":"+@output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s )
+      # -- update coffeescript bare -- 
+      the_hold_options = Tray.instance.compass_project_config.the_hold_options
+      the_hold_options.update({
+        :login => @user_name_text.getText,
+        :token => @api_key_text.getText,
+        :project => @project_name_text.getText,
+        :project_site_password => @project_password_text.getText
+      })
+      Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
 
-        # -- update line comments --
-        Tray.instance.update_config( "line_comments", @line_comments_button.getSelection )
-
-        # -- update sass options --
-        sass_options = Tray.instance.compass_project_config.sass_options
-        sass_options = {} if !sass_options.is_a? Hash
-        sass_options[:debug_info] = @debug_info_button.getSelection
-        Tray.instance.update_config( "sass_options", sass_options.inspect )
-
-        # -- update coffeescript bare -- 
-        fireapp_coffeescript_options = Tray.instance.compass_project_config.fireapp_coffeescript_options
-        fireapp_coffeescript_options.update({:bare => @bare_button.getSelection })
-        Tray.instance.update_config( "fireapp_coffeescript_options", fireapp_coffeescript_options.inspect)
-
-        Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
-        Tray.instance.clean_project
-        evt.widget.shell.dispose();
+      Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
+      Tray.instance.clean_project
+      evt.widget.shell.dispose();
     end
   end
 

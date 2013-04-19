@@ -188,11 +188,11 @@ class Tray
   end
 
   def build_change_options_panel( index )
-    @changeoptions_item = add_menu_item( "Change Sass Options...", change_options_handler , Swt::SWT::PUSH, @menu, index)
+    @changeoptions_item = add_menu_item( "Change Options...", change_options_handler , Swt::SWT::PUSH, @menu, index)
     
   end
 
-#=begin
+=begin
   def build_change_options_menuitem( index )
 
     @changeoptions_item = add_menu_item( "Change Sass Options...", empty_handler , Swt::SWT::CASCADE, @menu, index)
@@ -216,7 +216,7 @@ class Tray
     debuginfo_item    = add_menu_item( "Debug Info",   debuginfo_handler,   Swt::SWT::CHECK, submenu )
     debuginfo_item.setSelection(true) if compass_project_config.sass_options && compass_project_config.sass_options[:debug_info] 
   end
-#=end
+=end
 
   def build_compass_framework_menuitem( submenu, handler )
     Compass::Frameworks::ALL.each do | framework |
