@@ -87,11 +87,11 @@ module Listen
       @_dependencies.each do |dependency|
         begin
           next if DependencyManager.already_loaded?(dependency)
-          #gem(dependency.name, dependency.version) Fire.app dont use gem
+          # gem(dependency.name, dependency.version) Fire.app dont use gem
           require(dependency.name)
           DependencyManager.add_loaded(dependency)
           @_dependencies.delete(dependency)
-        rescue Gem::LoadError
+        rescue LoadError
           args = [dependency.name, dependency.version]
           command = if running_under_bundler?
             BUNDLER_DECLARE_GEM % args
