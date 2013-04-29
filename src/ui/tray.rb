@@ -599,7 +599,6 @@ class Tray
       logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
       Compass.reset_configuration!
       Dir.chdir(dir)
-      e994bc8571c0940de1b12902f7a38c29f4fb7443
       
       # update compass global configuration and make sure assert folder exists
       Compass::Commands::UpdateProject.new( dir, {:logger => logger})
