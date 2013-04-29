@@ -599,6 +599,7 @@ class Tray
       logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
       Compass.reset_configuration!
       Dir.chdir(dir)
+      x = Compass::Commands::UpdateProject.new( dir, {:logger => logger})
 
       Thread.abort_on_exception = true
       @compass_thread = Thread.new do
