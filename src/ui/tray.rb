@@ -382,38 +382,20 @@ class Tray
       build_project
     end
   end 
-  def build_project(target_path=nil, options={})
-    ENV["RACK_ENV"] = "production"
 
-    project_path = File.expand_path(Compass.configuration.project_path)
-    release_dir = File.expand_path( target_path || Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
-
-    App.try do 
-
-      report_window = nil
-      if !options[:headless]
-        report_window = App.report('Start build project!') do
-          Swt::Program.launch(release_dir)
-        end
-      end
-
-      FileUtils.rm_r( release_dir) if File.exists?(release_dir)
-      FileUtils.mkdir_p( release_dir)
-
-      rebuild_sass_and_coffeescript(project_path)
-      build_html(project_path, get_black_list(project_path, false))
-      build_static_file(project_path, get_black_list(project_path, true))
-
-      end_build_project=Time.now
-      report_window.append "Done!"  if report_window
-    end
-    ENV["RACK_ENV"] = "development"
-    return release_dir
-  end
+  
 
   def get_black_list(project_path, include_tilt_key = false)
-    blacklist = []
 
+    # rebuild sass & coffeescript
+    is_compass_project = false
+    x = Compass::Commands::UpdateProject.new( project_path, {})
+    if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
+      x.perform
+      is_compass_project = true
+    end
+
+    blacklist = []
     build_ignore_file = "build_ignore.txt"
 
     if File.exists?(File.join( project_path, build_ignore_file))
@@ -447,17 +429,11 @@ class Tray
       blacklist
     end
 
-    def rebuild_sass_and_coffeescript(project_path)
-      # rebuild sass & coffeescript
-      is_compass_project = false
-      x = Compass::Commands::UpdateProject.new( project_path, {})
-      if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
-        x.perform
-        is_compass_project = true
-      end
-    end
 
-    def build_html(project_path, blacklist)
+
+    def build_html(project_path, release_dir, blacklist)
+      report = ""
+
       #build html 
       Dir.glob( File.join(project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
         if file =~ /build_\d{14}/ || file.index(release_dir)
@@ -476,12 +452,16 @@ class Tray
           next if pass
 
           write_dynamaic_file(release_dir, request_path)
-          report_window.append "Create: #{request_path}" if report_window
+          report << "\nCreate: #{request_path}" if report
         end
       end
+
+      report
     end
 
-    def build_static_file(project_path, blacklist)
+    def build_static_file(project_path, release_dir, blacklist)
+      report = ""
+
       #copy static file
       Dir.glob( File.join(project_path, '**', '*') ) do |file|
         path = file[(project_path.length+1) .. -1]
@@ -501,9 +481,11 @@ class Tray
         if File.file? file
           FileUtils.mkdir_p( File.dirname(  new_file ))
           FileUtils.cp( file, new_file )
-          report_window.append "Copy: #{file.gsub(/#{project_path}/,'')}" if report_window
+          report << "\nCopy: #{file.gsub(/#{project_path}/,'')}" if report
         end
       end
+
+      report
     end
 
     if is_compass_project && Compass.configuration.fireapp_build_path 
@@ -514,7 +496,38 @@ class Tray
     blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
   end
 
+  def build_project(target_path=nil, options={})
+    ENV["RACK_ENV"] = "production"
 
+    project_path = File.expand_path(Compass.configuration.project_path)
+    release_dir = File.expand_path( target_path || Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
+
+    App.try do 
+
+      report_window = nil
+      if !options[:headless]
+        report_window = App.report('Start build project!') do
+          Swt::Program.launch(release_dir)
+        end
+      end
+
+      FileUtils.rm_r( release_dir) if File.exists?(release_dir)
+      FileUtils.mkdir_p( release_dir)
+
+      msg = ""
+      msg << build_html(project_path, release_dir, get_black_list(project_path, false))
+      msg << build_static_file(project_path, release_dir, get_black_list(project_path, true))
+
+      if report_window then
+        report_window.append msg
+        report_window.append "Done!"  
+      end
+
+      end_build_project=Time.now
+    end
+    ENV["RACK_ENV"] = "development"
+    return release_dir
+  end
 
   def deploy_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
