@@ -408,43 +408,7 @@ class Tray
         is_compass_project = true
       end
 
-      blacklist = []
-
-      build_ignore_file = "build_ignore.txt"
-
-      if File.exists?(File.join( project_path, build_ignore_file))
-        blacklist << build_ignore_file
-        blacklist += File.open( File.join( project_path, build_ignore_file) ).readlines.map{|p|
-          p.strip
-        }
-      else
-        blacklist += [
-          "*.swp",
-          "*.layout",
-          "*~",
-          "*/.DS_Store",
-          "*/.git",
-          "*/.gitignore",
-          "*.svn",
-          "*/Thumbs.db",
-          "*/.sass-cache",
-          "*/.coffeescript-cache",
-          "*/compass_app_log.txt",
-          "*/fire_app_log.txt",
-          "view_helpers.rb",
-          "Gemfile",
-          "Gemfile.lock",
-          "config.ru"
-        ]
-        blacklist << File.basename(Compass.detect_configuration_file) if is_compass_project
-      end
-
-      if is_compass_project && Compass.configuration.fireapp_build_path 
-        blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
-      end
-
-      blacklist.uniq!
-      blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
+      blacklist = build_black_list(project_path)
 
       #build html 
       Dir.glob( File.join(project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
@@ -499,6 +463,48 @@ class Tray
     ENV["RACK_ENV"] = "development"
     return release_dir
   end
+
+  def build_black_list(project_path)
+    blacklist = []
+
+    build_ignore_file = "build_ignore.txt"
+
+    if File.exists?(File.join( project_path, build_ignore_file))
+      blacklist << build_ignore_file
+      blacklist += File.open( File.join( project_path, build_ignore_file) ).readlines.map{|p|
+        p.strip
+      }
+    else
+      blacklist += [
+        "*.swp",
+        "*.layout",
+        "*~",
+        "*/.DS_Store",
+        "*/.git",
+        "*/.gitignore",
+        "*.svn",
+        "*/Thumbs.db",
+        "*/.sass-cache",
+        "*/.coffeescript-cache",
+        "*/compass_app_log.txt",
+        "*/fire_app_log.txt",
+        "view_helpers.rb",
+        "Gemfile",
+        "Gemfile.lock",
+        "config.ru"
+      ]
+      blacklist << File.basename(Compass.detect_configuration_file) if is_compass_project
+    end
+
+    if is_compass_project && Compass.configuration.fireapp_build_path 
+      blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
+    end
+
+    blacklist.uniq!
+    blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
+  end
+
+
 
   def deploy_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
