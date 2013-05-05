@@ -83,8 +83,8 @@ module ProjectBuilder
       Dir.glob( File.join(project_path, '**', '*') ) do |file|
         path = file[(project_path.length+1) .. -1]
         next if path =~ /build_\d{14}/
-          pass = false
-
+        
+        pass = false
         blacklist.each do |pattern|
           puts path,pattern if path =~ /proxy/
             if File.fnmatch(pattern, path)
@@ -97,7 +97,16 @@ module ProjectBuilder
         new_file = File.join(release_dir, path)
         if File.file? file
           FileUtils.mkdir_p( File.dirname(  new_file ))
-          FileUtils.cp( file, new_file )
+
+          if File.extname(file) == '.js' then
+            File.open(new_file, 'w') do |f|
+              require 'uglifier'
+              f.write(Uglifier.compile(File.read(file)))
+            end
+          elsif
+            FileUtils.cp( file, new_file )
+          end
+
           report << "\nCopy: #{file.gsub(/#{project_path}/,'')}" if report
         end
       end
