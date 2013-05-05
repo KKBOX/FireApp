@@ -400,62 +400,9 @@ class Tray
       FileUtils.rm_r( release_dir) if File.exists?(release_dir)
       FileUtils.mkdir_p( release_dir)
 
-      # rebuild sass & coffeescript
-      is_compass_project = false
-      x = Compass::Commands::UpdateProject.new( project_path, {})
-      if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
-        x.perform
-        is_compass_project = true
-      end
-
-      blacklist = build_black_list(project_path)
-
-      #build html 
-      Dir.glob( File.join(project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
-      if file =~ /build_\d{14}/ || file.index(release_dir)
-        next 
-      end
-      extname=File.extname(file)
-      if Tilt[ extname[1..-1] ]
-        request_path = file[project_path.length ... (-1*extname.size)]
-        pass = false
-        blacklist.each do |pattern|
-          if File.fnmatch(pattern, request_path[1..-1])
-            pass = true
-            break
-          end
-        end
-        next if pass
-
-        write_dynamaic_file(release_dir, request_path)
-        report_window.append "Create: #{request_path}" if report_window
-      end
-      end
-
-      Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? }
-
-      #copy static file
-      Dir.glob( File.join(project_path, '**', '*') ) do |file|
-        path = file[(project_path.length+1) .. -1]
-        next if path =~ /build_\d{14}/
-          pass = false
-
-        blacklist.each do |pattern|
-          puts path,pattern if path =~ /proxy/
-            if File.fnmatch(pattern, path)
-              pass = true
-              break
-            end
-        end
-        next if pass
-
-        new_file = File.join(release_dir, path)
-        if File.file? file
-          FileUtils.mkdir_p( File.dirname(  new_file ))
-          FileUtils.cp( file, new_file )
-          report_window.append "Copy: #{file.gsub(/#{project_path}/,'')}" if report_window
-        end
-      end
+      rebuild_sass_and_coffeescript(project_path)
+      build_html(project_path, get_black_list(project_path, false))
+      build_static_file(project_path, get_black_list(project_path, true))
 
       end_build_project=Time.now
       report_window.append "Done!"  if report_window
@@ -464,7 +411,7 @@ class Tray
     return release_dir
   end
 
-  def build_black_list(project_path)
+  def get_black_list(project_path, include_tilt_key = false)
     blacklist = []
 
     build_ignore_file = "build_ignore.txt"
@@ -494,6 +441,69 @@ class Tray
         "config.ru"
       ]
       blacklist << File.basename(Compass.detect_configuration_file) if is_compass_project
+
+      Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? } if include_tilt_key
+
+      blacklist
+    end
+
+    def rebuild_sass_and_coffeescript(project_path)
+      # rebuild sass & coffeescript
+      is_compass_project = false
+      x = Compass::Commands::UpdateProject.new( project_path, {})
+      if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
+        x.perform
+        is_compass_project = true
+      end
+    end
+
+    def build_html(project_path, blacklist)
+      #build html 
+      Dir.glob( File.join(project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
+        if file =~ /build_\d{14}/ || file.index(release_dir)
+          next 
+        end
+        extname=File.extname(file)
+        if Tilt[ extname[1..-1] ]
+          request_path = file[project_path.length ... (-1*extname.size)]
+          pass = false
+          blacklist.each do |pattern|
+            if File.fnmatch(pattern, request_path[1..-1])
+              pass = true
+              break
+            end
+          end
+          next if pass
+
+          write_dynamaic_file(release_dir, request_path)
+          report_window.append "Create: #{request_path}" if report_window
+        end
+      end
+    end
+
+    def build_static_file(project_path, blacklist)
+      #copy static file
+      Dir.glob( File.join(project_path, '**', '*') ) do |file|
+        path = file[(project_path.length+1) .. -1]
+        next if path =~ /build_\d{14}/
+          pass = false
+
+        blacklist.each do |pattern|
+          puts path,pattern if path =~ /proxy/
+            if File.fnmatch(pattern, path)
+              pass = true
+              break
+            end
+        end
+        next if pass
+
+        new_file = File.join(release_dir, path)
+        if File.file? file
+          FileUtils.mkdir_p( File.dirname(  new_file ))
+          FileUtils.cp( file, new_file )
+          report_window.append "Copy: #{file.gsub(/#{project_path}/,'')}" if report_window
+        end
+      end
     end
 
     if is_compass_project && Compass.configuration.fireapp_build_path 
