@@ -372,7 +372,26 @@ class Tray
 
   def build_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
-      ProjectBuilder.build
+      ENV["RACK_ENV"] = "production"
+
+      App.try do 
+
+        build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
+
+        report_window = App.report('Start build project!') do
+          Swt::Program.launch(build_path)
+        end
+
+        ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg|
+          report_window.append msg
+        end
+        report_window.append "Done!"
+
+        end_build_project=Time.now
+      end
+
+      
+      ENV["RACK_ENV"] = "development"    
     end
   end 
 
