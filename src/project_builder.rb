@@ -97,7 +97,7 @@ class ProjectBuilder
         if File.file? file
           FileUtils.mkdir_p( File.dirname(  new_file ))
 
-          if File.extname(file) == '.js' then
+          if File.extname(file) == '.js' && Compass.configuration.fireapp_minifyjs_on_build then
             File.open(new_file, 'w') do |f|
               require 'uglifier'
               f.write(Uglifier.compile(File.read(file)))
