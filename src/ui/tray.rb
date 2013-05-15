@@ -402,7 +402,10 @@ class Tray
       App.try do 
         options = Compass.configuration.the_hold_options
         temp_build_folder = File.join(Dir.tmpdir, "fireapp", rand.to_s)
-        respone = TheHoldUploader.upload_patch(build_project(temp_build_folder, {:headless => true}), options)
+        build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
+        
+        ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg| end
+        respone = TheHoldUploader.upload_patch(build_path, options)
         if respone.code == "200"
           host=URI(options[:host]).host
           Swt::Program.launch("http://#{options[:project]}.#{options[:login]}.#{host}")
