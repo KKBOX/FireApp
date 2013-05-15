@@ -50,11 +50,11 @@ class ChangeOptionsPanel
     # -- context group --
     @sass_group = build_sass_group(horizontal_separator)
     @coffeescript_group = build_coffeescript_group(@sass_group)
-    @thehold_group = build_thehold_group(@coffeescript_group)
+    # @thehold_group = build_thehold_group(@coffeescript_group)
 
     # -- control button --
-    build_control_button(@thehold_group)
-
+    # build_control_button(@thehold_group)
+    build_control_button(@coffeescript_group)
     
     
     @shell.pack
@@ -277,15 +277,15 @@ class ChangeOptionsPanel
       Tray.instance.update_config( "fireapp_coffeescript_options", fireapp_coffeescript_options.inspect)
 
 
-      # -- update coffeescript bare -- 
-      the_hold_options = Tray.instance.compass_project_config.the_hold_options
-      the_hold_options.update({
-        :login => @user_name_text.getText,
-        :token => @api_key_text.getText,
-        :project => @project_name_text.getText,
-        :project_site_password => @project_password_text.getText
-      })
-      Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
+      # -- update the_hold bare -- 
+      #the_hold_options = Tray.instance.compass_project_config.the_hold_options
+      #the_hold_options.update({
+      #  :login => @user_name_text.getText,
+      #  :token => @api_key_text.getText,
+      #  :project => @project_name_text.getText,
+      #  :project_site_password => @project_password_text.getText
+      #})
+      #Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
 
       Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
       Tray.instance.clean_project
