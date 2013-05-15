@@ -48,7 +48,8 @@ class ChangeOptionsPanel
 
 
     # -- context group --
-    @sass_group = build_sass_group(horizontal_separator)
+    @general_group = build_general(horizontal_separator)
+    @sass_group = build_sass_group(@general_group)
     @coffeescript_group = build_coffeescript_group(@sass_group)
     # @thehold_group = build_thehold_group(@coffeescript_group)
 
@@ -58,6 +59,141 @@ class ChangeOptionsPanel
     
     
     @shell.pack
+  end
+
+  def build_general(behind)
+    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
+    group.setText('General')
+
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
+    group.setLayoutData( layoutdata )
+
+    layout = Swt::Layout::FormLayout.new
+    layout.marginWidth = layout.marginHeight = 5
+    group.setLayout( layout )
+
+    # -- http path label --
+    http_path_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    http_path_label.setLayoutData( layoutdata )
+    http_path_label.setText("Http Path:")
+    http_path_label.pack
+
+    # -- http path text --
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( http_path_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( http_path_label, 0, Swt::SWT::CENTER)
+    @http_path_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    @http_path_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.http_path
+    @http_path_text.setText( text ) if text
+
+    # -- css dir label --
+    css_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( http_path_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( http_path_label, 10, Swt::SWT::BOTTOM)
+    css_dir_label.setLayoutData( layoutdata )
+    css_dir_label.setText("Css Dir:")
+    css_dir_label.pack
+
+    # -- css dir text --
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( css_dir_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( css_dir_label, 0, Swt::SWT::CENTER)
+    @css_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    @css_dir_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.css_dir
+    @css_dir_text.setText( text ) if text
+
+
+    # -- sass dir label --
+    sass_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( css_dir_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( css_dir_label, 10, Swt::SWT::BOTTOM)
+    sass_dir_label.setLayoutData( layoutdata )
+    sass_dir_label.setText("Sass Dir:")
+    sass_dir_label.pack
+
+    # -- sass dir text --
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( sass_dir_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( sass_dir_label, 0, Swt::SWT::CENTER)
+    @sass_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    @sass_dir_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.sass_dir
+    @sass_dir_text.setText( text ) if text
+
+    # -- images dir label --
+    images_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( sass_dir_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( sass_dir_label, 10, Swt::SWT::BOTTOM)
+    images_dir_label.setLayoutData( layoutdata )
+    images_dir_label.setText("Images Dir:")
+    images_dir_label.pack
+
+    # -- images dir text --
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( images_dir_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( images_dir_label, 0, Swt::SWT::CENTER)
+    @images_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    @images_dir_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.images_dir
+    @images_dir_text.setText( text ) if text
+
+    # -- javascripts dir label --
+    js_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( images_dir_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( images_dir_label, 10, Swt::SWT::BOTTOM)
+    js_dir_label.setLayoutData( layoutdata )
+    js_dir_label.setText("JS Dir:")
+    js_dir_label.pack
+
+    # -- javascripts dir text --
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( js_dir_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( js_dir_label, 0, Swt::SWT::CENTER)
+    @js_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    @js_dir_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.javascripts_dir
+    @js_dir_text.setText( text ) if text
+
+    # -- javascripts dir label --
+    coffeescripts_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( js_dir_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( js_dir_label, 10, Swt::SWT::BOTTOM)
+    coffeescripts_dir_label.setLayoutData( layoutdata )
+    coffeescripts_dir_label.setText("CoffeeScripts Dir:")
+    coffeescripts_dir_label.pack
+
+    # -- javascripts dir text --
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 0, Swt::SWT::CENTER)
+    @coffeescripts_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    @coffeescripts_dir_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.fireapp_coffeescripts_dir
+    @coffeescripts_dir_text.setText( text ) if text
+
+    # -- minifyjs_on_build checkbox --
+    #layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    #layoutdata.left = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 0, Swt::SWT::LEFT )
+    #layoutdata.top  = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 10, Swt::SWT::BOTTOM)
+    #@minifyjs_on_build_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    #@minifyjs_on_build_button.setText( 'Minifyjs on Build' )
+    #@minifyjs_on_build_button.setLayoutData( layoutdata )
+    #@minifyjs_on_build_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_minifyjs_on_build
+
+
+    group.pack
+
+    group
   end
 
   def build_sass_group(behind)
@@ -258,6 +394,15 @@ class ChangeOptionsPanel
   def save_handler
     Swt::Widgets::Listener.impl do |method, evt|
       evt.widget.shell.setVisible( false )
+
+      # -- update general --
+      Tray.instance.update_config( "http_path", @http_path_text.getText.inspect )
+      Tray.instance.update_config( "css_dir", @css_dir_text.getText.inspect )
+      Tray.instance.update_config( "sass_dir", @sass_dir_text.getText.inspect )
+      Tray.instance.update_config( "images_dir", @images_dir_text.getText.inspect )
+      Tray.instance.update_config( "javascripts_dir", @js_dir_text.getText.inspect )
+      Tray.instance.update_config( "fireapp_coffeescripts_dir", @coffeescripts_dir_text.getText.inspect )
+
 
       # -- update output style --
       Tray.instance.update_config( "output_style", ":"+@output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s )
