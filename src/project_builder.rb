@@ -3,6 +3,16 @@ class ProjectBuilder
 
   attr_reader :project_path
 
+  def self.log(type, msg)
+    msg = msg.sub(File.expand_path(Compass.configuration.project_path), '')[1..-1] if defined?(Tray) 
+
+    if defined?(Tray) && Tray.instance.logger
+      Tray.instance.logger.record type, msg
+    else  
+      puts "   #{type} #{msg}"
+    end
+  end
+
   def initialize(project_path)
     @project_path = project_path
   end
@@ -72,6 +82,7 @@ class ProjectBuilder
           next if pass
 
           write_dynamaic_file(release_dir, request_path)
+          ProjectBuilder.log("Create", "#{request_path}")
           yield "Create: #{request_path}"
         end
       end
@@ -104,13 +115,16 @@ class ProjectBuilder
                 require 'uglifier'
                 f.write(Uglifier.compile(File.read(file)))
               end
+              ProjectBuilder.log("Minify", "##{file.gsub(/#{@project_path}/,'')}")
               yield "Minify: #{file.gsub(/#{@project_path}/,'')}"
             rescue Exception => e
               FileUtils.cp( file, new_file )
+              ProjectBuilder.log("! Minify", "##{file.gsub(/#{@project_path}/,'')} Fail, Please check")
               yield "! Minify: #{file.gsub(/#{@project_path}/,'')} Fail, Please check"
             end
           elsif
             FileUtils.cp( file, new_file )
+            ProjectBuilder.log("Copy", "##{file.gsub(/#{@project_path}/,'')}")
             yield "Copy: #{file.gsub(/#{@project_path}/,'')}"
           end
 
