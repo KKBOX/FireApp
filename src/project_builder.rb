@@ -98,15 +98,23 @@ class ProjectBuilder
           FileUtils.mkdir_p( File.dirname(  new_file ))
 
           if File.extname(file) == '.js' && Compass.configuration.fireapp_minifyjs_on_build then
-            File.open(new_file, 'w') do |f|
-              require 'uglifier'
-              f.write(Uglifier.compile(File.read(file)))
+            
+            begin
+              File.open(new_file, 'w') do |f|
+                require 'uglifier'
+                f.write(Uglifier.compile(File.read(file)))
+              end
+              yield "Minify: #{file.gsub(/#{@project_path}/,'')}"
+            rescue Exception => e
+              FileUtils.cp( file, new_file )
+              yield "! Minify: #{file.gsub(/#{@project_path}/,'')} Fail, Please check"
             end
           elsif
             FileUtils.cp( file, new_file )
+            yield "Copy: #{file.gsub(/#{@project_path}/,'')}"
           end
 
-          yield "Copy: #{file.gsub(/#{@project_path}/,'')}"
+          
         end
       end
 
