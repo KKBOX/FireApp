@@ -14,11 +14,20 @@ else
   arch="32"
 end
 
+# for Ubuntu Unity, because they hard code the white list
+# http://bazaar.launchpad.net/~unity-team/unity/trunk/view/head:/panel/PanelTray.cpp#L33
+if org.jruby.platform.Platform::IS_LINUX
+  SWT_APP_NAME = "JavaEmbeddedFrame"  # for Ubuntu Unity 
+else
+  SWT_APP_NAME = "Fire.app" 
+end
+
 require "#{SWT_LIB_PATH}/swt_#{os}#{arch}"
 
 module Swt
   import org.eclipse.swt.SWT
   import org.eclipse.swt.program.Program
+  import org.eclipse.swt.internal.gtk.OS if org.jruby.platform.Platform::IS_LINUX
 
   module Widgets
     import org.eclipse.swt.widgets.Button

@@ -45,6 +45,7 @@ INFO_ENDL
       %w{ruby images applescript documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib }
       end
+      %x{chmod 644 #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/Java/fire-app.jar}
       Dir.chdir CONFIG.osx_output_dir
       %x{mv #{CONFIG.project_name}.app Fire.app;}
       @osx_bundle_file="fire.app.osx.#{@compile_time}-#{@revision}.zip"
@@ -69,7 +70,7 @@ INFO_ENDL
         %x{cp -R lib/#{copy_dir} #{CONFIG.windows_output_dir}/lib }
       end
       
-      %x{mv package/windows/package/windows/*.exe package/windows}
+      %x{chmod 644 #{CONFIG.windows_output_dir}/fire-app.jar}
       %x{rm -rf package/windows/package}
       Dir.chdir 'package'
       %x{rm -rf fire.app windows/*.xml; mv windows fire.app}
@@ -93,6 +94,7 @@ INFO_ENDL
         f.write("#!/usr/bin/env bash\ncd $(dirname $0)\njava -client -jar fire-app.jar $@")
       end
       %x{chmod +x package/fire.app/run.sh}
+      %x{chmod 644 package/fire.app/fire-app.jar}
       Dir.chdir 'package'
       @linux_bundle_file="fire.app.linux.#{@compile_time}-#{@revision}.zip"
       %x{zip -9 -r #{@packages_dir}/#{@linux_bundle_file} fire.app}

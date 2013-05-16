@@ -21,7 +21,12 @@ module Compass
       
       def stop
         log_action(:info, "AppWatcher stop!",{})
-        listener.stop
+        begin
+          listener.stop 
+        rescue Exception => e
+          log_action(:warning, "#{e.message}\n#{e.backtrace}", {})
+        end
+
       end
 
       def coffeescript_watchers
