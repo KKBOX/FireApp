@@ -26,7 +26,7 @@ require 'stringio'
 require 'thread'
 require "open-uri"
 require "yaml"
-%w{alert notification quit_window tray preference_panel report welcome_window change_options_panel}.each do | f |
+%w{alert notification quit_window tray preference_panel report welcome_window change_options_panel progress_window}.each do | f |
   require "ui/#{f}"
 end
 

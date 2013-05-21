@@ -409,6 +409,8 @@ def build_buildoption_group(behind)
   def save_handler
     Swt::Widgets::Listener.impl do |method, evt|
       evt.widget.shell.setVisible( false )
+      msg_window = ProgressWindow.new
+      msg_window.replace('Saving...', false, true)
 
       # -- update general --
       # Tray.instance.update_config( "http_path", @http_path_text.getText.inspect )
@@ -449,6 +451,8 @@ def build_buildoption_group(behind)
 
       Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
       Tray.instance.clean_project
+
+      msg_window.dispose
       evt.widget.shell.dispose();
     end
   end
