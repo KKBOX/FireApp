@@ -32,7 +32,7 @@ class ProgressWindow
       @label = Swt::Widgets::Label.new(@shell, Swt::SWT::LEFT)
       @label.setText(msg)
       @label.setLayoutData(gridData)
-
+      @label.update
 
       @monior=target_display.getPrimaryMonitor().getBounds();
       rect = @shell.getClientArea();
