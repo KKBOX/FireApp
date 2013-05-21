@@ -1,5 +1,5 @@
 
-class DeployWindow
+class ProgressWindow
 
   def initialize(msg="Starting", target_display = nil, &block)
     target_display = Swt::Widgets::Display.get_current unless target_display

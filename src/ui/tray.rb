@@ -419,7 +419,7 @@ class Tray
         build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
         
 
-        deploy_window = DeployWindow.new
+        deploy_window = ProgressWindow.new
         ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg| 
           deploy_window.replace(msg)
         end
