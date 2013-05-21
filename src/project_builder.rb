@@ -122,7 +122,7 @@ class ProjectBuilder
               ProjectBuilder.log("! Minify", "##{file.gsub(/#{@project_path}/,'')} Fail, Please check")
               yield "! Minify: #{file.gsub(/#{@project_path}/,'')} Fail, Please check"
             end
-          elsif
+          else
             FileUtils.cp( file, new_file )
             ProjectBuilder.log("Copy", "##{file.gsub(/#{@project_path}/,'')}")
             yield "Copy: #{file.gsub(/#{@project_path}/,'')}"
