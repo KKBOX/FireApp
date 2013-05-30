@@ -389,13 +389,13 @@ class Tray
       ENV["RACK_ENV"] = "production"
 
       App.try do 
-
         build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
 
         report_window = App.report('Start build project!') do
           Swt::Program.launch(build_path)
         end
 
+        clean_project(false)
         ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg|
           report_window.append msg
         end

@@ -185,6 +185,8 @@ module App
   end
 
   def notify(msg, target_display = nil )
+    puts "+ notify: " + msg
+
     if org.jruby.platform.Platform::IS_MAC
       system('/usr/bin/osascript', "#{LIB_PATH}/applescript/growl.scpt", msg )
     else
