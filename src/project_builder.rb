@@ -91,7 +91,7 @@ class ProjectBuilder
     def build_static_file(release_dir, blacklist)
 
       #copy static file
-      Dir.glob( File.join(@project_path, '**', '*') ) do |file|
+      Dir.glob( File.join(@project_path, '**', '{.,}*') ) do |file|
         path = file[(@project_path.length+1) .. -1]
         next if path =~ /build_\d{14}/
         
@@ -144,7 +144,7 @@ class ProjectBuilder
   end
 
   def build(build_path)
-    
+
     release_dir = File.expand_path( build_path )
     
     FileUtils.rm_r( release_dir) if File.exists?(release_dir)
