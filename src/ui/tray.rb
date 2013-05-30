@@ -520,6 +520,7 @@ class Tray
 =end
 
   def watch(dir)
+
     dir.gsub!('\\','/') if org.jruby.platform.Platform::IS_WINDOWS
     App.try do 
       stop_watch

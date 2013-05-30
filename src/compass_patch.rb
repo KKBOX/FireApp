@@ -88,6 +88,8 @@ module Compass
 
     # Record an action that has occurred
     def record(action, *arguments)
+
+      #puts "App::CONFIG['notifications'].include?(action) #{App::CONFIG['notifications'].include?(action)}"
       msg = "#{action_padding(action)}#{action} #{arguments.join(' ')}"
       if App::CONFIG["notifications"].include?(action)
         App.notify( msg.strip, @display )
