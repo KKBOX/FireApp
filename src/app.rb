@@ -71,7 +71,7 @@ module App
       "services" => [ :http, :livereload],
       "services_http_port" => 24681,
       "services_livereload_port" => 35729,
-      "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,coffee,markdown,mkd,md",
+      "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,coffee,markdown,mkd,md,js",
       "preferred_syntax" => "scss",
       "force_enable_fsevent" => false,
       "num_of_history" => 5
