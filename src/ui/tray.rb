@@ -391,10 +391,26 @@ class Tray
       App.try do 
         build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
 
+      
+        # -- original setting --
+        original_line_comments = Tray.instance.compass_project_config.line_comments
+        original_debug_info =  Tray.instance.compass_project_config.sass_options[:debug_info]    
+
+        # -- change line comments to false --
+        Tray.instance.update_config( "line_comments", false )
+
+        # -- change debug info to false --
+        sass_options = Tray.instance.compass_project_config.sass_options
+        sass_options = {} if !sass_options.is_a? Hash
+        sass_options[:debug_info] = false
+        Tray.instance.update_config( "sass_options", sass_options.inspect )
+
+        # -- init report -- 
         report_window = App.report('Start build project!') do
           Swt::Program.launch(build_path)
         end
 
+        # -- clean and build project
         clean_project(false)
         ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg|
           report_window.append msg
@@ -402,6 +418,17 @@ class Tray
         report_window.append "Done!"
 
         end_build_project=Time.now
+
+        # -- change line comments to original --
+        Tray.instance.update_config( "line_comments", original_line_comments )
+
+        # -- change debug info to original --
+        sass_options = Tray.instance.compass_project_config.sass_options
+        sass_options = {} if !sass_options.is_a? Hash
+        sass_options[:debug_info] = original_debug_info
+        Tray.instance.update_config( "sass_options", sass_options.inspect )
+
+        clean_project(false)
       end
 
       

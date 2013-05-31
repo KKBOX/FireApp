@@ -449,7 +449,7 @@ def build_buildoption_group(behind)
       #})
       #Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
 
-      Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
+      # Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
       Tray.instance.clean_project
 
       msg_window.dispose
