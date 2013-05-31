@@ -30,6 +30,10 @@ module Compass
     false
   end  
 
+  Configuration.add_configuration_property(:fireapp_always_report_on_build, nil) do
+    true
+  end  
+
   module Commands
     class UpdateProject
       def perform

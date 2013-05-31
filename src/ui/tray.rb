@@ -408,14 +408,14 @@ class Tray
         # -- init report -- 
         report_window = App.report('Start build project!') do
           Swt::Program.launch(build_path)
-        end
+        end if Tray.instance.compass_project_config.fireapp_always_report_on_build
 
         # -- clean and build project
         clean_project(false)
         ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg|
-          report_window.append msg
+          report_window.append msg if report_window
         end
-        report_window.append "Done!"
+        report_window.append "Done!" if report_window
 
         end_build_project=Time.now
 

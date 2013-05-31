@@ -257,6 +257,16 @@ def build_buildoption_group(behind)
     @minifyjs_on_build_button.setLayoutData( layoutdata )
     @minifyjs_on_build_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_minifyjs_on_build
 
+    # -- always_report_on_build checkbox --
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( @minifyjs_on_build_button, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @minifyjs_on_build_button, 10, Swt::SWT::BOTTOM)
+    @always_report_on_build_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    @always_report_on_build_button.setText( 'Always Report on Build' )
+    @always_report_on_build_button.setLayoutData( layoutdata )
+    @always_report_on_build_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_always_report_on_build
+
+
 
     group.pack
 
@@ -420,6 +430,7 @@ def build_buildoption_group(behind)
       Tray.instance.update_config( "javascripts_dir", @js_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_coffeescripts_dir", @coffeescripts_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_minifyjs_on_build", @minifyjs_on_build_button.getSelection )
+      Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
 
       # -- update output style --
       Tray.instance.update_config( "output_style", ":"+@output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s )
