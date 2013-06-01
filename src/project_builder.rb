@@ -1,4 +1,6 @@
 
+require 'tilt'
+
 class ProjectBuilder
 
   attr_reader :project_path
@@ -14,6 +16,7 @@ class ProjectBuilder
   end
 
   def initialize(project_path)
+    require 'til'
     @project_path = project_path
   end
 
