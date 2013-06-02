@@ -36,12 +36,12 @@ class ChangeOptionsPanel
     font=Swt::Graphics::Font.new(@display, font_data)
     panel_title_label.setFont(font)
     panel_title_label.setText("Project Options")
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     panel_title_label.setLayoutData( layoutdata )
 
     # -- horizontal separator --
     horizontal_separator = Swt::Widgets::Label.new(@shell, Swt::SWT::SEPARATOR | Swt::SWT::HORIZONTAL)
-    layoutdata = Swt::Layout::FormData.new(360, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(390, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( panel_title_label, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( panel_title_label, 10, Swt::SWT::BOTTOM)
     horizontal_separator.setLayoutData( layoutdata )
@@ -62,11 +62,22 @@ class ChangeOptionsPanel
     @shell.pack
   end
 
+  def build_select_button_on_general_group(group, swttext)
+    # -- dir button --
+    select_dir_btn = Swt::Widgets::Button.new(group, Swt::SWT::PUSH | Swt::SWT::CENTER)
+    select_dir_btn.setText('Select')
+    layoutdata = Swt::Layout::FormData.new(70, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( swttext, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( swttext, 0, Swt::SWT::CENTER)
+    select_dir_btn.setLayoutData( layoutdata )
+    select_dir_btn.addListener(Swt::SWT::Selection, select_handler(swttext))
+  end
+
   def build_general_group(behind)
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     group.setText('General')
 
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     group.setLayoutData( layoutdata )
@@ -108,15 +119,8 @@ class ChangeOptionsPanel
     text = Tray.instance.compass_project_config.sass_dir
     @sass_dir_text.setText( text ) if text
 
-    # -- sass choose dir button --
-    sass_dir_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
-    sass_dir_btn.setText('Choose')
-    layoutdata = Swt::Layout::FormData.new(30, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( @sass_dir_text, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( @sass_dir_text, 0, Swt::SWT::CENTER)
-    sass_dir_btn.setLayoutData( layoutdata )
-    #save_btn.addListener(Swt::SWT::Selection, save_handler)
-    #sass_dir_btn.pack
+    ## -- select dir button --
+    build_select_button_on_general_group(group, @sass_dir_text)
 
 
     # -- coffeescripts dir label --
@@ -129,13 +133,17 @@ class ChangeOptionsPanel
     coffeescripts_dir_label.pack
 
     # -- coffeescripts dir text --
-    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 0, Swt::SWT::CENTER)
     @coffeescripts_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @coffeescripts_dir_text.setLayoutData( layoutdata )
     text = Tray.instance.compass_project_config.fireapp_coffeescripts_dir
     @coffeescripts_dir_text.setText( text ) if text
+
+    ## -- select dir button --
+    build_select_button_on_general_group(group, @coffeescripts_dir_text)
+
 
     # -- css dir label --
     css_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -147,13 +155,17 @@ class ChangeOptionsPanel
     css_dir_label.pack
 
     # -- css dir text --
-    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( css_dir_label, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( css_dir_label, 0, Swt::SWT::CENTER)
     @css_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @css_dir_text.setLayoutData( layoutdata )
     text = Tray.instance.compass_project_config.css_dir
     @css_dir_text.setText( text ) if text
+
+    ## -- select dir button --
+    build_select_button_on_general_group(group, @css_dir_text)
+
 
     # -- images dir label --
     images_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -165,13 +177,17 @@ class ChangeOptionsPanel
     images_dir_label.pack
 
     # -- images dir text --
-    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( images_dir_label, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( images_dir_label, 0, Swt::SWT::CENTER)
     @images_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @images_dir_text.setLayoutData( layoutdata )
     text = Tray.instance.compass_project_config.images_dir
     @images_dir_text.setText( text ) if text
+
+    ## -- select dir button --
+    build_select_button_on_general_group(group, @images_dir_text)
+
 
     # -- javascripts dir label --
     js_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -183,13 +199,17 @@ class ChangeOptionsPanel
     js_dir_label.pack
 
     # -- javascripts dir text --
-    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( js_dir_label, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( js_dir_label, 0, Swt::SWT::CENTER)
     @js_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @js_dir_text.setLayoutData( layoutdata )
     text = Tray.instance.compass_project_config.javascripts_dir
     @js_dir_text.setText( text ) if text
+
+    ## -- select dir button --
+    build_select_button_on_general_group(group, @js_dir_text)
+
 
     group.pack
 
@@ -200,7 +220,7 @@ class ChangeOptionsPanel
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     group.setText("Sass")
 
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     group.setLayoutData( layoutdata )
@@ -252,7 +272,7 @@ def build_buildoption_group(behind)
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     group.setText("Build")
 
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     group.setLayoutData( layoutdata )
@@ -262,14 +282,14 @@ def build_buildoption_group(behind)
     group.setLayout( layout )
 
     # -- minifyjs_on_build checkbox --
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     @minifyjs_on_build_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
     @minifyjs_on_build_button.setText( 'Minifyjs on Build' )
     @minifyjs_on_build_button.setLayoutData( layoutdata )
     @minifyjs_on_build_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_minifyjs_on_build
 
     # -- always_report_on_build checkbox --
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( @minifyjs_on_build_button, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( @minifyjs_on_build_button, 10, Swt::SWT::BOTTOM)
     @always_report_on_build_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
@@ -288,7 +308,7 @@ def build_buildoption_group(behind)
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     group.setText("CoffeeScript")
 
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     group.setLayoutData( layoutdata )
@@ -298,7 +318,7 @@ def build_buildoption_group(behind)
     group.setLayout( layout )
 
     # -- bare checkbox --
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     @bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
     @bare_button.setText( 'Bare' )
     @bare_button.setLayoutData( layoutdata )
@@ -316,7 +336,7 @@ def build_buildoption_group(behind)
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     group.setText('TheHold')
 
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     group.setLayoutData( layoutdata )
@@ -426,6 +446,25 @@ def build_buildoption_group(behind)
   def cancel_handler
     Swt::Widgets::Listener.impl do |method, evt|   
       evt.widget.shell.dispose();
+    end
+  end
+
+  def select_handler(swttext)
+    Swt::Widgets::Listener.impl do |method, evt|   
+      dia = Swt::Widgets::DirectoryDialog.new(@shell)
+      dia.setFilterPath(Tray.instance.watching_dir)
+      dir = dia.open
+      dir_path = Pathname.new(dir) if !dir.nil? 
+      watching_dir_path = Pathname.new(Tray.instance.watching_dir)
+
+      if dir.nil? || dir_path.realpath == watching_dir_path.realpath then
+        nil
+      elsif !dir_path.relative_path_from(watching_dir_path).to_s.split('/').include?('..') 
+        swttext.setText(dir_path.relative_path_from(watching_dir_path).to_s) 
+        swttext.forceFocus
+      else
+        App.alert("can't use this folder.")
+      end
     end
   end
 
