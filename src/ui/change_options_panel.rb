@@ -100,13 +100,24 @@ class ChangeOptionsPanel
     sass_dir_label.pack
 
     # -- sass dir text --
-    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( sass_dir_label, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( sass_dir_label, 0, Swt::SWT::CENTER)
     @sass_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @sass_dir_text.setLayoutData( layoutdata )
     text = Tray.instance.compass_project_config.sass_dir
     @sass_dir_text.setText( text ) if text
+
+    # -- sass choose dir button --
+    sass_dir_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
+    sass_dir_btn.setText('Choose')
+    layoutdata = Swt::Layout::FormData.new(30, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( @sass_dir_text, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @sass_dir_text, 0, Swt::SWT::CENTER)
+    sass_dir_btn.setLayoutData( layoutdata )
+    #save_btn.addListener(Swt::SWT::Selection, save_handler)
+    #sass_dir_btn.pack
+
 
     # -- coffeescripts dir label --
     coffeescripts_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -399,6 +410,7 @@ def build_buildoption_group(behind)
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     save_btn.setLayoutData( layoutdata )
     save_btn.addListener(Swt::SWT::Selection, save_handler)
+    save_btn.pack
 
     # -- cancel button --
     cancel_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
@@ -408,6 +420,7 @@ def build_buildoption_group(behind)
     layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
     cancel_btn.setLayoutData( layoutdata )
     cancel_btn.addListener(Swt::SWT::Selection, cancel_handler)
+    cancel_btn.pack
   end
 
   def cancel_handler
