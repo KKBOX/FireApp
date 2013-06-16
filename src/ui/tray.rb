@@ -146,10 +146,7 @@ class Tray
 
   def compass_switch_handler
     Swt::Widgets::Listener.impl do |method, evt|
-      if @watching_dir
-        stop_watch
-      end
-      watch(evt.widget.text)
+      watch(evt.widget.text, {:show_progress => true})
     end
   end
 
@@ -160,7 +157,7 @@ class Tray
       else
         dia = Swt::Widgets::DirectoryDialog.new(@shell)
         dir = dia.open
-        watch(dir) if dir 
+        watch(dir, {:show_progress => true}) if dir 
       end
     end
   end
@@ -391,7 +388,7 @@ class Tray
       App.try do 
         build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
 
-      
+        
         # -- original setting --
         original_line_comments = Tray.instance.compass_project_config.line_comments
         original_debug_info =  Tray.instance.compass_project_config.sass_options[:debug_info]    
@@ -405,13 +402,14 @@ class Tray
         sass_options[:debug_info] = false
         Tray.instance.update_config( "sass_options", sass_options.inspect )
 
+        clean_project(false)
+
         # -- init report -- 
         report_window = App.report('Start build project!') do
           Swt::Program.launch(Pathname.new(build_path).realpath.to_s)
         end if Tray.instance.compass_project_config.fireapp_always_report_on_build
 
-        # -- clean and build project
-        clean_project(false)
+        # -- build project --
         ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg|
           report_window.append msg if report_window
         end
@@ -484,7 +482,7 @@ class Tray
       end
       App.report( actual ) if show_report
     end
-    watch(dir, false)
+    watch(dir, {:need_stop => false})
   end
 
 
@@ -551,11 +549,15 @@ class Tray
   end 
 =end
 
-  def watch(dir, need_stop = true)
+  def watch(dir, options = {}) # options = { :need_stop(boolean), :show_progress(boolean) }
+
+    msg_window = ProgressWindow.new if options[:show_progress]
+    msg_window.replace("Watching #{dir}...", false, true) if msg_window
 
     dir.gsub!('\\','/') if org.jruby.platform.Platform::IS_WINDOWS
     App.try do 
-      stop_watch if need_stop
+      
+      stop_watch if options[:need_stop] 
       @logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
       Compass.reset_configuration!
       Dir.chdir(dir)
@@ -637,9 +639,13 @@ class Tray
         end
       end
 
+      msg_window.dispose if msg_window
+
       return true
 
     end
+
+    msg_window.dispose if msg_window
 
     return false
   end
