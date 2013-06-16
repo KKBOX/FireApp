@@ -22,7 +22,7 @@ module Compass
       def stop
         log_action(:info, "AppWatcher stop!",{})
         begin
-          listener.stop 
+          listener.stop if listener.adapter
         rescue Exception => e
           log_action(:warning, "#{e.message}\n#{e.backtrace}", {})
         end
