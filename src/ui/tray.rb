@@ -443,7 +443,8 @@ class Tray
       App.try do 
         options = Compass.configuration.the_hold_options
         temp_build_folder = File.join(Dir.tmpdir, "fireapp", rand.to_s)
-        build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
+        #build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
+        build_path = "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
         
 
         deploy_window = ProgressWindow.new
@@ -456,12 +457,16 @@ class Tray
         if respone.code == "200"
           host=URI(options[:host]).host
           Swt::Program.launch("http://#{options[:project]}.#{options[:login]}.#{host}")
-          deploy_window.dispose
+          
           App.alert("done")
         else
-          deploy_window.dispose
           App.alert(respone.body)
         end
+        deploy_window.dispose
+
+        require 'fileutils'
+        FileUtils.rm_rf(build_path)
+
       end
     end
   end
