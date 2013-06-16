@@ -16,7 +16,7 @@ class ProjectBuilder
   end
 
   def initialize(project_path)
-    require 'til'
+    require 'tilt'
     @project_path = project_path
   end
 

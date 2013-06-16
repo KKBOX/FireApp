@@ -32,7 +32,11 @@ module Compass
 
   Configuration.add_configuration_property(:fireapp_always_report_on_build, nil) do
     true
-  end  
+  end 
+
+  Configuration.add_configuration_property(:sass_options, nil) do
+    {}
+  end 
 
   module Commands
     class UpdateProject
