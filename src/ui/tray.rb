@@ -407,7 +407,7 @@ class Tray
 
         # -- init report -- 
         report_window = App.report('Start build project!') do
-          Swt::Program.launch(build_path)
+          Swt::Program.launch(Pathname.new(build_path).realpath.to_s)
         end if Tray.instance.compass_project_config.fireapp_always_report_on_build
 
         # -- clean and build project
@@ -479,7 +479,7 @@ class Tray
       end
       App.report( actual ) if show_report
     end
-    watch(dir)
+    watch(dir, false)
   end
 
 
@@ -546,11 +546,11 @@ class Tray
   end 
 =end
 
-  def watch(dir)
+  def watch(dir, need_stop = true)
 
     dir.gsub!('\\','/') if org.jruby.platform.Platform::IS_WINDOWS
     App.try do 
-      stop_watch
+      stop_watch if need_stop
       @logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
       Compass.reset_configuration!
       Dir.chdir(dir)
@@ -645,8 +645,8 @@ class Tray
     SimpleHTTPServer.instance.stop if defined?(SimpleHTTPServer)
     FSEvent.stop_all_instances if Object.const_defined?("FSEvent") && FSEvent.methods.map{|x| x.to_sym}.include?(:stop_all_instances)
 
-    if @compass_thread
-      @compass_thread[:watcher].stop
+    if @compass_thread 
+      @compass_thread[:watcher].stop 
     end
 
     [@simplelivereload_thread, @simplehttpserver_thread, @compass_thread].each do |x|
