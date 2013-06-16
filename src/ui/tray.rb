@@ -377,7 +377,7 @@ class Tray
 
   def clean_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
-      clean_project(true)
+      clean_project({:show_report => true})
     end
   end
 
@@ -402,7 +402,7 @@ class Tray
         sass_options[:debug_info] = false
         Tray.instance.update_config( "sass_options", sass_options.inspect )
 
-        clean_project(false)
+        clean_project({:show_progress => true})
 
         # -- init report -- 
         report_window = App.report('Start build project!') do
@@ -426,7 +426,7 @@ class Tray
         sass_options[:debug_info] = original_debug_info
         Tray.instance.update_config( "sass_options", sass_options.inspect )
 
-        clean_project(false)
+        clean_project
       end
 
       
@@ -469,7 +469,13 @@ class Tray
     end
   end
 
-  def clean_project(show_report = false)
+  def clean_project(options = {}) # options = {:show_report(boolean), :show_progress(boolean)}
+
+    options = { :show_report => false, :show_progress => false }.merge(options)
+
+    msg_window = ProgressWindow.new if options[:show_progress]
+    msg_window.replace("Compiling...", false, true) if msg_window
+
     dir = @watching_dir
     stop_watch
     App.try do 
@@ -480,9 +486,11 @@ class Tray
         Compass::Commands::UpdateProject.new( dir, {:logger => @logger}).perform
         Compass.reset_configuration!
       end
-      App.report( actual ) if show_report
+      App.report( actual ) if options[:show_report]
     end
     watch(dir, {:need_stop => false})
+
+    msg_window.dispose if msg_window
   end
 
 
@@ -550,6 +558,8 @@ class Tray
 =end
 
   def watch(dir, options = {}) # options = { :need_stop(boolean), :show_progress(boolean) }
+
+    options = { :need_stop => true, :show_progress => false }.merge(options)
 
     msg_window = ProgressWindow.new if options[:show_progress]
     msg_window.replace("Watching #{dir}...", false, true) if msg_window
