@@ -17,6 +17,10 @@ class ChangeOptionsPanel
     @shell.forceActive
   end
 
+  def close
+    @shell.dispose if @shell and !@shell.isDisposed
+  end
+
   def create_window
     @shell = Swt::Widgets::Shell.new(@display, Swt::SWT::DIALOG_TRIM)
     @shell.setText("Change Options")
@@ -463,7 +467,7 @@ def build_buildoption_group(behind)
         swttext.setText(dir_path.relative_path_from(watching_dir_path).to_s) 
         swttext.forceFocus
       else
-        App.alert("can't use this folder.")
+        App.alert("Can't use this folder.")
       end
     end
   end
@@ -471,6 +475,10 @@ def build_buildoption_group(behind)
   def save_handler
     Swt::Widgets::Listener.impl do |method, evt|
       evt.widget.shell.setVisible( false )
+
+      #App.alert("Already stop watch project") Tray.instance.watching_dir
+      #evt.widget.shell.dispose if Tray.instance.watching_dir
+
       msg_window = ProgressWindow.new
       msg_window.replace('Saving...', false, true)
 
@@ -516,7 +524,7 @@ def build_buildoption_group(behind)
       Tray.instance.clean_project
 
       msg_window.dispose
-      evt.widget.shell.dispose();
+      evt.widget.shell.dispose
     end
   end
 

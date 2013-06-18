@@ -666,6 +666,8 @@ class Tray
     SimpleHTTPServer.instance.stop if defined?(SimpleHTTPServer)
     FSEvent.stop_all_instances if Object.const_defined?("FSEvent") && FSEvent.methods.map{|x| x.to_sym}.include?(:stop_all_instances)
 
+    ChangeOptionsPanel.instance.close
+
     if @compass_thread 
       @compass_thread[:watcher].stop 
     end
