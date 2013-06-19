@@ -34,6 +34,7 @@ module Compass
     true
   end 
 
+  # default sass_options is nil
   Configuration.add_configuration_property(:sass_options, nil) do
     {}
   end 
