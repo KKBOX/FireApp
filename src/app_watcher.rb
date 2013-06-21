@@ -10,6 +10,7 @@ module Compass
       def initialize(project_path, watches=[], options={}, poll=false)
         super
         @sass_watchers += coffeescript_watchers
+        @sass_watchers += javascript_watchers
         @sass_watchers += livereload_watchers
         setup_listener
       end
@@ -43,6 +44,24 @@ module Compass
         CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir,
                                       Compass.configuration.javascripts_dir, 
                                       Compass.configuration.fireapp_coffeescript_options );
+      end
+
+      def javascript_watchers
+        javascript_filter = File.join(Compass.configuration.javascripts_dir,  "*.js")
+        child_javascript_filter = File.join(Compass.configuration.javascripts_dir, "**", "*.js")
+
+        JavascriptCompiler.minify_folder(Compass.configuration.javascripts_dir)
+
+        [ Watcher::Watch.new(child_javascript_filter, &method(:javascript_callback) ),
+          Watcher::Watch.new(javascript_filter, &method(:javascript_callback) ) ]
+      end
+
+      def javascript_callback(base, file, action)
+        log_action(:info, "Minifying: #{base} #{file}", options)
+        puts( "Minifying: #{base} #{file}", options)
+        file_to_minify = File.join(base, file)
+        javascripts_min_dir =  "#{Compass.configuration.javascripts_dir}-min"
+        JavascriptCompiler.minify_file(file_to_minify, Compass.configuration.javascripts_dir, javascripts_min_dir);
       end
 
       def livereload_watchers

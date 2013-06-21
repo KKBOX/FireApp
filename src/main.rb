@@ -64,6 +64,7 @@ begin
     require 'execjs'
     require "fsevent_patch" if App::OS == 'darwin'
     require "coffee_compiler.rb"
+    require "javascript_compiler.rb"
     require "app_watcher.rb"
     require "compass_patch.rb"
     require "sass_patch.rb"
