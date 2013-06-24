@@ -11,6 +11,9 @@ else
   LIB_PATH = File.expand_path 'lib' 
 end
 
+# set execjs runtime
+ENV["EXECJS_RUNTIME"] = "Node"
+
 # bundle nodejs for windows so we need add node.exe path to ENV['PATH']
 if org.jruby.platform.Platform::IS_WINDOWS
   ENV['PATH'] = File.join(LIB_PATH,'nodejs/win')+File::PATH_SEPARATOR+ENV['PATH']
