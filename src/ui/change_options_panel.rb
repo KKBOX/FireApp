@@ -480,7 +480,7 @@ def build_buildoption_group(behind)
       #evt.widget.shell.dispose if Tray.instance.watching_dir
 
       msg_window = ProgressWindow.new
-      msg_window.replace('Saving...', false, true)
+      msg_window.replace('Regenerating...', false, true)
 
       # -- update general --
       # Tray.instance.update_config( "http_path", @http_path_text.getText.inspect )
