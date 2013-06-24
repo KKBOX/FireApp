@@ -70,7 +70,9 @@ class ChangeOptionsPanel
     # -- dir button --
     select_dir_btn = Swt::Widgets::Button.new(group, Swt::SWT::PUSH | Swt::SWT::CENTER)
     select_dir_btn.setText('Select')
-    layoutdata = Swt::Layout::FormData.new(70, Swt::SWT::DEFAULT)
+    button_width = 70
+    button_width = button_width - 10 if org.jruby.platform.Platform::IS_WINDOWS
+    layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( swttext, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( swttext, 0, Swt::SWT::CENTER)
     select_dir_btn.setLayoutData( layoutdata )
@@ -426,10 +428,14 @@ def build_buildoption_group(behind)
   end
 
   def build_control_button(behind)
+
+    button_width = 90
+    button_width = button_width - 10 if org.jruby.platform.Platform::IS_WINDOWS
+
     # -- save button --
     save_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
     save_btn.setText('Save')
-    layoutdata = Swt::Layout::FormData.new(100, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.right = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     save_btn.setLayoutData( layoutdata )
@@ -439,7 +445,7 @@ def build_buildoption_group(behind)
     # -- cancel button --
     cancel_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
     cancel_btn.setText('Cancel')
-    layoutdata = Swt::Layout::FormData.new(90, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, 5, Swt::SWT::LEFT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
     cancel_btn.setLayoutData( layoutdata )
