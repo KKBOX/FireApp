@@ -524,7 +524,7 @@ def build_buildoption_group(behind)
       Tray.instance.clean_project
 
       msg_window.dispose
-      evt.widget.shell.dispose
+      close
     end
   end
 
