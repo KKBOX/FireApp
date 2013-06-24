@@ -42,6 +42,9 @@ INFO_ENDL
       %x{mkdir -p  #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/swt}
       %x{cp -R lib/swt/swt_osx* #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/swt}
 
+      %x{mkdir -p  #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/nodejs/osx}
+      %x{cp -R lib/nodejs/osx/node* #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/nodejs/osx/node}
+
       %w{ruby images applescript documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib }
       end
@@ -63,8 +66,8 @@ INFO_ENDL
       %x{mkdir -p  #{CONFIG.windows_output_dir}/lib/swt}
       %x{cp -R lib/swt/swt_win* #{CONFIG.windows_output_dir}/lib/swt}
       
-      %x{mkdir -p  #{CONFIG.windows_output_dir}/lib/nodejs}
-      %x{cp -R lib/nodejs/node-win* #{CONFIG.windows_output_dir}/lib/nodejs/node.exe}
+      %x{mkdir -p  #{CONFIG.windows_output_dir}/lib/nodejs/win}
+      %x{cp -R lib/nodejs/win/node-win* #{CONFIG.windows_output_dir}/lib/nodejs/win/node.exe}
 
       %w{ruby images documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} #{CONFIG.windows_output_dir}/lib }
@@ -84,6 +87,9 @@ INFO_ENDL
       Dir.chdir File.dirname(__FILE__)
       %x{mkdir -p  package/jar/lib/swt}
       %x{cp -R lib/swt/swt_linux* package/jar/lib/swt}
+
+      %x{mkdir -p  package/jar/lib/nodejs/linux}
+      %x{cp -R lib/nodejs/linux/node* package/jar/lib/nodejs/linux/node}
 
       %w{ruby images documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} package/jar/lib }
