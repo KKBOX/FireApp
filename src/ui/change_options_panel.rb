@@ -17,6 +17,10 @@ class ChangeOptionsPanel
     @shell.forceActive
   end
 
+  def close
+    @shell.dispose if @shell and !@shell.isDisposed
+  end
+
   def create_window
     @shell = Swt::Widgets::Shell.new(@display, Swt::SWT::DIALOG_TRIM)
     @shell.setText("Change Options")
@@ -66,7 +70,9 @@ class ChangeOptionsPanel
     # -- dir button --
     select_dir_btn = Swt::Widgets::Button.new(group, Swt::SWT::PUSH | Swt::SWT::CENTER)
     select_dir_btn.setText('Select')
-    layoutdata = Swt::Layout::FormData.new(70, Swt::SWT::DEFAULT)
+    button_width = 70
+    button_width = button_width - 10 if org.jruby.platform.Platform::IS_WINDOWS
+    layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( swttext, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( swttext, 0, Swt::SWT::CENTER)
     select_dir_btn.setLayoutData( layoutdata )
@@ -422,10 +428,14 @@ def build_buildoption_group(behind)
   end
 
   def build_control_button(behind)
+
+    button_width = 90
+    button_width = button_width - 10 if org.jruby.platform.Platform::IS_WINDOWS
+
     # -- save button --
     save_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
     save_btn.setText('Save')
-    layoutdata = Swt::Layout::FormData.new(100, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.right = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     save_btn.setLayoutData( layoutdata )
@@ -435,7 +445,7 @@ def build_buildoption_group(behind)
     # -- cancel button --
     cancel_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
     cancel_btn.setText('Cancel')
-    layoutdata = Swt::Layout::FormData.new(90, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, 5, Swt::SWT::LEFT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
     cancel_btn.setLayoutData( layoutdata )
@@ -463,7 +473,7 @@ def build_buildoption_group(behind)
         swttext.setText(dir_path.relative_path_from(watching_dir_path).to_s) 
         swttext.forceFocus
       else
-        App.alert("can't use this folder.")
+        App.alert("Can't use this folder.")
       end
     end
   end
@@ -471,6 +481,10 @@ def build_buildoption_group(behind)
   def save_handler
     Swt::Widgets::Listener.impl do |method, evt|
       evt.widget.shell.setVisible( false )
+
+      #App.alert("Already stop watch project") Tray.instance.watching_dir
+      #evt.widget.shell.dispose if Tray.instance.watching_dir
+
       msg_window = ProgressWindow.new
       msg_window.replace('Saving...', false, true)
 
@@ -516,7 +530,7 @@ def build_buildoption_group(behind)
       Tray.instance.clean_project
 
       msg_window.dispose
-      evt.widget.shell.dispose();
+      evt.widget.shell.dispose
     end
   end
 
