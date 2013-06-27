@@ -16,8 +16,18 @@ class SimpleHTTPServer
   include Singleton
   def start(dir, options)
     Dir.chdir(dir)
+
+    mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
+    mime_types.store 'eot', 'application/vnd.ms-fontobject'
+    mime_types.store 'js', 'application/javascript'
+    mime_types.store 'svg', 'image/svg+xml'
+    mime_types.store 'svgz', 'image/svg+xml'
+    mime_types.store 'ttf', 'application/x-font-ttf'
+    mime_types.store 'woff', 'application/x-font-woff'
+
     options={
-      :Port => 24681
+      :Port => 24681,
+      :MimeTypes => mime_types
     }.merge(options)
 
     stop 
