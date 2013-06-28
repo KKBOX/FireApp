@@ -4,11 +4,28 @@
 
 [Fire.app][fireapp] is a **menubar only app** for dead easy HTML prototyping.
 
-This fork addds the ability to minify files on save rather than build.
+This fork by [Aaron](http://aaron.md/) adds the ability to minify files on save rather than build.
 
 Fire.app is written in **Java (JRuby)**, and works in mac, linux and pc.
 
-## System Requirement
+# Notes on this version:
+
+This is a hackjob that works. This is my first project ever in ruby that involved doing anything other changing a line or two of code. I don't expect a straight pull into the main project, but it may be useful for others.
+
+Features:
+1. Watches all .js files in javascripts_dir folder recursively for changes and saves the uglified versions as filename.min.js to the folder "#{javascripts_dir}-min". 
+2. Works with both LiveReload and coffeescript generated files.
+3. Automatically uglifies all .js files on project load (except files named .min.js already)
+4. Handles deleting .min.js files when .js files are deleted.
+5. If you manually save a .min.js in your main js directory, it will create a minified version of it in your js-min folder, but will not change the extension to ".min.min.js".
+6. Can set configuration options to set minified folder names.
+7. Works with Clean & Compile
+
+Issues:
+1. If your main /js/ folder contains "jquery.min.js" and "jquery.js" and you delete "jquery.min.js" it will also delete "/js-min/jquery.min.js"
+2. Renaming a file will delete the old .min.js but not create a new file
+
+# System Requirement
 
 Fire.app has been tested in:
 
