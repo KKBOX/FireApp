@@ -18,14 +18,12 @@ class JavascriptMinify
 
   def self.clean_minify_folder(javascripts_min_dir )
     javascripts_min_dir = File.expand_path(javascripts_min_dir)
-    
     FileUtils.rm_rf(javascripts_min_dir)
     JavascriptMinify.log( :remove, "#{javascripts_min_dir}/")
   end
 
   def self.minify_folder(javascripts_dir, javascripts_min_dir)
     javascripts_dir = File.expand_path(javascripts_dir)
-    #puts( "1 minifying #{javascripts_dir} #{javascripts_min_dir}")
 
     Dir.glob( File.join(javascripts_dir, "**", "*.js")) do |full_path|
       if full_path.index(".min.js") == nil #no double minification unless specifically set.
@@ -81,4 +79,3 @@ class JavascriptMinify
     end
   end
 end
-

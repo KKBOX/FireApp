@@ -53,7 +53,6 @@ module Compass
   module Commands
     class UpdateProject
       def perform
-
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
           CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
         end
