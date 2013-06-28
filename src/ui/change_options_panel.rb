@@ -565,7 +565,6 @@ def build_buildoption_group(behind)
       Tray.instance.clean_project
 
       msg_window.dispose
-
       evt.widget.shell.dispose if evt.widget && !evt.widget.isDisposed
     end
   end
