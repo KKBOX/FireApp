@@ -26,12 +26,20 @@ module Compass
     }
   end
 
+  Configuration.add_configuration_property(:javascripts_min_dir, nil) do
+    "js-min"
+  end  
+
   Configuration.add_configuration_property(:fireapp_minifyjs_on_build, nil) do
     false
   end  
 
-  Configuration.add_configuration_property(:javascripts_min_dir, nil) do
-    "js-min"
+  Configuration.add_configuration_property(:fireapp_minifyjs_on_save, nil) do
+    false
+  end  
+
+  Configuration.add_configuration_property(:fireapp_minifyjs_on_clean, nil) do
+    true
   end  
 
   Configuration.add_configuration_property(:fireapp_always_report_on_build, nil) do
@@ -50,7 +58,7 @@ module Compass
           CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
         end
 
-        if File.exists?( Compass.configuration.javascripts_dir )
+        if Compass.configuration.fireapp_minifyjs_on_clean && File.exists?( Compass.configuration.javascripts_dir )
           JavascriptCompiler.minify_folder( Compass.configuration.javascripts_dir, Compass.configuration.javascripts_min_dir );
         end
 
@@ -67,6 +75,11 @@ module Compass
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
           CoffeeCompiler.clean_compile_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
         end
+
+        if File.exists?( Compass.configuration.javascripts_min_dir )
+          JavascriptCompiler.clean_minify_folder( Compass.configuration.javascripts_min_dir );
+        end
+
         compiler = new_compiler_instance
         compiler.clean!
         Compass::SpriteImporter.find_all_sprite_map_files(Compass.configuration.generated_images_path).each do |sprite|

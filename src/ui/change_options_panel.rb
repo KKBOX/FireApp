@@ -322,6 +322,23 @@ def build_buildoption_group(behind)
     @always_report_on_build_button.setLayoutData( layoutdata )
     @always_report_on_build_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_always_report_on_build
 
+    # -- minifyjs_on_save checkbox --
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( @always_report_on_build_button, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @always_report_on_build_button, 10, Swt::SWT::BOTTOM)
+    @minifyjs_on_save_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    @minifyjs_on_save_button.setText( 'Minifyjs on Save' )
+    @minifyjs_on_save_button.setLayoutData( layoutdata )
+    @minifyjs_on_save_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_minifyjs_on_save
+
+    # -- minifyjs_on_clean checkbox --
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( @minifyjs_on_save_button, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @minifyjs_on_save_button, 10, Swt::SWT::BOTTOM)
+    @minifyjs_on_clean_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    @minifyjs_on_clean_button.setText( 'Minifyjs on Clean' )
+    @minifyjs_on_clean_button.setLayoutData( layoutdata )
+    @minifyjs_on_clean_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_minifyjs_on_clean
 
 
     group.pack
@@ -512,6 +529,8 @@ def build_buildoption_group(behind)
       Tray.instance.update_config( "javascripts_min_dir", @js_min_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_coffeescripts_dir", @coffeescripts_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_minifyjs_on_build", @minifyjs_on_build_button.getSelection )
+      Tray.instance.update_config( "fireapp_minifyjs_on_save", @minifyjs_on_save_button.getSelection )
+      Tray.instance.update_config( "fireapp_minifyjs_on_clean", @minifyjs_on_clean_button.getSelection )
       Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
 
       # -- update output style --

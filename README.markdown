@@ -10,23 +10,39 @@ Fire.app is written in **Java (JRuby)**, and works in mac, linux and pc.
 
 # Notes on this version:
 
-This is a hackjob that works. This is my first project ever in ruby that involved doing anything other changing a line or two of code. I don't expect a straight pull into the main project, but it may be useful for others.
+Your JS folder and your JS min folder can be at different levels so you can set up a directory structure like:
+
+```
+/main folder
+	/assets
+		/js-min
+		/css
+		/images
+	/library
+		/coffee
+		/js
+		/scss
+```
 
 Features:
 
-1. Watches all .js files in javascripts_dir folder recursively for changes and saves the uglified versions as filename.min.js to the folder "#{javascripts_dir}-min". 
+1. Can use configuration options to set minified folder name.
 
-2. Works with both LiveReload and coffeescript generated files.
+1. Can be enabled and disabled in project options panel. 
+	* *Minify On Clean & Compile*: defaults to true;
+	* *Minify On Save*: defaults to false;
 
-3. Automatically uglifies all .js files on project load (except files named .min.js already)
+1. Watches all .js files in _javascripts\_dir_ folder recursively for changes and saves the uglified versions as filename.min.js to the folder _javascripts\_min\_dir_. 
 
-4. Handles deleting .min.js files when .js files are deleted.
+1. Works with Clean & Compile (If you disable minify\_on\_clean, it will delete the minified folder and not recreate it.)
 
-5. If you manually save a .min.js in your main js directory, it will create a minified version of it in your js-min folder, but will not change the extension to ".min.min.js".
+1. Works with both LiveReload and coffeescript generated files.
 
-6. Can set configuration options to set minified folder names.
+1. Handles deleting .min.js files when .js files are deleted.
 
-7. Works with Clean & Compile
+1. If you manually save a .min.js in your main js directory, it will create a minified version of it in your js-min folder, but will not change the extension to ".min.min.js".
+
+
 
 Issues:
 

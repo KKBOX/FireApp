@@ -6,14 +6,21 @@ require 'json'
 
 class JavascriptCompiler
 
-  def self.log(type, msg)new_js_path
+  def self.log(type, msg)
     msg = msg.sub(File.expand_path(Compass.configuration.project_path), '')[1..-1] if defined?(Tray) 
 
     if defined?(Tray) && Tray.instance.logger
       Tray.instance.logger.record type, msg
     else  
-      puts "   #{type} #{msg}"
+      puts "Minify: #{type} #{msg}"
     end
+  end
+
+  def self.clean_minify_folder(javascripts_min_dir )
+    javascripts_min_dir = File.expand_path(javascripts_min_dir)
+    
+    FileUtils.rm_rf(javascripts_min_dir)
+    JavascriptCompiler.log( :remove, "#{javascripts_min_dir}/")
   end
 
   def self.minify_folder(javascripts_dir, javascripts_min_dir)

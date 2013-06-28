@@ -10,8 +10,12 @@ module Compass
       def initialize(project_path, watches=[], options={}, poll=false)
         super
         @sass_watchers += coffeescript_watchers
-        @sass_watchers += javascript_watchers
         @sass_watchers += livereload_watchers
+
+        if Compass.configuration.fireapp_minifyjs_on_save
+          @sass_watchers += javascript_watchers
+        end
+
         setup_listener
       end
 
