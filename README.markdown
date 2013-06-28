@@ -10,21 +10,7 @@ Fire.app is written in **Java (JRuby)**, and works in mac, linux and pc.
 
 # Notes on this version:
 
-Your JS folder and your JS min folder can be at different levels so you can set up a directory structure like:
-
-```
-/main folder
-	/assets
-		/js-min
-		/css
-		/images
-	/library
-		/coffee
-		/js
-		/scss
-```
-
-Features:
+## Features and Changes
 
 1. Can use configuration options to set minified folder name.
 
@@ -43,12 +29,27 @@ Features:
 1. If you manually save a .min.js in your main js directory, it will create a minified version of it in your js-min folder, but will not change the extension to ".min.min.js".
 
 
+**Your JS folder and your JS min folder can be at different levels**  so you can set up a directory structure like:
 
-Issues:
+```
+/main folder
+	/assets
+		/js-min
+		/css
+		/images
+	/library
+		/coffee
+		/js
+		/scss
+```
 
-1. If your main /js/ folder contains "jquery.min.js" and "jquery.js" and you delete "jquery.min.js" it will also delete "/js-min/jquery.min.js"
+## Issues:
 
-2. Renaming a file will delete the old .min.js but not create a new file
+1. If your main /js/ folder contains "jquery.min.js" and "jquery.js" and you delete "jquery.min.js" it will also delete "/js-min/jquery.min.js".  (Rare case when migrating to using minify, a manual clean and compile should be used instead)
+
+## Questions
+
+1. If in your source js folder you have a .min.js, should it be directly copied to js_min folder instead of minified again with the same name?
 
 # System Requirement
 
