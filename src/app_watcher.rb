@@ -63,7 +63,7 @@ module Compass
         puts( "Minifying: #{base} #{file}", options)
         file_to_minify = File.join(base, file)
     
-        JavascriptCompiler.minify_file(file_to_minify, Compass.configuration.javascripts_dir, Compass.configuration.javascripts_min_dir);
+        JavascriptMinify.minify_file(file_to_minify, Compass.configuration.javascripts_dir, Compass.configuration.javascripts_min_dir);
       end
 
       def livereload_watchers

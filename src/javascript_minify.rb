@@ -4,7 +4,7 @@ require 'pathname'
 require 'uglifier'
 require 'json'
 
-class JavascriptCompiler
+class JavascriptMinify
 
   def self.log(type, msg)
     msg = msg.sub(File.expand_path(Compass.configuration.project_path), '')[1..-1] if defined?(Tray) 
@@ -20,7 +20,7 @@ class JavascriptCompiler
     javascripts_min_dir = File.expand_path(javascripts_min_dir)
     
     FileUtils.rm_rf(javascripts_min_dir)
-    JavascriptCompiler.log( :remove, "#{javascripts_min_dir}/")
+    JavascriptMinify.log( :remove, "#{javascripts_min_dir}/")
   end
 
   def self.minify_folder(javascripts_dir, javascripts_min_dir)

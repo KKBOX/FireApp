@@ -59,7 +59,7 @@ module Compass
         end
 
         if Compass.configuration.fireapp_minifyjs_on_clean && File.exists?( Compass.configuration.javascripts_dir )
-          JavascriptCompiler.minify_folder( Compass.configuration.javascripts_dir, Compass.configuration.javascripts_min_dir );
+          JavascriptMinify.minify_folder( Compass.configuration.javascripts_dir, Compass.configuration.javascripts_min_dir );
         end
 
         compiler = new_compiler_instance
@@ -77,7 +77,7 @@ module Compass
         end
 
         if File.exists?( Compass.configuration.javascripts_min_dir )
-          JavascriptCompiler.clean_minify_folder( Compass.configuration.javascripts_min_dir );
+          JavascriptMinify.clean_minify_folder( Compass.configuration.javascripts_min_dir );
         end
 
         compiler = new_compiler_instance
