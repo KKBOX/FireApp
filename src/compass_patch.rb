@@ -30,6 +30,10 @@ module Compass
     false
   end  
 
+  Configuration.add_configuration_property(:javascripts_min_dir, nil) do
+    "js-min"
+  end  
+
   Configuration.add_configuration_property(:fireapp_always_report_on_build, nil) do
     true
   end 
@@ -41,8 +45,13 @@ module Compass
   module Commands
     class UpdateProject
       def perform
+
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
           CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
+        end
+
+        if File.exists?( Compass.configuration.javascripts_dir )
+          JavascriptCompiler.minify_folder( Compass.configuration.javascripts_dir, Compass.configuration.javascripts_min_dir );
         end
 
         compiler = new_compiler_instance

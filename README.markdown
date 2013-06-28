@@ -4,6 +4,8 @@
 
 [Fire.app][fireapp] is a **menubar only app** for dead easy HTML prototyping.
 
+This fork addds the ability to minify files on save rather than build.
+
 Fire.app is written in **Java (JRuby)**, and works in mac, linux and pc.
 
 ## System Requirement

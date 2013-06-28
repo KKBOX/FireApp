@@ -214,6 +214,27 @@ class ChangeOptionsPanel
     ## -- select dir button --
     build_select_button_on_general_group(group, @js_dir_text)
 
+    # -- javascripts min dir label --
+    js_min_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( js_dir_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( js_dir_label, 10, Swt::SWT::BOTTOM)
+    js_min_dir_label.setLayoutData( layoutdata )
+    js_min_dir_label.setText("Minified JS Dir:")
+    js_min_dir_label.pack
+
+    # -- javascripts min dir text --
+    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( js_min_dir_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( js_min_dir_label, 0, Swt::SWT::CENTER)
+    @js_min_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    @js_min_dir_text.setLayoutData( layoutdata )
+    text = Tray.instance.compass_project_config.javascripts_min_dir
+    @js_min_dir_text.setText( text ) if text
+
+    ## -- select dir button --
+    build_select_button_on_general_group(group, @js_min_dir_text)
+
 
     group.pack
 
@@ -488,6 +509,7 @@ def build_buildoption_group(behind)
       Tray.instance.update_config( "sass_dir", @sass_dir_text.getText.inspect )
       Tray.instance.update_config( "images_dir", @images_dir_text.getText.inspect )
       Tray.instance.update_config( "javascripts_dir", @js_dir_text.getText.inspect )
+      Tray.instance.update_config( "javascripts_min_dir", @js_min_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_coffeescripts_dir", @coffeescripts_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_minifyjs_on_build", @minifyjs_on_build_button.getSelection )
       Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
@@ -524,7 +546,8 @@ def build_buildoption_group(behind)
       Tray.instance.clean_project
 
       msg_window.dispose
-      evt.widget.shell.dispose
+
+      evt.widget.shell.dispose if evt.widget && !evt.widget.isDisposed
     end
   end
 

@@ -16,9 +16,8 @@ class JavascriptCompiler
     end
   end
 
-  def self.minify_folder(javascripts_dir)
+  def self.minify_folder(javascripts_dir, javascripts_min_dir)
     javascripts_dir = File.expand_path(javascripts_dir)
-    javascripts_min_dir = "#{javascripts_dir}-min"
     #puts( "1 minifying #{javascripts_dir} #{javascripts_min_dir}")
 
     Dir.glob( File.join(javascripts_dir, "**", "*.js")) do |full_path|
