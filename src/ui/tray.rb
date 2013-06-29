@@ -623,7 +623,7 @@ class Tray
                                            @menu, 
                                            @menu.indexOf(@clean_item) +1 )
       last_item = @build_project_item
-      if Compass.configuration.the_hold_options
+      if !Compass.configuration.the_hold_options.empty?
         @deploy_project_item =  add_menu_item( "Deploy Project", 
                                               deploy_project_handler, 
                                               Swt::SWT::PUSH,
