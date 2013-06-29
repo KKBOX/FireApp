@@ -100,7 +100,6 @@ class ProjectBuilder
         
         pass = false
         blacklist.each do |pattern|
-          puts path,pattern if path =~ /proxy/
             if File.fnmatch(pattern, path)
               pass = true
               break

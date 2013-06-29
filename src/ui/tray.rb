@@ -189,32 +189,6 @@ class Tray
     
   end
 
-=begin
-  def build_change_options_menuitem( index )
-
-    @changeoptions_item = add_menu_item( "Change Sass Options...", empty_handler , Swt::SWT::CASCADE, @menu, index)
-    submenu = Swt::Widgets::Menu.new( @menu )
-    @changeoptions_item.menu = submenu
-
-    outputstyle_item = add_menu_item( "Output Style", nil, Swt::SWT::PUSH, submenu)
-
-    %W{nested expanded compact compressed}.each do |output_style|
-      item = add_menu_item( output_style,     outputstyle_handler, Swt::SWT::RADIO, submenu )
-      item.setSelection(true) if compass_project_config.output_style.to_s == output_style
-    end
-
-    add_menu_separator(submenu)
-
-    options_item = add_menu_item( "Options", nil, Swt::SWT::PUSH, submenu)
-
-    linecomments_item  = add_menu_item( "Line Comments", linecomments_handler, Swt::SWT::CHECK, submenu )
-    linecomments_item.setSelection(true) if compass_project_config.line_comments
-
-    debuginfo_item    = add_menu_item( "Debug Info",   debuginfo_handler,   Swt::SWT::CHECK, submenu )
-    debuginfo_item.setSelection(true) if compass_project_config.sass_options && compass_project_config.sass_options[:debug_info] 
-  end
-=end
-
   def build_compass_framework_menuitem( submenu, handler )
     Compass::Frameworks::ALL.each do | framework |
       next if framework.name =~ /^_/
@@ -415,7 +389,6 @@ class Tray
         end
         report_window.append "Done!" if report_window
 
-        end_build_project=Time.now
 
         # -- change line comments to original --
         Tray.instance.update_config( "line_comments", original_line_comments )
@@ -523,40 +496,6 @@ class Tray
     end
   end
 
-=begin
-  def outputstyle_handler
-    Swt::Widgets::Listener.impl do |method, evt|
-      if evt.widget.getSelection 
-        puts "output_style "+ ":#{evt.widget.text}"
-        update_config( "output_style", ":#{evt.widget.text}" )
-        clean_project
-      end
-    end
-  end
-
-  def linecomments_handler
-    Swt::Widgets::Listener.impl do |method, evt|
-      puts "line_comments "+ evt.widget.getSelection.to_s
-      update_config( "line_comments", evt.widget.getSelection.to_s )
-      clean_project
-    end
-  end
-
-  def debuginfo_handler
-    Swt::Widgets::Listener.impl do |method, evt|
-
-      sass_options = compass_project_config.sass_options
-      sass_options = {} if !sass_options.is_a? Hash
-      sass_options[:debug_info] = evt.widget.getSelection
-
-      update_config( "sass_options", sass_options.inspect )
-
-      Compass::Commands::CleanProject.new(@watching_dir, {}).perform
-      clean_project
-    end
-  end 
-=end
-
   def watch(dir, options = {}) # options = { :need_stop(boolean), :show_progress(boolean) }
 
     options = { :need_stop => true, :show_progress => false }.merge(options)
@@ -607,7 +546,6 @@ class Tray
       @install_item.menu = Swt::Widgets::Menu.new( @menu )
       build_compass_framework_menuitem( @install_item.menu, install_project_handler )
       
-      #build_change_options_menuitem( @menu.indexOf(@install_item) +1 )
       build_change_options_panel(@menu.indexOf(@install_item) +1 )
 
       @clean_item =  add_menu_item( "Clean && Compile", 
