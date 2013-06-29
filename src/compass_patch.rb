@@ -21,9 +21,7 @@ module Compass
   end
  
   Configuration.add_configuration_property(:the_hold_options, nil) do
-    {
-      :host => "http://the-hold.handlino.com/"
-    }
+    { }
   end
 
   Configuration.add_configuration_property(:fireapp_minifyjs_on_build, nil) do
