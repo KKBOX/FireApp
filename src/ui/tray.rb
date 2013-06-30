@@ -447,7 +447,7 @@ class Tray
     options = { :show_report => false, :show_progress => false }.merge(options)
 
     msg_window = ProgressWindow.new if options[:show_progress]
-    msg_window.replace("Compiling...", false, true) if msg_window
+    msg_window.replace("Building...", false, true) if msg_window
 
     dir = @watching_dir
     stop_watch
