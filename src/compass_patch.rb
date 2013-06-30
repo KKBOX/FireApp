@@ -15,11 +15,20 @@ module Compass
   Configuration.add_configuration_property(:fireapp_coffeescripts_dir, nil) do
     "coffeescripts"
   end
+ 
+  Configuration.add_configuration_property(:fireapp_livescripts_dir, nil) do
+    "livescripts"
+  end
 
   Configuration.add_configuration_property(:fireapp_coffeescript_options, nil) do
     {}
   end
+  
+  Configuration.add_configuration_property(:fireapp_livescript_options, nil) do
+    {}
+  end
  
+
   Configuration.add_configuration_property(:the_hold_options, nil) do
     { }
   end
@@ -43,7 +52,9 @@ module Compass
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
           CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
         end
-
+        if File.exists?( Compass.configuration.fireapp_livescripts_dir )
+          LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_livescript_options );
+        end
         compiler = new_compiler_instance
         check_for_sass_files!(compiler)
         compiler.clean! if compiler.new_config?
@@ -56,6 +67,9 @@ module Compass
       def perform
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
           CoffeeCompiler.clean_compile_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
+        end
+        if File.exists?( Compass.configuration.fireapp_livescripts_dir )
+          LiveScriptCompiler.clean_compile_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )
         end
         compiler = new_compiler_instance
         compiler.clean!

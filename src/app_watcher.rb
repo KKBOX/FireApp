@@ -66,6 +66,22 @@ module Compass
                                       Compass.configuration.javascripts_dir, 
                                       Compass.configuration.fireapp_coffeescript_options );
       end
+      
+      def coffeescript_watchers
+        filter = File.join(Compass.configuration.fireapp_livescripts_dir,  "*.ls")
+        child_filter = File.join(Compass.configuration.fireapp_livescripts_dir, "**", "*.ls")
+
+        [ Watcher::Watch.new(child_filter, &method(:livescript_callback) ),
+          Watcher::Watch.new(filter, &method(:livescript_callback) ) ]
+      end
+
+      def livescript_callback(base, file, action)
+        log_action(:info, "#{file} was #{action}", options)
+        puts( "#{file} was #{action}", options)
+        LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir,
+                                      Compass.configuration.javascripts_dir, 
+                                      Compass.configuration.fireapp_livescript_options );
+      end
 
       def livereload_watchers
        ::App::CONFIG["services_livereload_extensions"].split(/,/).map do |ext|
