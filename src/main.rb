@@ -1,5 +1,6 @@
 INITAT=Time.now
 
+require 'java'
 $LOAD_PATH << 'src'
 require 'pathname'
 resources_dir =  Pathname.new(__FILE__).dirname().dirname().dirname().to_s()[5..-1]
@@ -11,10 +12,18 @@ else
   LIB_PATH = File.expand_path 'lib' 
 end
 
+# set execjs runtime
+ENV["EXECJS_RUNTIME"] = "Node"
+
 # bundle nodejs for windows so we need add node.exe path to ENV['PATH']
 if org.jruby.platform.Platform::IS_WINDOWS
-  ENV['PATH'] = File.join(LIB_PATH,'nodejs')+File::PATH_SEPARATOR+ENV['PATH']
+  ENV['PATH'] = File.join(LIB_PATH,'nodejs','win')+File::PATH_SEPARATOR+ENV['PATH']
+elsif org.jruby.platform.Platform::IS_MAC
+  ENV['PATH'] = File.join(LIB_PATH,'nodejs','osx')+File::PATH_SEPARATOR+ENV['PATH']
+elsif org.jruby.platform.Platform::IS_LINUX
+  ENV['PATH'] = File.join(LIB_PATH,'nodejs','linux')+File::PATH_SEPARATOR+ENV['PATH']
 end
+
 
 require "swt_wrapper"
 require "ui/splash_window"
@@ -26,7 +35,7 @@ require 'stringio'
 require 'thread'
 require "open-uri"
 require "yaml"
-%w{alert notification quit_window tray preference_panel report welcome_window}.each do | f |
+%w{alert notification quit_window tray preference_panel report welcome_window change_options_panel progress_window}.each do | f |
   require "ui/#{f}"
 end
 
@@ -64,15 +73,16 @@ begin
     require 'execjs'
     require "fsevent_patch" if App::OS == 'darwin'
     require "coffee_compiler.rb"
+    require "livescript_compiler.rb"
     require "app_watcher.rb"
     require "compass_patch.rb"
     require "sass_patch.rb"
     require "the_hold_uploader.rb"
+    require "project_builder.rb"
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
   end
 
-  require 'em-websocket'
   require 'json'
 
   %w{ninesixty html5-boilerplate compass-h5bp bootstrap-sass susy zurb-foundation fireapp-example}.each do |x|

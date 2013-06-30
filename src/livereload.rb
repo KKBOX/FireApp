@@ -1,33 +1,50 @@
+require "singleton"
+require 'em-websocket'
+require 'json'
 
 module EventMachine
   module WebSocket
-    class Connection 
-      def receive_data(data)
-        debug [:receive_data, data]
-
-        if @handler
-          @handler.receive_data(data)
+    class Connection
+      def dispatch(data)
+        if data.match(/\A<policy-file-request\s*\/>/)
+          send_flash_cross_domain_file
+          # we need livereload.js
+        elsif data.match(/\AGET \/?livereload.js/)
+          send_livereloadjs_file
         else
-          dispatch(data)
+          @handshake ||= begin
+                           handshake = Handshake.new(@secure || @secure_proxy)
+
+                           handshake.callback { |upgrade_response, handler_klass|
+                             debug [:accepting_ws_version, handshake.protocol_version]
+                             debug [:upgrade_response, upgrade_response]
+                             self.send_data(upgrade_response)
+                             @handler = handler_klass.new(self, @debug)
+                             @handshake = nil 
+                             trigger_on_open(handshake)
+                           }   
+
+                           handshake.errback { |e| 
+                             debug [:error, e]
+                             trigger_on_error(e)
+                             # Handshake errors require the connection to be aborted
+                             abort
+                           }   
+
+                           handshake
+                         end 
+
+          @handshake.receive_data(data)
         end 
-      rescue HandshakeError => e
-        debug [:error, e]
-        trigger_on_error(e)
-        # Errors during the handshake require the connection to be aborted
+      end 
+      def send_livereloadjs_file
+        debug [:send_livereloadjs_file, '' ]
+        send_data open(File.join(LIB_PATH, 'javascripts', "livereload.js")){|f| f.read}
 
-        #abort # comment for failover normailhttp request
-
-      rescue WebSocketError => e
-        debug [:error, e]
-        trigger_on_error(e)
-        close_websocket_private(1002) # 1002 indicates a protocol error
-      rescue => e
-        debug [:error, e]
-        # These are application errors - raise unless onerror defined
-        trigger_on_error(e) || raise(e)
-        # There is no code defined for application errors, so use 3000
-        # (which is reserved for frameworks)
-        close_websocket_private(3000)
+        # handle the cross-domain request transparently
+        # no need to notify the user about this connection
+        @onclose = nil
+        close_connection_after_writing
       end 
 
     end
@@ -53,7 +70,7 @@ class SimpleLivereload
       :port => 35729,
       :debug => false
     }.merge(options)
-    
+
 
     Thread.abort_on_exception = true
     @livereload_thread = Thread.new do 
@@ -61,7 +78,7 @@ class SimpleLivereload
         ws.onopen do
           begin
             puts "Browser connected."; 
-            ws.send "!!ver:#{1.6}";
+            #ws.send "!!ver:#{1.6}";
             SimpleLivereload.instance.clients << ws
           rescue
             puts $!
@@ -70,21 +87,22 @@ class SimpleLivereload
         end
         ws.onmessage do |msg|
           puts "Browser URL: #{msg}"
+          begin
+            msg = JSON.parse(msg)
+            if msg["command"]=='hello'
+              ws.send JSON.dump({
+                "command"    => 'hello',
+                "protocols"  => ['http://livereload.com/protocols/official-7'],
+                "serverName" => "Fire.app"
+              })
+            end
+          rescue
+          end
         end
 
         ws.onclose do
           SimpleLivereload.instance.clients.delete ws
           puts "Browser disconnected."
-        end
-
-        ws.onerror do |error|
-          # for http://help.livereload.com/kb/general-use/using-livereload-without-browser-extensions
-          if error.kind_of?(EventMachine::WebSocket::HandshakeError)
-            ws.send_data "HTTP/1.1 200 OK\r\n\r\n"+ open(File.join(LIB_PATH, 'javascripts', "livereload.js")).read
-            ws.close_connection_after_writing
-          else
-            ws.about
-          end
         end
       end
     end
@@ -101,10 +119,11 @@ class SimpleLivereload
   end
 
   def send_livereload_msg( base, relative )
-    data = JSON.dump( ['refresh', { :path => URI.escape(File.join(base, relative)),
-                     :apply_js_live  => true,
-                     :apply_css_live => true,
-                     :apply_images_live => true }] )
+    data = JSON.dump( {
+      :command => "reload",
+      :path    => URI.escape(File.join(base, relative)),
+      :liveCSS => true,
+    } )
     @clients.each do |ws|
       EM::next_tick do
         ws.send(data)

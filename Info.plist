@@ -46,6 +46,11 @@
             <array>
                 <string>-Dfile.encoding=utf8</string>
                 <string>-Xverify:none</string>
+                <string>-Xss1m</string>
+                <string>-XX:-UseParallelOldGC</string>
+                <string>-XX:NewRatio=4</string>
+                <string>-Xmx384m</string>
+                <string>-Xms128m</string>
                 <string>-Xbootclasspath/p:$APP_PACKAGE/Contents/Resources/Java/lib/java/jruby-complete.jar</string>
             </array>
         </dict>

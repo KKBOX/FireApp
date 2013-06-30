@@ -1,4 +1,3 @@
-
 # Project Config Example
 
 append to config.rb 
@@ -21,16 +20,13 @@ append to config.rb
             access_log /var/log/nginx/foo.bar.access.log;
             error_log /var/log/nginx/foo.bar.error.log;
 
-            location /sites {
+            location /user_sites {
                 internal;
                 root /foo/bar;
             }
             location / {
-                passenger_enabled on;
-                root /foo/bar/public; # for passenger 
-
-                # proxy_pass        http://localhost:9292;
-                # proxy_set_header Host $host;
+                proxy_pass        http://localhost:9292;
+                proxy_set_header Host $host;
             }
         }
 

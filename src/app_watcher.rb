@@ -1,9 +1,9 @@
-
 if Compass::VERSION =~ /^0.12/
   $LOAD_PATH.unshift File.join(LIB_PATH,'ruby','compass_0.12','backport_from_0.13','lib')
   require 'compass/watcher'
 end
 
+require 'livereload.rb'
 module Compass
   module Watcher
     class  AppWatcher < ProjectWatcher
@@ -14,9 +14,41 @@ module Compass
         setup_listener
       end
 
+      def listen_callback(modified_file, added_file, removed_file)
+        #log_action(:info, ">>> Listen Callback fired added: #{added_file}, mod: #{modified_file}, rem: #{removed_file}", {})
+        action = nil
+        action ||= :modified unless modified_file.empty?
+        action ||= :added unless added_file.empty?
+        action ||= :removed unless removed_file.empty?
+
+        files = modified_file + added_file + removed_file
+        # run watchers
+        sass_watchers.each do |watcher|
+          files.each do |file|
+            if watcher.is_a? Array # for compass 0.12 watcher format
+              glob,callback = watcher
+              callback.call(project_path, file, action) if File.fnmatch(glob, file)
+            else
+              watcher.run_callback(project_path, file, action) if watcher.match?(file)
+            end
+          end
+        end
+        java.lang.System.gc()
+      end
+
       def watch!
         compile
         super
+      end
+      
+      def stop
+        log_action(:info, "AppWatcher stop!",{})
+        begin
+          listener.stop if listener.adapter
+        rescue Exception => e
+          log_action(:warning, "#{e.message}\n#{e.backtrace}", {})
+        end
+
       end
 
       def coffeescript_watchers
@@ -33,6 +65,22 @@ module Compass
         CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir,
                                       Compass.configuration.javascripts_dir, 
                                       Compass.configuration.fireapp_coffeescript_options );
+      end
+      
+      def coffeescript_watchers
+        filter = File.join(Compass.configuration.fireapp_livescripts_dir,  "*.ls")
+        child_filter = File.join(Compass.configuration.fireapp_livescripts_dir, "**", "*.ls")
+
+        [ Watcher::Watch.new(child_filter, &method(:livescript_callback) ),
+          Watcher::Watch.new(filter, &method(:livescript_callback) ) ]
+      end
+
+      def livescript_callback(base, file, action)
+        log_action(:info, "#{file} was #{action}", options)
+        puts( "#{file} was #{action}", options)
+        LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir,
+                                      Compass.configuration.javascripts_dir, 
+                                      Compass.configuration.fireapp_livescript_options );
       end
 
       def livereload_watchers

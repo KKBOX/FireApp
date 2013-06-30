@@ -2,6 +2,7 @@ require "singleton"
 class Tray
   include Singleton
   attr_reader :logger
+  attr_reader :watching_dir
   def initialize()
     @http_server = nil
     @compass_thread = nil
@@ -145,10 +146,7 @@ class Tray
 
   def compass_switch_handler
     Swt::Widgets::Listener.impl do |method, evt|
-      if @watching_dir
-        stop_watch
-      end
-      watch(evt.widget.text)
+      watch(evt.widget.text, {:show_progress => true})
     end
   end
 
@@ -159,7 +157,7 @@ class Tray
       else
         dia = Swt::Widgets::DirectoryDialog.new(@shell)
         dir = dia.open
-        watch(dir) if dir 
+        watch(dir, {:show_progress => true}) if dir 
       end
     end
   end
@@ -186,28 +184,9 @@ class Tray
     Compass.add_project_configuration(file_name)
   end
 
-  def build_change_options_menuitem( index )
-
-    @changeoptions_item = add_menu_item( "Change Sass Options...", empty_handler , Swt::SWT::CASCADE, @menu, index)
-    submenu = Swt::Widgets::Menu.new( @menu )
-    @changeoptions_item.menu = submenu
-
-    outputstyle_item = add_menu_item( "Output Style", nil, Swt::SWT::PUSH, submenu)
-
-    %W{nested expanded compact compressed}.each do |output_style|
-      item = add_menu_item( output_style,     outputstyle_handler, Swt::SWT::RADIO, submenu )
-      item.setSelection(true) if compass_project_config.output_style.to_s == output_style
-    end
-
-    add_menu_separator(submenu)
-
-    options_item = add_menu_item( "Options", nil, Swt::SWT::PUSH, submenu)
-
-    linecomments_item  = add_menu_item( "Line Comments", linecomments_handler, Swt::SWT::CHECK, submenu )
-    linecomments_item.setSelection(true) if compass_project_config.line_comments
-
-    debuginfo_item    = add_menu_item( "Debug Info",   debuginfo_handler,   Swt::SWT::CHECK, submenu )
-    debuginfo_item.setSelection(true) if compass_project_config.sass_options && compass_project_config.sass_options[:debug_info] 
+  def build_change_options_panel( index )
+    @changeoptions_item = add_menu_item( "Change Options...", change_options_handler , Swt::SWT::PUSH, @menu, index)
+    
   end
 
   def build_compass_framework_menuitem( submenu, handler )
@@ -299,6 +278,12 @@ class Tray
     end
   end
 
+  def change_options_handler 
+    Swt::Widgets::Listener.impl do |method, evt|
+      ChangeOptionsPanel.instance.open
+    end
+  end
+
   def preference_handler 
     Swt::Widgets::Listener.impl do |method, evt|
       PreferencePanel.instance.open
@@ -366,171 +351,121 @@ class Tray
 
   def clean_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
-      clean_project(true)
+      clean_project({:show_report => true})
     end
   end
-
-  def write_dynamaic_file(release_dir, request_path )
-    new_file = File.join(release_dir, request_path)
-    FileUtils.mkdir_p( File.dirname(  new_file ))
-    puts request_path
-    File.open(new_file, 'w') {|f| f.write( open("http://127.0.0.1:#{App::CONFIG['services_http_port']}#{URI.escape(request_path)}").read ) } 
-  end 
 
   def build_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
-      build_project
+      ENV["RACK_ENV"] = "production"
+
+      App.try do 
+        build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
+
+        
+        # -- original setting --
+        original_line_comments = Tray.instance.compass_project_config.line_comments
+        original_debug_info =  Tray.instance.compass_project_config.sass_options[:debug_info]    
+
+        # -- change line comments to false --
+        Tray.instance.update_config( "line_comments", false )
+
+        # -- change debug info to false --
+        sass_options = Tray.instance.compass_project_config.sass_options
+        sass_options = {} if !sass_options.is_a? Hash
+        sass_options[:debug_info] = false
+        Tray.instance.update_config( "sass_options", sass_options.inspect )
+
+        clean_project({:show_progress => true})
+
+        # -- init report -- 
+        report_window = App.report('Start build project!') do
+          Swt::Program.launch(Pathname.new(build_path).realpath.to_s)
+        end if Tray.instance.compass_project_config.fireapp_always_report_on_build
+
+        # -- build project --
+        ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg|
+          report_window.append msg if report_window
+        end
+        report_window.append "Done!" if report_window
+
+
+        # -- change line comments to original --
+        Tray.instance.update_config( "line_comments", original_line_comments )
+
+        # -- change debug info to original --
+        sass_options = Tray.instance.compass_project_config.sass_options
+        sass_options = {} if !sass_options.is_a? Hash
+        sass_options[:debug_info] = original_debug_info
+        Tray.instance.update_config( "sass_options", sass_options.inspect )
+
+        clean_project
+      end
+
+      
+      ENV["RACK_ENV"] = "development"    
     end
   end 
-  def build_project(target_path=nil, options={})
-    ENV["RACK_ENV"] = "production"
 
-    project_path = File.expand_path(Compass.configuration.project_path)
-    release_dir = File.expand_path( target_path || Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}")
-
-    App.try do 
-
-      report_window = nil
-      if !options[:headless]
-        report_window = App.report('Start build project!') do
-          Swt::Program.launch(release_dir)
-        end
-      end
-
-      FileUtils.rm_r( release_dir) if File.exists?(release_dir)
-      FileUtils.mkdir_p( release_dir)
-
-      # rebuild sass & coffeescript
-      is_compass_project = false
-      x = Compass::Commands::UpdateProject.new( project_path, {})
-      if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
-        x.perform
-        is_compass_project = true
-      end
-
-      blacklist = []
-
-      build_ignore_file = "build_ignore.txt"
-
-      if File.exists?(File.join( project_path, build_ignore_file))
-        blacklist << build_ignore_file
-        blacklist += File.open( File.join( project_path, build_ignore_file) ).readlines.map{|p|
-          p.strip
-        }
-      else
-        blacklist += [
-          "*.swp",
-          "*.layout",
-          "*~",
-          "*/.DS_Store",
-          "*/.git",
-          "*/.gitignore",
-          "*.svn",
-          "*/Thumbs.db",
-          "*/.sass-cache",
-          "*/.coffeescript-cache",
-          "*/compass_app_log.txt",
-          "*/fire_app_log.txt",
-          "view_helpers.rb",
-          "Gemfile",
-          "Gemfile.lock",
-          "config.ru"
-        ]
-        blacklist << File.basename(Compass.detect_configuration_file) if is_compass_project
-      end
-
-      if is_compass_project && Compass.configuration.fireapp_build_path 
-        blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
-      end
-
-      blacklist.uniq!
-      blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
-
-      #build html 
-      Dir.glob( File.join(project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
-      if file =~ /build_\d{14}/ || file.index(release_dir)
-        next 
-      end
-      extname=File.extname(file)
-      if Tilt[ extname[1..-1] ]
-        request_path = file[project_path.length ... (-1*extname.size)]
-        pass = false
-        blacklist.each do |pattern|
-          if File.fnmatch(pattern, request_path[1..-1])
-            pass = true
-            break
-          end
-        end
-        next if pass
-
-        write_dynamaic_file(release_dir, request_path)
-        report_window.append "Create: #{request_path}" if report_window
-      end
-      end
-
-      Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? }
-
-      #copy static file
-      Dir.glob( File.join(project_path, '**', '*') ) do |file|
-        path = file[(project_path.length+1) .. -1]
-        next if path =~ /build_\d{14}/
-          pass = false
-
-        blacklist.each do |pattern|
-          puts path,pattern if path =~ /proxy/
-            if File.fnmatch(pattern, path)
-              pass = true
-              break
-            end
-        end
-        next if pass
-
-        new_file = File.join(release_dir, path)
-        if File.file? file
-          FileUtils.mkdir_p( File.dirname(  new_file ))
-          FileUtils.cp( file, new_file )
-          report_window.append "Copy: #{file.gsub(/#{project_path}/,'')}" if report_window
-        end
-      end
-
-      end_build_project=Time.now
-      report_window.append "Done!"  if report_window
-    end
-    ENV["RACK_ENV"] = "development"
-    return release_dir
-  end
+  
 
   def deploy_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
       App.try do 
         options = Compass.configuration.the_hold_options
         temp_build_folder = File.join(Dir.tmpdir, "fireapp", rand.to_s)
-        respone = TheHoldUploader.upload_patch(build_project(temp_build_folder, {:headless => true}), options)
+        #build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
+        build_path = "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
+        
+
+        deploy_window = ProgressWindow.new
+        ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg| 
+          deploy_window.replace(msg)
+        end
+
+        deploy_window.replace("Uploading...", false, true)
+        respone = TheHoldUploader.upload_patch(build_path, options)
         if respone.code == "200"
           host=URI(options[:host]).host
           Swt::Program.launch("http://#{options[:project]}.#{options[:login]}.#{host}")
+          
           App.alert("done")
         else
           App.alert(respone.body)
         end
+        deploy_window.dispose
+
+        require 'fileutils'
+        FileUtils.rm_rf(build_path)
+
       end
     end
   end
 
-  def clean_project(show_report = false)
+  def clean_project(options = {}) # options = {:show_report(boolean), :show_progress(boolean)}
+
+    options = { :show_report => false, :show_progress => false }.merge(options)
+
+    msg_window = ProgressWindow.new if options[:show_progress]
+    msg_window.replace("Building...", false, true) if msg_window
+
     dir = @watching_dir
     stop_watch
     App.try do 
+      @logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
       actual = App.get_stdout do
-        Compass::Commands::CleanProject.new(dir, {}).perform
+        Compass::Commands::CleanProject.new(dir, {:logger => @logger}).perform
         Compass.reset_configuration!
-        Compass::Commands::UpdateProject.new( dir, {}).perform
+        Compass::Commands::UpdateProject.new( dir, {:logger => @logger}).perform
         Compass.reset_configuration!
       end
-      App.report( actual ) if show_report
+      App.report( actual ) if options[:show_report]
     end
-    watch(dir)
+    watch(dir, {:need_stop => false})
+
+    msg_window.dispose if msg_window
   end
+
 
   def update_config(need_clean_attr, value)
     new_config_str = "\n#{need_clean_attr} = #{value} # by Fire.app "
@@ -561,52 +496,28 @@ class Tray
     end
   end
 
-  def outputstyle_handler
-    Swt::Widgets::Listener.impl do |method, evt|
-      if evt.widget.getSelection 
-        update_config( "output_style", ":#{evt.widget.text}" )
-        clean_project
-      end
-    end
-  end
+  def watch(dir, options = {}) # options = { :need_stop(boolean), :show_progress(boolean) }
 
-  def linecomments_handler
-    Swt::Widgets::Listener.impl do |method, evt|
-      update_config( "line_comments", evt.widget.getSelection.to_s )
-      clean_project
-    end
-  end
+    options = { :need_stop => true, :show_progress => false }.merge(options)
 
-  def debuginfo_handler
-    Swt::Widgets::Listener.impl do |method, evt|
+    msg_window = ProgressWindow.new if options[:show_progress]
+    msg_window.replace("Watching #{dir}...", false, true) if msg_window
 
-      sass_options = compass_project_config.sass_options
-      sass_options = {} if !sass_options.is_a? Hash
-      sass_options[:debug_info] = evt.widget.getSelection
-
-      update_config( "sass_options", sass_options.inspect )
-
-      Compass::Commands::CleanProject.new(@watching_dir, {}).perform
-      clean_project
-    end
-  end 
-
-  def watch(dir)
     dir.gsub!('\\','/') if org.jruby.platform.Platform::IS_WINDOWS
     App.try do 
+      
+      stop_watch if options[:need_stop] 
+      @logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
       Compass.reset_configuration!
       Dir.chdir(dir)
-      x = Compass::Commands::UpdateProject.new( dir, {})
 
-      if !x.new_compiler_instance.sass_files.empty? # if we watch a compass project
-        stop_watch
+      # update compass global configuration and make sure assert folder exists
+      Compass::Commands::UpdateProject.new( dir, {:logger => @logger})
 
-        @logger = Compass::Logger.new({ :display => App.display, :log_dir => dir})
-
-        Thread.abort_on_exception = true
-        @compass_thread = Thread.new do
-          Compass::Watcher::AppWatcher.new(dir, Compass.configuration.watches).watch!
-        end
+      Thread.abort_on_exception = true
+      @compass_thread = Thread.new do
+        Thread.current[:watcher]=Compass::Watcher::AppWatcher.new(dir, Compass.configuration.watches, {:logger=> @logger})
+        Thread.current[:watcher].watch!
       end
 
       @tray_item.image = @watching_icon
@@ -635,7 +546,7 @@ class Tray
       @install_item.menu = Swt::Widgets::Menu.new( @menu )
       build_compass_framework_menuitem( @install_item.menu, install_project_handler )
       
-      build_change_options_menuitem( @menu.indexOf(@install_item) +1 )
+      build_change_options_panel(@menu.indexOf(@install_item) +1 )
 
       @clean_item =  add_menu_item( "Clean && Compile", 
                                    clean_project_handler, 
@@ -650,7 +561,7 @@ class Tray
                                            @menu, 
                                            @menu.indexOf(@clean_item) +1 )
       last_item = @build_project_item
-      if Compass.configuration.the_hold_options
+      if !Compass.configuration.the_hold_options.empty?
         @deploy_project_item =  add_menu_item( "Deploy Project", 
                                               deploy_project_handler, 
                                               Swt::SWT::PUSH,
@@ -664,22 +575,25 @@ class Tray
       end
 
       if App::CONFIG['services'].include?( :http )
+        require "simplehttpserver"
         @simplehttpserver_thread = Thread.new do
-          require "simplehttpserver"
           SimpleHTTPServer.instance.start(Compass.configuration.project_path, :Port =>  App::CONFIG['services_http_port'])
         end
       end
 
       if App::CONFIG['services'].include?( :livereload )
         @simplelivereload_thread = Thread.new do
-          require "livereload"
           SimpleLivereload.instance.watch(Compass.configuration.project_path, { :port => App::CONFIG["services_livereload_port"] }) 
         end
       end
 
+      msg_window.dispose if msg_window
+
       return true
 
     end
+
+    msg_window.dispose if msg_window
 
     return false
   end
@@ -689,6 +603,13 @@ class Tray
     SimpleLivereload.instance.unwatch if defined?(SimpleLivereload)
     SimpleHTTPServer.instance.stop if defined?(SimpleHTTPServer)
     FSEvent.stop_all_instances if Object.const_defined?("FSEvent") && FSEvent.methods.map{|x| x.to_sym}.include?(:stop_all_instances)
+
+    ChangeOptionsPanel.instance.close
+
+    if @compass_thread 
+      @compass_thread[:watcher].stop 
+    end
+
     [@simplelivereload_thread, @simplehttpserver_thread, @compass_thread].each do |x|
       x.kill if x && x.alive?
     end

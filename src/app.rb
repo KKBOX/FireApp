@@ -4,7 +4,7 @@ module App
   extend self
 
   include CompileVersion
-  VERSION = "1.8"
+  VERSION = "1.11"
   OS = org.jruby.platform.Platform::OS 
   OS_VERSION = java.lang.System.getProperty("os.version")
 
@@ -71,7 +71,7 @@ module App
       "services" => [ :http, :livereload],
       "services_http_port" => 24681,
       "services_livereload_port" => 35729,
-      "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,coffee,markdown,mkd,md",
+      "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,coffee,js,markdown,mkd,md",
       "preferred_syntax" => "scss",
       "force_enable_fsevent" => false,
       "num_of_history" => 5
@@ -185,11 +185,13 @@ module App
   end
 
   def notify(msg, target_display = nil )
-    if org.jruby.platform.Platform::IS_MAC
-      system('/usr/bin/osascript', "#{LIB_PATH}/applescript/growl.scpt", msg )
-    else
+    #puts "+ notify: " + msg
+
+    #if org.jruby.platform.Platform::IS_MAC
+    #  system('/usr/bin/osascript', "#{LIB_PATH}/applescript/growl.scpt", msg )
+    #else
       Notification.new(msg, target_display)
-    end
+    #end
   end
 
   def report(msg, target_display = nil, options={}, &block)
