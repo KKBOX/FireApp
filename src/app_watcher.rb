@@ -59,8 +59,8 @@ module Compass
       end
 
       def javascript_callback(base, file, action)
-        log_action(:info, "Minifying: #{base} #{file}", options)
-        puts( "Minifying: #{base} #{file}", options)
+        log_action(:info, "#{file} was #{action}", {})
+        puts( "#{file} was #{action}", {})
         file_to_minify = File.join(base, file)
     
         JavascriptMinify.minify_file(file_to_minify, Compass.configuration.javascripts_dir, Compass.configuration.javascripts_min_dir);

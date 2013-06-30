@@ -8,11 +8,10 @@ class JavascriptMinify
 
   def self.log(type, msg)
     msg = msg.sub(File.expand_path(Compass.configuration.project_path), '')[1..-1] if defined?(Tray) 
-
     if defined?(Tray) && Tray.instance.logger
       Tray.instance.logger.record type, msg
     else  
-      puts "Minify: #{type} #{msg}"
+      puts "Minify: #{msg}"
     end
   end
 
@@ -68,14 +67,19 @@ class JavascriptMinify
   end
 
   def self.minify(full_path, new_js_path)
-
     FileUtils.mkdir_p(File.dirname(new_js_path)) #make sure the folders exist
 
     if File.exists?(new_js_path)
       FileUtils.rm_rf(new_js_path)
     end
+
+    JavascriptMinify.log( :minifying, "#{new_js_path}")
     File.open(new_js_path, 'w') do |f|
-      f.write(Uglifier.compile(File.read(full_path)))
+      begin
+        f.write(Uglifier.compile(File.read(full_path)))
+      rescue Exception=>e
+        f.write("document.write("+ "#{new_js_path}: #{e.message}".to_json + ")")
+      end
     end
   end
 end
