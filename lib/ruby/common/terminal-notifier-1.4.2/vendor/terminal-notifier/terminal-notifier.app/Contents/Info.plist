@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>12A269</string>
+	<string>12D78</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -11,7 +11,7 @@
 	<key>CFBundleIconFile</key>
 	<string>Terminal</string>
 	<key>CFBundleIdentifier</key>
-	<string>nl.superalloy.oss.terminal-notifier</string>
+	<string>handlino.terminal-notifier</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -27,17 +27,17 @@
 	<key>DTCompiler</key>
 	<string></string>
 	<key>DTPlatformBuild</key>
-	<string>4F243</string>
+	<string>4H512</string>
 	<key>DTPlatformVersion</key>
 	<string>GM</string>
 	<key>DTSDKBuild</key>
-	<string>12A264</string>
+	<string>12D75</string>
 	<key>DTSDKName</key>
 	<string>macosx10.8</string>
 	<key>DTXcode</key>
-	<string>0440</string>
+	<string>0461</string>
 	<key>DTXcodeBuild</key>
-	<string>4F243</string>
+	<string>4H512</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.8</string>
 	<key>LSUIElement</key>
