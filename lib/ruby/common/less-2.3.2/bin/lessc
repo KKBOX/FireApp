@@ -1,0 +1,103 @@
+#!/usr/bin/env ruby
+
+require 'less'
+
+compress = false
+yuicompress = false
+
+options = {
+  :paths => [],
+  :strictImports => false,
+  :silent => false,
+  :optimization => 1
+}
+
+output = nil
+
+require 'optparse'
+
+opts = OptionParser.new do |opts|
+  opts.summary_width = 37
+
+  opts.banner = 'Usage: lessc [options] [INPUT]'
+  
+  opts.on('-h', '--help', 'print this help') do
+    puts opts
+    exit
+  end
+  
+  opts.on('-v', '--version', 'print version') do
+    puts("lessc #{Less['version'].join('.')} (LESS Compiler) [Ruby] #{Less::VERSION}")
+    exit(0)
+  end
+
+  opts.on('-s', '--silent') do
+    options[:silent] = true
+  end
+
+  opts.on('--strict-imports') do
+    options[:strictImports] = true
+  end
+
+  opts.on('-x', '--compress') do
+    compress = true
+  end
+
+  opts.on('--yui-compress') do
+    yuicompress = true
+  end
+
+  opts.on('--no-color') do
+    options[:color] = false
+  end
+
+  require 'rbconfig'
+  is_windows = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+  separator = is_windows ? ';' : ':'
+  opts.on('--paths PATHS', '--include-path PATHS',
+    "paths to include separated by '#{separator}'") do |paths|
+    paths = paths.split(separator).map do |path|
+      path.empty? ? nil : File.expand_path(path)
+    end
+    options[:paths] = paths.compact
+  end
+     
+  # NOTE: not present in JS version, has: --00, --01 and --02
+  opts.on('--optimization [0, 1 or 2]', "default: 1") do |num|
+    options[:optimization] = (num || 1).to_i
+  end
+  
+  [0, 1, 2].each do |num| # --00 --01 --02
+    opts.on("--0#{num}", "optimization: #{num}") do
+      options[:optimization] = num
+    end
+  end
+  
+  # NOTE: not present in JS version, does [INPUT] [OUTPUT]
+  #opts.on('--output file', "specify an output path") do |path|
+  #  output = File.expand_path(path)
+  #end
+  
+end
+
+opts.parse! ARGV
+
+if ARGV.empty?
+  puts("lessc: no input files")
+  exit(1)
+end
+
+if ARGV.size == 1
+  options[:filename] = ARGV.first
+end
+
+ARGV.each do |path|
+  options[:paths].unshift File.dirname(path)
+end
+options[:paths].uniq!
+
+parser = Less::Parser.new(options)
+tree = parser.parse(ARGF.read)
+css = tree.to_css(:compress => compress, :yuicompress => yuicompress)
+
+puts css # we do not support [INPUT] [OUTPUT] as the JS version does
