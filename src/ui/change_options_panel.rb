@@ -23,6 +23,10 @@ class ChangeOptionsPanel
     @shell.dispose if @shell and !@shell.isDisposed
   end
 
+  def close
+    @shell.dispose if @shell and !@shell.isDisposed
+  end
+
   def create_window
     @shell = Swt::Widgets::Shell.new(@display, Swt::SWT::DIALOG_TRIM)
     @shell.setText("Change Options")
