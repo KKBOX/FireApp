@@ -15,6 +15,8 @@ class ChangeOptionsPanel
     @shell.setLocation((m.width-rect.width) /2, (m.height-rect.height) /2) 
     @shell.open
     @shell.forceActive
+
+    @isChanged = false
   end
 
   def close
@@ -66,8 +68,21 @@ class ChangeOptionsPanel
     @shell.pack
   end
 
-  def build_select_button_on_general_group(group, swttext)
+
+  def build_dir_text_on_general_group(group, text, align)
+    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( align, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::CENTER)
+    dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    dir_text.setLayoutData( layoutdata )
+    dir_text.setText( text ) if text
+    dir_text.addListener(Swt::SWT::Selection, change_handler)
+    dir_text
+  end
+
+  def build_select_button_on_general_group(group, swttext, align = nil)
     # -- dir button --
+    align = swttext if align
     select_dir_btn = Swt::Widgets::Button.new(group, Swt::SWT::PUSH | Swt::SWT::CENTER)
     select_dir_btn.setText('Select')
     button_width = 70
@@ -117,13 +132,7 @@ class ChangeOptionsPanel
     sass_dir_label.pack
 
     # -- sass dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( sass_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( sass_dir_label, 0, Swt::SWT::CENTER)
-    @sass_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @sass_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.sass_dir
-    @sass_dir_text.setText( text ) if text
+    @sass_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.sass_dir, sass_dir_label)
 
     ## -- select dir button --
     build_select_button_on_general_group(group, @sass_dir_text)
@@ -453,9 +462,16 @@ def build_buildoption_group(behind)
     cancel_btn.pack
   end
 
+
+  def change_handler
+    Swt::Widgets::Listener.impl do |method, evt|   
+      @isChanged = true
+    end
+  end
+
   def cancel_handler
     Swt::Widgets::Listener.impl do |method, evt|   
-      evt.widget.shell.dispose();
+      close
     end
   end
 
