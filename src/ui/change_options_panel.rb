@@ -443,6 +443,7 @@ def build_buildoption_group(behind)
     cancel_btn.setText('Cancel')
     layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, 5, Swt::SWT::LEFT)
+    layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, -5, Swt::SWT::LEFT) if org.jruby.platform.Platform::IS_WINDOWS
     layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
     cancel_btn.setLayoutData( layoutdata )
     cancel_btn.addListener(Swt::SWT::Selection, cancel_handler)
