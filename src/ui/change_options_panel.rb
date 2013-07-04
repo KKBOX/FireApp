@@ -136,84 +136,41 @@ class ChangeOptionsPanel
 
 
     # -- sass dir label --
-    sass_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    sass_dir_label.setLayoutData( layoutdata )
-    sass_dir_label.setText("Sass Dir:")
-    sass_dir_label.pack
-
+    sass_dir_label = build_dir_label_on_general_group(group, "Sass Dir:", group)
     # -- sass dir text --
     @sass_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.sass_dir, sass_dir_label)
-
     ## -- select dir button --
     build_select_button_on_general_group(group, @sass_dir_text)
 
 
     # -- coffeescripts dir label --
-    coffeescripts_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( sass_dir_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( sass_dir_label, 10, Swt::SWT::BOTTOM)
-    coffeescripts_dir_label.setLayoutData( layoutdata )
-    coffeescripts_dir_label.setText("CoffeeScripts Dir:")
-    coffeescripts_dir_label.pack
-
+    coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", sass_dir_label)
     # -- coffeescripts dir text --
     @coffeescripts_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
-
-
     ## -- select dir button --
     build_select_button_on_general_group(group, @coffeescripts_dir_text)
 
 
     # -- css dir label --
-    css_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 10, Swt::SWT::BOTTOM)
-    css_dir_label.setLayoutData( layoutdata )
-    css_dir_label.setText("Css Dir:")
-    css_dir_label.pack
-
+    css_dir_label = build_dir_label_on_general_group(group, "Css Dir:", coffeescripts_dir_label)
     # -- css dir text --
     @css_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.css_dir, css_dir_label)
-
-
     ## -- select dir button --
     build_select_button_on_general_group(group, @css_dir_text)
 
 
     # -- images dir label --
-    images_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( css_dir_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( css_dir_label, 10, Swt::SWT::BOTTOM)
-    images_dir_label.setLayoutData( layoutdata )
-    images_dir_label.setText("Images Dir:")
-    images_dir_label.pack
-
+    images_dir_label = build_dir_label_on_general_group(group, "Images Dir:", css_dir_label)
     # -- images dir text --
     @images_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.images_dir, images_dir_label)
-
-
     ## -- select dir button --
     build_select_button_on_general_group(group, @images_dir_text)
 
 
     # -- javascripts dir label --
-    js_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( images_dir_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( images_dir_label, 10, Swt::SWT::BOTTOM)
-    js_dir_label.setLayoutData( layoutdata )
-    js_dir_label.setText("Javascripts Dir:")
-    js_dir_label.pack
-
+    js_dir_label = build_dir_label_on_general_group(group, "Javascripts Dir:", images_dir_label)
     # -- javascripts dir text --
-
     @js_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.javascripts_dir, js_dir_label)
-
-
     ## -- select dir button --
     build_select_button_on_general_group(group, @js_dir_text)
 
