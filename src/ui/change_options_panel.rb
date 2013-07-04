@@ -61,7 +61,8 @@ class ChangeOptionsPanel
     @general_group = build_general_group(horizontal_separator)
     @sass_group = build_sass_group(@general_group)
     @coffeescript_group = build_coffeescript_group(@sass_group)
-    @buildoption_group = build_buildoption_group(@coffeescript_group)
+    @livescript_group = build_livescript_group(@coffeescript_group)
+    @buildoption_group = build_buildoption_group(@livescript_group)
     # @thehold_group = build_thehold_group(@coffeescript_group)
 
     # -- control button --
@@ -294,13 +295,39 @@ def build_buildoption_group(behind)
 
     # -- bare checkbox --
     layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    @bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
-    @bare_button.setText( 'Bare' )
-    @bare_button.setLayoutData( layoutdata )
+    @coffeescripts_bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    @coffeescripts_bare_button.setText( 'Bare' )
+    @coffeescripts_bare_button.setLayoutData( layoutdata )
 
     #puts 'fireapp_coffeescript_options: '+Tray.instance.compass_project_config.fireapp_coffeescript_options.to_s
     #puts Tray.instance.compass_project_config.fireapp_coffeescript_options.is_a?(Hash)
-    @bare_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_coffeescript_options[:bare]
+    @coffeescripts_bare_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_coffeescript_options[:bare]
+
+    group.pack
+
+    group
+  end
+
+  def build_livescript_group(behind)
+    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
+    group.setText("LiveScript")
+
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
+    group.setLayoutData( layoutdata )
+
+    layout = Swt::Layout::FormLayout.new
+    layout.marginWidth = layout.marginHeight = 5
+    group.setLayout( layout )
+
+    # -- bare checkbox --
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    @livescripts_bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    @livescripts_bare_button.setText( 'Bare' )
+    @livescripts_bare_button.setLayoutData( layoutdata )
+
+    @livescripts_bare_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_livescript_options[:bare]
 
     group.pack
 
@@ -489,8 +516,13 @@ def build_buildoption_group(behind)
 
       # -- update coffeescript bare -- 
       fireapp_coffeescript_options = Tray.instance.compass_project_config.fireapp_coffeescript_options
-      fireapp_coffeescript_options.update({:bare => @bare_button.getSelection })
+      fireapp_coffeescript_options.update({:bare => @coffeescripts_bare_button.getSelection })
       Tray.instance.update_config( "fireapp_coffeescript_options", fireapp_coffeescript_options.inspect)
+
+      # -- update livescript bare -- 
+      fireapp_livescript_options = Tray.instance.compass_project_config.fireapp_livescript_options
+      fireapp_livescript_options.update({:bare => @livescripts_bare_button.getSelection })
+      Tray.instance.update_config( "fireapp_livescript_options", fireapp_livescript_options.inspect)
 
 
       # -- update the_hold bare -- 
