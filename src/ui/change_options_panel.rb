@@ -150,9 +150,16 @@ class ChangeOptionsPanel
     ## -- select dir button --
     build_select_button_on_general_group(group, @coffeescripts_dir_text)
 
+    # -- livescripts dir label --
+    livescripts_dir_label = build_dir_label_on_general_group(group, "LiveScripts Dir:", coffeescripts_dir_label)
+    # -- coffeescripts dir text --
+    @livescripts_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.fireapp_livescripts_dir, livescripts_dir_label)
+    ## -- select dir button --
+    build_select_button_on_general_group(group, @livescripts_dir_text)
+
 
     # -- css dir label --
-    css_dir_label = build_dir_label_on_general_group(group, "Css Dir:", coffeescripts_dir_label)
+    css_dir_label = build_dir_label_on_general_group(group, "Css Dir:", livescripts_dir_label)
     # -- css dir text --
     @css_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.css_dir, css_dir_label)
     ## -- select dir button --
@@ -460,6 +467,7 @@ def build_buildoption_group(behind)
       Tray.instance.update_config( "images_dir", @images_dir_text.getText.inspect )
       Tray.instance.update_config( "javascripts_dir", @js_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_coffeescripts_dir", @coffeescripts_dir_text.getText.inspect )
+      Tray.instance.update_config( "fireapp_livescripts_dir", @livescripts_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_minifyjs_on_build", @minifyjs_on_build_button.getSelection )
       Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
 
