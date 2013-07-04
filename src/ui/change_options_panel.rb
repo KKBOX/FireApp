@@ -69,6 +69,17 @@ class ChangeOptionsPanel
   end
 
 
+  def build_dir_label_on_general_group(group, text, align)
+    dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( align, 10, Swt::SWT::BOTTOM)
+    dir_label.setLayoutData( layoutdata )
+    dir_label.setText(text)
+    dir_label.pack
+    dir_label
+  end
+
   def build_dir_text_on_general_group(group, text, align)
     layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( align, 1, Swt::SWT::RIGHT)
