@@ -361,7 +361,7 @@ class Tray
 
       App.try do 
         build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
-
+        build_path = Pathname.new(build_path).realpath.to_s
         
         # -- original setting --
         original_line_comments = Tray.instance.compass_project_config.line_comments
@@ -380,7 +380,7 @@ class Tray
 
         # -- init report -- 
         report_window = App.report('Start build project!') do
-          Swt::Program.launch(Pathname.new(build_path).realpath.to_s)
+          Swt::Program.launch(build_path)
         end if Tray.instance.compass_project_config.fireapp_always_report_on_build
 
         # -- build project --
@@ -400,6 +400,8 @@ class Tray
         Tray.instance.update_config( "sass_options", sass_options.inspect )
 
         clean_project
+
+        Notifier.notify("Done!", {:execute => "open #{build_path}"}) if !Tray.instance.compass_project_config.fireapp_always_report_on_build
       end
 
       
