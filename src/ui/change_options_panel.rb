@@ -148,13 +148,8 @@ class ChangeOptionsPanel
     coffeescripts_dir_label.pack
 
     # -- coffeescripts dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 0, Swt::SWT::CENTER)
-    @coffeescripts_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @coffeescripts_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.fireapp_coffeescripts_dir
-    @coffeescripts_dir_text.setText( text ) if text
+    @coffeescripts_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
+
 
     ## -- select dir button --
     build_select_button_on_general_group(group, @coffeescripts_dir_text)
@@ -170,13 +165,8 @@ class ChangeOptionsPanel
     css_dir_label.pack
 
     # -- css dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( css_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( css_dir_label, 0, Swt::SWT::CENTER)
-    @css_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @css_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.css_dir
-    @css_dir_text.setText( text ) if text
+    @css_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.css_dir, css_dir_label)
+
 
     ## -- select dir button --
     build_select_button_on_general_group(group, @css_dir_text)
@@ -192,13 +182,8 @@ class ChangeOptionsPanel
     images_dir_label.pack
 
     # -- images dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( images_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( images_dir_label, 0, Swt::SWT::CENTER)
-    @images_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @images_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.images_dir
-    @images_dir_text.setText( text ) if text
+    @images_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.images_dir, images_dir_label)
+
 
     ## -- select dir button --
     build_select_button_on_general_group(group, @images_dir_text)
@@ -214,13 +199,9 @@ class ChangeOptionsPanel
     js_dir_label.pack
 
     # -- javascripts dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( js_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( js_dir_label, 0, Swt::SWT::CENTER)
-    @js_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @js_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.javascripts_dir
-    @js_dir_text.setText( text ) if text
+
+    @js_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.javascripts_dir, js_dir_label)
+
 
     ## -- select dir button --
     build_select_button_on_general_group(group, @js_dir_text)
