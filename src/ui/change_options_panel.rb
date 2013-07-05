@@ -15,6 +15,12 @@ class ChangeOptionsPanel
     @shell.setLocation((m.width-rect.width) /2, (m.height-rect.height) /2) 
     @shell.open
     @shell.forceActive
+
+    @isChanged = false
+  end
+
+  def close
+    @shell.dispose if @shell and !@shell.isDisposed
   end
 
   def close
@@ -55,7 +61,8 @@ class ChangeOptionsPanel
     @general_group = build_general_group(horizontal_separator)
     @sass_group = build_sass_group(@general_group)
     @coffeescript_group = build_coffeescript_group(@sass_group)
-    @buildoption_group = build_buildoption_group(@coffeescript_group)
+    @livescript_group = build_livescript_group(@coffeescript_group)
+    @buildoption_group = build_buildoption_group(@livescript_group)
     # @thehold_group = build_thehold_group(@coffeescript_group)
 
     # -- control button --
@@ -66,11 +73,37 @@ class ChangeOptionsPanel
     @shell.pack
   end
 
-  def build_select_button_on_general_group(group, swttext)
+
+  def build_dir_label_on_general_group(group, text, align)
+    dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( align, 10, Swt::SWT::BOTTOM)
+    dir_label.setLayoutData( layoutdata )
+    dir_label.setText(text)
+    dir_label.pack
+    dir_label
+  end
+
+  def build_dir_text_on_general_group(group, text, align)
+    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( align, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::CENTER)
+    dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    dir_text.setLayoutData( layoutdata )
+    dir_text.setText( text ) if text
+    dir_text.addListener(Swt::SWT::Selection, change_handler)
+    dir_text
+  end
+
+  def build_select_button_on_general_group(group, swttext, align = nil)
     # -- dir button --
+    align = swttext if align
     select_dir_btn = Swt::Widgets::Button.new(group, Swt::SWT::PUSH | Swt::SWT::CENTER)
     select_dir_btn.setText('Select')
-    layoutdata = Swt::Layout::FormData.new(70, Swt::SWT::DEFAULT)
+    button_width = 70
+    button_width = button_width - 10 if org.jruby.platform.Platform::IS_WINDOWS
+    layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( swttext, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( swttext, 0, Swt::SWT::CENTER)
     select_dir_btn.setLayoutData( layoutdata )
@@ -108,109 +141,48 @@ class ChangeOptionsPanel
 
 
     # -- sass dir label --
-    sass_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    sass_dir_label.setLayoutData( layoutdata )
-    sass_dir_label.setText("Sass Dir:")
-    sass_dir_label.pack
-
+    sass_dir_label = build_dir_label_on_general_group(group, "Sass Dir:", group)
     # -- sass dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( sass_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( sass_dir_label, 0, Swt::SWT::CENTER)
-    @sass_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @sass_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.sass_dir
-    @sass_dir_text.setText( text ) if text
-
+    @sass_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.sass_dir, sass_dir_label)
     ## -- select dir button --
     build_select_button_on_general_group(group, @sass_dir_text)
 
 
     # -- coffeescripts dir label --
-    coffeescripts_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( sass_dir_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( sass_dir_label, 10, Swt::SWT::BOTTOM)
-    coffeescripts_dir_label.setLayoutData( layoutdata )
-    coffeescripts_dir_label.setText("CoffeeScripts Dir:")
-    coffeescripts_dir_label.pack
-
+    coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", sass_dir_label)
     # -- coffeescripts dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 0, Swt::SWT::CENTER)
-    @coffeescripts_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @coffeescripts_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.fireapp_coffeescripts_dir
-    @coffeescripts_dir_text.setText( text ) if text
-
+    @coffeescripts_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
     ## -- select dir button --
     build_select_button_on_general_group(group, @coffeescripts_dir_text)
 
+    # -- livescripts dir label --
+    livescripts_dir_label = build_dir_label_on_general_group(group, "LiveScripts Dir:", coffeescripts_dir_label)
+    # -- coffeescripts dir text --
+    @livescripts_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.fireapp_livescripts_dir, livescripts_dir_label)
+    ## -- select dir button --
+    build_select_button_on_general_group(group, @livescripts_dir_text)
+
 
     # -- css dir label --
-    css_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( coffeescripts_dir_label, 10, Swt::SWT::BOTTOM)
-    css_dir_label.setLayoutData( layoutdata )
-    css_dir_label.setText("Css Dir:")
-    css_dir_label.pack
-
+    css_dir_label = build_dir_label_on_general_group(group, "Css Dir:", livescripts_dir_label)
     # -- css dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( css_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( css_dir_label, 0, Swt::SWT::CENTER)
-    @css_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @css_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.css_dir
-    @css_dir_text.setText( text ) if text
-
+    @css_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.css_dir, css_dir_label)
     ## -- select dir button --
     build_select_button_on_general_group(group, @css_dir_text)
 
 
     # -- images dir label --
-    images_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( css_dir_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( css_dir_label, 10, Swt::SWT::BOTTOM)
-    images_dir_label.setLayoutData( layoutdata )
-    images_dir_label.setText("Images Dir:")
-    images_dir_label.pack
-
+    images_dir_label = build_dir_label_on_general_group(group, "Images Dir:", css_dir_label)
     # -- images dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( images_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( images_dir_label, 0, Swt::SWT::CENTER)
-    @images_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @images_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.images_dir
-    @images_dir_text.setText( text ) if text
-
+    @images_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.images_dir, images_dir_label)
     ## -- select dir button --
     build_select_button_on_general_group(group, @images_dir_text)
 
 
     # -- javascripts dir label --
-    js_dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( images_dir_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( images_dir_label, 10, Swt::SWT::BOTTOM)
-    js_dir_label.setLayoutData( layoutdata )
-    js_dir_label.setText("Javascripts Dir:")
-    js_dir_label.pack
-
+    js_dir_label = build_dir_label_on_general_group(group, "Javascripts Dir:", images_dir_label)
     # -- javascripts dir text --
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( js_dir_label, 1, Swt::SWT::RIGHT)
-    layoutdata.top  = Swt::Layout::FormAttachment.new( js_dir_label, 0, Swt::SWT::CENTER)
-    @js_dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    @js_dir_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.javascripts_dir
-    @js_dir_text.setText( text ) if text
-
+    @js_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.javascripts_dir, js_dir_label)
     ## -- select dir button --
     build_select_button_on_general_group(group, @js_dir_text)
 
@@ -323,13 +295,39 @@ def build_buildoption_group(behind)
 
     # -- bare checkbox --
     layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    @bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
-    @bare_button.setText( 'Bare' )
-    @bare_button.setLayoutData( layoutdata )
+    @coffeescripts_bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    @coffeescripts_bare_button.setText( 'Bare' )
+    @coffeescripts_bare_button.setLayoutData( layoutdata )
 
     #puts 'fireapp_coffeescript_options: '+Tray.instance.compass_project_config.fireapp_coffeescript_options.to_s
     #puts Tray.instance.compass_project_config.fireapp_coffeescript_options.is_a?(Hash)
-    @bare_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_coffeescript_options[:bare]
+    @coffeescripts_bare_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_coffeescript_options[:bare]
+
+    group.pack
+
+    group
+  end
+
+  def build_livescript_group(behind)
+    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
+    group.setText("LiveScript")
+
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
+    group.setLayoutData( layoutdata )
+
+    layout = Swt::Layout::FormLayout.new
+    layout.marginWidth = layout.marginHeight = 5
+    group.setLayout( layout )
+
+    # -- bare checkbox --
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    @livescripts_bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    @livescripts_bare_button.setText( 'Bare' )
+    @livescripts_bare_button.setLayoutData( layoutdata )
+
+    @livescripts_bare_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_livescript_options[:bare]
 
     group.pack
 
@@ -426,10 +424,14 @@ def build_buildoption_group(behind)
   end
 
   def build_control_button(behind)
+
+    button_width = 90
+    button_width = button_width - 10 if org.jruby.platform.Platform::IS_WINDOWS
+
     # -- save button --
     save_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
     save_btn.setText('Save')
-    layoutdata = Swt::Layout::FormData.new(100, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.right = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
     save_btn.setLayoutData( layoutdata )
@@ -439,17 +441,25 @@ def build_buildoption_group(behind)
     # -- cancel button --
     cancel_btn = Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
     cancel_btn.setText('Cancel')
-    layoutdata = Swt::Layout::FormData.new(90, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(button_width, Swt::SWT::DEFAULT)
     layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, 5, Swt::SWT::LEFT)
+    layoutdata.right = Swt::Layout::FormAttachment.new( save_btn, -5, Swt::SWT::LEFT) if org.jruby.platform.Platform::IS_WINDOWS
     layoutdata.top  = Swt::Layout::FormAttachment.new( save_btn, 0, Swt::SWT::CENTER)
     cancel_btn.setLayoutData( layoutdata )
     cancel_btn.addListener(Swt::SWT::Selection, cancel_handler)
     cancel_btn.pack
   end
 
+
+  def change_handler
+    Swt::Widgets::Listener.impl do |method, evt|   
+      @isChanged = true
+    end
+  end
+
   def cancel_handler
     Swt::Widgets::Listener.impl do |method, evt|   
-      evt.widget.shell.dispose();
+      close
     end
   end
 
@@ -489,6 +499,7 @@ def build_buildoption_group(behind)
       Tray.instance.update_config( "images_dir", @images_dir_text.getText.inspect )
       Tray.instance.update_config( "javascripts_dir", @js_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_coffeescripts_dir", @coffeescripts_dir_text.getText.inspect )
+      Tray.instance.update_config( "fireapp_livescripts_dir", @livescripts_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_minifyjs_on_build", @minifyjs_on_build_button.getSelection )
       Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
 
@@ -506,8 +517,13 @@ def build_buildoption_group(behind)
 
       # -- update coffeescript bare -- 
       fireapp_coffeescript_options = Tray.instance.compass_project_config.fireapp_coffeescript_options
-      fireapp_coffeescript_options.update({:bare => @bare_button.getSelection })
+      fireapp_coffeescript_options.update({:bare => @coffeescripts_bare_button.getSelection })
       Tray.instance.update_config( "fireapp_coffeescript_options", fireapp_coffeescript_options.inspect)
+
+      # -- update livescript bare -- 
+      fireapp_livescript_options = Tray.instance.compass_project_config.fireapp_livescript_options
+      fireapp_livescript_options.update({:bare => @livescripts_bare_button.getSelection })
+      Tray.instance.update_config( "fireapp_livescript_options", fireapp_livescript_options.inspect)
 
 
       # -- update the_hold bare -- 
