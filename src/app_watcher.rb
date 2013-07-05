@@ -10,6 +10,7 @@ module Compass
       def initialize(project_path, watches=[], options={}, poll=false)
         super
         @sass_watchers += coffeescript_watchers
+        @sass_watchers += livescript_watchers
         @sass_watchers += livereload_watchers
         setup_listener
       end
@@ -67,7 +68,7 @@ module Compass
                                       Compass.configuration.fireapp_coffeescript_options );
       end
       
-      def coffeescript_watchers
+      def livescript_watchers
         filter = File.join(Compass.configuration.fireapp_livescripts_dir,  "*.ls")
         child_filter = File.join(Compass.configuration.fireapp_livescripts_dir, "**", "*.ls")
 
