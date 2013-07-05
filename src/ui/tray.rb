@@ -405,7 +405,7 @@ class Tray
           if Notifier.is_support
             Notifier.notify("Done!", {:execute => "open #{build_path}"})
           else
-            App.notify("Done!") 
+            App.notify("Done!", App.display) 
           end
         end
 

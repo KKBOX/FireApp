@@ -193,6 +193,7 @@ module App
       #system('/usr/bin/osascript', "#{LIB_PATH}/applescript/growl.scpt", msg )
     else
       Notification.new(msg, target_display)
+      target_display.wake if target_display
     end
   end
 
