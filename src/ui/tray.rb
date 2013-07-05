@@ -401,7 +401,14 @@ class Tray
 
         clean_project
 
-        Notifier.notify("Done!", {:execute => "open #{build_path}"}) if !Tray.instance.compass_project_config.fireapp_always_report_on_build
+        if !Tray.instance.compass_project_config.fireapp_always_report_on_build
+          if Notifier.is_support
+            Notifier.notify("Done!", {:execute => "open #{build_path}"})
+          else
+            App.notify("Done!") 
+          end
+        end
+
       end
 
       
