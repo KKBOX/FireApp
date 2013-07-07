@@ -52,6 +52,7 @@ class ProjectBuilder
         "*/.coffeescript-cache",
         "*/compass_app_log.txt",
         "*/fire_app_log.txt",
+        "*/.listen_test",
         "view_helpers.rb",
         "Gemfile",
         "Gemfile.lock",
