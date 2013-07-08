@@ -1,10 +1,10 @@
 
 require 'time'
 require 'pathname'
-require 'coffee_script'
-require 'json'
+require 'less'
+require 'csson'
 
-class CoffeeCompiler
+class LessCompiler
 
   def self.log(type, msg)
     msg = msg.sub(File.expand_path(Compass.configuration.project_path), '')[1..-1] if defined?(Tray) 
@@ -16,42 +16,42 @@ class CoffeeCompiler
     end
   end
 
-  def self.compile_folder( coffeescripts_dir, javascripts_dir, options={} )
-    coffeescripts_dir = File.expand_path(coffeescripts_dir)
-    javascripts_dir = File.expand_path(javascripts_dir)
+  def self.compile_folder( less_dir, css_dir, options={} )
+    less_dir = File.expand_path(less_dir)
+    css_dir = File.expand_path(css_dir)
     
-    Dir.glob( File.join(coffeescripts_dir, "**", "*.coffee")) do |full_path|
+    Dir.glob( File.join(less_dir, "**", "*.less")) do |full_path|
       full_path=File.expand_path(full_path)
 
-      new_js_path = get_new_js_path(coffeescripts_dir, full_path, javascripts_dir)
+      new_css_path = get_new_css_path(less_dir, full_path, css_dir)
 
-      CoffeeCompiler.new(full_path, new_js_path, get_cache_dir(coffeescripts_dir), options ).compile
+      LessCompiler.new(full_path, new_css_path, get_cache_dir(less_dir), options ).compile
     end
   end
 
-  def self.clean_compile_folder( coffeescripts_dir, javascripts_dir )
-    coffeescripts_dir = File.expand_path(coffeescripts_dir)
-    javascripts_dir = File.expand_path(javascripts_dir)
+  def self.clean_compile_folder( less_dir, css_dir )
+    less_dir = File.expand_path(less_dir)
+    css_dir = File.expand_path(css_dir)
     
-    cache_dir=get_cache_dir(coffeescripts_dir)
+    cache_dir=get_cache_dir(less_dir)
     FileUtils.rm_rf(cache_dir)
-    CoffeeCompiler.log( :remove, "#{cache_dir}/")
+    LessCompiler.log( :remove, "#{cache_dir}/")
 
-    Dir.glob( File.join(coffeescripts_dir, "**", "*.coffee")) do |full_path|
-      new_js_path = get_new_js_path(coffeescripts_dir, full_path, javascripts_dir)
-      if File.exists?(new_js_path)
-        CoffeeCompiler.log( :remove, new_js_path)
-        FileUtils.rm_rf(new_js_path)
+    Dir.glob( File.join(less_dir, "**", "*.less")) do |full_path|
+      new_css_path = get_new_css_path(less_dir, full_path, css_dir)
+      if File.exists?(new_css_path)
+        LessCompiler.log( :remove, new_css_path)
+        FileUtils.rm_rf(new_css_path)
       end 
     end
 
   end
 
-  def self.get_new_js_path(coffeescripts_dir, full_path, javascripts_dir)
+  def self.get_new_css_path(less_dir, full_path, css_dir)
     full_path=File.expand_path(full_path)
-    new_dir  = File.dirname(full_path.to_s.sub(coffeescripts_dir, ''))
-    new_file = File.basename(full_path).gsub(/\.coffee/,".js").gsub(/js\.js/,'js')
-    return  File.join(javascripts_dir, new_dir, new_file)
+    new_dir  = File.dirname(full_path.to_s.sub(less_dir, ''))
+    new_file = File.basename(full_path).gsub(/\.coffee/,".css").gsub(/css\.css/,'css')
+    return  File.join(css_dir, new_dir, new_file)
   end
 
   def initialize(coffeescript_path, javascript_path, cache_dir=nil, options={})
@@ -67,40 +67,40 @@ class CoffeeCompiler
       if cache_file.file?
         cache_object = JSON.load( cache_file.read)
         if cache_object["mtime"] == @coffeescript_path.mtime.to_i
-          @js = cache_object["js"]
-          write_js_to_file unless @javascript_path.exist?
-          return @js
+          @css = cache_object["css"]
+          write_css_to_file unless @javascript_path.exist?
+          return @css
         end
       end
 
-      @js=get_js
+      @css=get_css
       cache_file.open('w') do|f|
-        f.write JSON.dump({"mtime" => @coffeescript_path.mtime.to_i, "js" => @js})
+        f.write JSON.dump({"mtime" => @coffeescript_path.mtime.to_i, "css" => @css})
       end
     else
-      @js = get_js
+      @css = get_css
     end
 
-    write_js_to_file
-    return @js
+    write_css_to_file
+    return @css
   end
 
-  def write_js_to_file
+  def write_css_to_file
     @javascript_path.parent.mkdir unless @javascript_path.parent.exist?
     if @javascript_path.exist?
-      CoffeeCompiler.log( :overwrite, @javascript_path.to_s)
+      LessCompiler.log( :overwrite, @javascript_path.to_s)
     else
-      CoffeeCompiler.log( :create, @javascript_path.to_s)
+      LessCompiler.log( :create, @javascript_path.to_s)
     end
-    @javascript_path.open("w"){|f| f.write(@js)}
+    @javascript_path.open("w"){|f| f.write(@css)}
 
   end
 
-  def get_js
+  def get_css
     begin
-      CoffeeScript.compile @coffeescript_path.read, @compile_options
+      LessCompiler.compile @coffeescript_path.read, @compile_options
     rescue Exception=>e
-      "document.write("+ "#{@coffeescript_path}: #{e.message}".to_json + ")"
+      "document.write("+ "#{@coffeescript_path}: #{e.message}".to_csson + ")"
     end
   end
 
