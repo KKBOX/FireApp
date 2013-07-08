@@ -2,7 +2,7 @@
 require 'time'
 require 'pathname'
 require 'less'
-require 'csson'
+require 'json'
 
 class LessCompiler
 
@@ -50,7 +50,7 @@ class LessCompiler
   def self.get_new_css_path(less_dir, full_path, css_dir)
     full_path=File.expand_path(full_path)
     new_dir  = File.dirname(full_path.to_s.sub(less_dir, ''))
-    new_file = File.basename(full_path).gsub(/\.coffee/,".css").gsub(/css\.css/,'css')
+    new_file = File.basename(full_path).gsub(/\.less/,".css").gsub(/css\.css/,'css')
     return  File.join(css_dir, new_dir, new_file)
   end
 
@@ -58,7 +58,8 @@ class LessCompiler
     @less_path = Pathname.new(less_path)
     @css_path   = Pathname.new(css_path)
     @cache_dir   = cache_dir ? Pathname.new(cache_dir) : nil
-    @compile_options = options
+    @compile_options = {:compress=>false, :yuicompress=>false}.merge(options)
+    @less_parser = Less::Parser.new(@compile_options)
   end
 
   def compile()
@@ -73,7 +74,7 @@ class LessCompiler
         end
       end
 
-      @css=get_css
+      @css = get_css
       cache_file.open('w') do|f|
         f.write JSON.dump({"mtime" => @less_path.mtime.to_i, "css" => @css})
       end
@@ -98,9 +99,9 @@ class LessCompiler
 
   def get_css
     begin
-      LessCompiler.compile @less_path.read, @compile_options
+      @less_parser.parse(@less_path.read).to_css(@compile_options)
     rescue Exception=>e
-      "document.write("+ "#{@less_path}: #{e.message}".to_csson + ")"
+      "document.write("+ "#{@less_path}: #{e.message}".to_json + ")"
     end
   end
 
