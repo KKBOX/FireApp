@@ -54,28 +54,28 @@ class LessCompiler
     return  File.join(css_dir, new_dir, new_file)
   end
 
-  def initialize(coffeescript_path, javascript_path, cache_dir=nil, options={})
-    @coffeescript_path = Pathname.new(coffeescript_path)
-    @javascript_path   = Pathname.new(javascript_path)
+  def initialize(less_path, css_path, cache_dir=nil, options={})
+    @less_path = Pathname.new(less_path)
+    @css_path   = Pathname.new(css_path)
     @cache_dir   = cache_dir ? Pathname.new(cache_dir) : nil
     @compile_options = options
   end
 
   def compile()
     if @cache_dir
-      cache_file = @cache_dir + @coffeescript_path.to_s.gsub(/[^a-z0-9]/,"_")
+      cache_file = @cache_dir + @less_path.to_s.gsub(/[^a-z0-9]/,"_")
       if cache_file.file?
         cache_object = JSON.load( cache_file.read)
-        if cache_object["mtime"] == @coffeescript_path.mtime.to_i
+        if cache_object["mtime"] == @less_path.mtime.to_i
           @css = cache_object["css"]
-          write_css_to_file unless @javascript_path.exist?
+          write_css_to_file unless @css_path.exist?
           return @css
         end
       end
 
       @css=get_css
       cache_file.open('w') do|f|
-        f.write JSON.dump({"mtime" => @coffeescript_path.mtime.to_i, "css" => @css})
+        f.write JSON.dump({"mtime" => @less_path.mtime.to_i, "css" => @css})
       end
     else
       @css = get_css
@@ -86,30 +86,30 @@ class LessCompiler
   end
 
   def write_css_to_file
-    @javascript_path.parent.mkdir unless @javascript_path.parent.exist?
-    if @javascript_path.exist?
-      LessCompiler.log( :overwrite, @javascript_path.to_s)
+    @css_path.parent.mkdir unless @css_path.parent.exist?
+    if @css_path.exist?
+      LessCompiler.log( :overwrite, @css_path.to_s)
     else
-      LessCompiler.log( :create, @javascript_path.to_s)
+      LessCompiler.log( :create, @css_path.to_s)
     end
-    @javascript_path.open("w"){|f| f.write(@css)}
+    @css_path.open("w"){|f| f.write(@css)}
 
   end
 
   def get_css
     begin
-      LessCompiler.compile @coffeescript_path.read, @compile_options
+      LessCompiler.compile @less_path.read, @compile_options
     rescue Exception=>e
-      "document.write("+ "#{@coffeescript_path}: #{e.message}".to_csson + ")"
+      "document.write("+ "#{@less_path}: #{e.message}".to_csson + ")"
     end
   end
 
   def self.get_cache_dir(base_dir)
 
     if defined?(App) 
-      cache_dir = File.expand_path( File.join(Compass.configuration.project_path, ".coffeescript-cache"))
+      cache_dir = File.expand_path( File.join(Compass.configuration.project_path, ".less-cache"))
     else
-      cache_dir = File.join( base_dir, ".coffeescript-cache")
+      cache_dir = File.join( base_dir, ".less-cache")
     end
 
     FileUtils.mkdir_p(cache_dir) unless  File.exists?(cache_dir)
