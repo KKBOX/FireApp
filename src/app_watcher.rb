@@ -12,6 +12,7 @@ module Compass
         @sass_watchers += coffeescript_watchers
         @sass_watchers += livescript_watchers
         @sass_watchers += livereload_watchers
+        @sass_watchers += less_watchers
         setup_listener
       end
 
@@ -102,6 +103,23 @@ module Compass
         tray = Tray.instance
         tray.shell.display.wake if tray.shell
       end 
+
+      def less_watchers
+        filter = File.join(Compass.configuration.fireapp_less_dir,  "*.less")
+        child_filter = File.join(Compass.configuration.fireapp_less_dir, "**", "*.less")
+
+        [ Watcher::Watch.new(child_filter, &method(:less_callback) ),
+          Watcher::Watch.new(filter, &method(:less_callback) ) ]
+      end
+
+      def less_callback(base, file, action)
+        log_action(:info, "#{file} was #{action}", options)
+        puts( "#{file} was #{action}", options)
+        LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir,
+                                      Compass.configuration.css_dir, 
+                                      Compass.configuration.fireapp_less_options );
+      end
+
 
       def setup_listener
         @listener = Listen.to(@project_path, :relative_paths => true)
