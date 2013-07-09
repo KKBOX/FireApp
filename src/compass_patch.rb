@@ -21,7 +21,7 @@ module Compass
   end
 
   Configuration.add_configuration_property(:fireapp_less_dir, nil) do
-    "livescripts"
+    "less"
   end
 
   Configuration.add_configuration_property(:fireapp_coffeescript_options, nil) do
