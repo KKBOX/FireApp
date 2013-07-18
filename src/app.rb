@@ -218,7 +218,6 @@ module App
       lib_path = File.expand_path( File.join(dir, subfolder,'lib') )
       $LOAD_PATH.unshift( lib_path ) if File.exists?(lib_path)
     end
-
   end
   
   def clear_autocomplete_cache
