@@ -1,7 +1,7 @@
 
 require 'time'
 require 'pathname'
-require 'less'
+require 'less_js'
 require 'json'
 
 class LessCompiler
@@ -59,7 +59,6 @@ class LessCompiler
     @css_path   = Pathname.new(css_path)
     @cache_dir   = cache_dir ? Pathname.new(cache_dir) : nil
     @compile_options = {:compress=>false, :yuicompress=>false}.merge(options)
-    @less_parser = Less::Parser.new(@compile_options)
   end
 
   def compile()
@@ -98,11 +97,11 @@ class LessCompiler
   end
 
   def get_css
-    begin
-      @less_parser.parse(@less_path.read).to_css(@compile_options)
-    rescue Exception=>e
-      "document.write("+ "#{@less_path}: #{e.message}".to_json + ")"
-    end
+    #begin
+      LessJs.compile @less_path.read #, @compile_options
+    #rescue Exception=>e
+    #  "document.write("+ "#{@less_path}: #{e.message}".to_json + ")"
+    #end
   end
 
   def self.get_cache_dir(base_dir)

@@ -12,7 +12,7 @@ module Compass
         @sass_watchers += coffeescript_watchers
         @sass_watchers += livescript_watchers
         @sass_watchers += livereload_watchers
-        #@sass_watchers += less_watchers
+        @sass_watchers += less_watchers
         setup_listener
       end
 

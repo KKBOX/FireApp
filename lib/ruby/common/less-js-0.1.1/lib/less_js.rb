@@ -39,6 +39,7 @@ module LessJs
         var window = document.createWindow();
         var location = {href: "", protocol: "http", host: "", port: ""};
         var less = window.less = {};
+        var tree = less.tree = {};
         
         #{contents}
 
@@ -67,7 +68,12 @@ module LessJs
     # Compile a script (String or IO) to CSS.
     def compile(script, options = {})
       script = script.read if script.respond_to?(:read)
+
+      puts script
+
       error, data = Source.context.call('compile', script)
+
+      puts error, data
 
       if error
         raise ParseError, error['message']
