@@ -58,7 +58,7 @@ class LessCompiler
     @less_path = Pathname.new(less_path)
     @css_path   = Pathname.new(css_path)
     @cache_dir   = cache_dir ? Pathname.new(cache_dir) : nil
-    @compile_options = {:compress=>false, :yuicompress=>false}.merge(options)
+    @compile_options = {}.merge(options)
   end
 
   def compile()
@@ -98,7 +98,7 @@ class LessCompiler
 
   def get_css
     #begin
-      LessJs.compile @less_path.read #, @compile_options
+      LessJs.compile @less_path.read , @compile_options
     #rescue Exception=>e
     #  "document.write("+ "#{@less_path}: #{e.message}".to_json + ")"
     #end
