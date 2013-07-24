@@ -27,6 +27,10 @@ class ChangeOptionsPanel
     @shell.dispose if @shell and !@shell.isDisposed
   end
 
+  def config
+    Tray.instance.compass_project_config
+  end
+
   def create_window
     @shell = Swt::Widgets::Shell.new(@display, Swt::SWT::DIALOG_TRIM)
     @shell.setText("Change Options")
@@ -108,6 +112,20 @@ class ChangeOptionsPanel
     layoutdata.top  = Swt::Layout::FormAttachment.new( swttext, 0, Swt::SWT::CENTER)
     select_dir_btn.setLayoutData( layoutdata )
     select_dir_btn.addListener(Swt::SWT::Selection, select_handler(swttext))
+    select_dir_btn
+  end
+
+  def build_checkbox_button(group, text, selected, align = nil)
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    if align != nil
+        layoutdata.left = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::LEFT )
+        layoutdata.top  = Swt::Layout::FormAttachment.new( align, 10, Swt::SWT::BOTTOM)
+    end
+    checkbox_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    checkbox_button.setText( text )
+    checkbox_button.setLayoutData( layoutdata )
+    checkbox_button.setSelection(true) if selected
+    checkbox_button
   end
 
   def build_general_group(behind)
@@ -125,32 +143,32 @@ class ChangeOptionsPanel
 
     # -- sass dir --
     sass_dir_label = build_dir_label_on_general_group(group, "Sass Dir:", group)
-    @sass_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.sass_dir, sass_dir_label)
+    @sass_dir_text = build_dir_text_on_general_group(group, config.sass_dir, sass_dir_label)
     build_select_button_on_general_group(group, @sass_dir_text)
 
     # -- coffeescripts dir --
     coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", sass_dir_label)
-    @coffeescripts_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
+    @coffeescripts_dir_text = build_dir_text_on_general_group(group, config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
     build_select_button_on_general_group(group, @coffeescripts_dir_text)
 
     # -- livescripts dir --
     livescripts_dir_label = build_dir_label_on_general_group(group, "LiveScripts Dir:", coffeescripts_dir_label)
-    @livescripts_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.fireapp_livescripts_dir, livescripts_dir_label)
+    @livescripts_dir_text = build_dir_text_on_general_group(group, config.fireapp_livescripts_dir, livescripts_dir_label)
     build_select_button_on_general_group(group, @livescripts_dir_text)
 
     # -- css dir --
     css_dir_label = build_dir_label_on_general_group(group, "Css Dir:", livescripts_dir_label)
-    @css_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.css_dir, css_dir_label)
+    @css_dir_text = build_dir_text_on_general_group(group, config.css_dir, css_dir_label)
     build_select_button_on_general_group(group, @css_dir_text)
 
     # -- images dir --
     images_dir_label = build_dir_label_on_general_group(group, "Images Dir:", css_dir_label)
-    @images_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.images_dir, images_dir_label)
+    @images_dir_text = build_dir_text_on_general_group(group, config.images_dir, images_dir_label)
     build_select_button_on_general_group(group, @images_dir_text)
 
     # -- javascripts dir --
     js_dir_label = build_dir_label_on_general_group(group, "Javascripts Dir:", images_dir_label)
-    @js_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.javascripts_dir, js_dir_label)
+    @js_dir_text = build_dir_text_on_general_group(group, config.javascripts_dir, js_dir_label)
     build_select_button_on_general_group(group, @js_dir_text)
 
 
@@ -186,43 +204,23 @@ class ChangeOptionsPanel
     %W{nested expanded compact compressed}.each do |output_style|
       @output_style_combo.add(output_style)
     end
-    @output_style_combo.setText( Tray.instance.compass_project_config.output_style.to_s )
+    @output_style_combo.setText( config.output_style.to_s )
 
     # -- line comments checkbox --
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( output_style_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( output_style_label, 10, Swt::SWT::BOTTOM)
-    @line_comments_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
-    @line_comments_button.setText( 'Line Comments' )
-    @line_comments_button.setLayoutData( layoutdata )
-    @line_comments_button.setSelection(true) if Tray.instance.compass_project_config.line_comments
+    @line_comments_button = build_checkbox_button(group, 'Line Comments', config.line_comments, output_style_label)
 
     # -- debug info checkbox --
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( @line_comments_button, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( @line_comments_button, 10, Swt::SWT::BOTTOM)
-    @debug_info_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
-    @debug_info_button.setText( 'Debug Info' )
-    @debug_info_button.setLayoutData( layoutdata )
-    @debug_info_button.setSelection(true) if Tray.instance.compass_project_config.sass_options && Tray.instance.compass_project_config.sass_options[:debug_info] 
+    @debug_info_button = build_checkbox_button(group, 'Debug Info', config.sass_options && config.sass_options[:debug_info],  @line_comments_button)
 
     # -- disable on build checkbox --
-    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( @debug_info_button, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( @debug_info_button, 10, Swt::SWT::BOTTOM)
-    @disable_linecomments_and_debuginfo_on_build_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
-    @disable_linecomments_and_debuginfo_on_build_button.setText( 'Disable Line Comments ＆ Debug Info on Build' )
-    @disable_linecomments_and_debuginfo_on_build_button.setLayoutData( layoutdata )
-    @disable_linecomments_and_debuginfo_on_build_button.setSelection(true) if Tray.instance.compass_project_config.fireapp_disable_linecomments_and_debuginfo_on_build 
-
-
+    @disable_linecomments_and_debuginfo_on_build_button = build_checkbox_button(group, 'Disable Line Comments ＆ Debug Info on Build', config.fireapp_disable_linecomments_and_debuginfo_on_build,  @debug_info_button)
 
     group.pack
 
     group
   end
 
-def build_buildoption_group(behind)
+  def build_buildoption_group(behind)
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
     group.setText("Build")
 
@@ -236,22 +234,10 @@ def build_buildoption_group(behind)
     group.setLayout( layout )
 
     # -- minifyjs_on_build checkbox --
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    @minifyjs_on_build_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
-    @minifyjs_on_build_button.setText( 'Minifyjs on Build' )
-    @minifyjs_on_build_button.setLayoutData( layoutdata )
-    @minifyjs_on_build_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_minifyjs_on_build
+    @minifyjs_on_build_button = build_checkbox_button(group, 'Minifyjs on Build', config.fireapp_minifyjs_on_build)
 
     # -- always_report_on_build checkbox --
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( @minifyjs_on_build_button, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( @minifyjs_on_build_button, 10, Swt::SWT::BOTTOM)
-    @always_report_on_build_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
-    @always_report_on_build_button.setText( 'Always Report on Build' )
-    @always_report_on_build_button.setLayoutData( layoutdata )
-    @always_report_on_build_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_always_report_on_build
-
-
+    @always_report_on_build_button = build_checkbox_button(group, 'Always Report on Build', config.fireapp_always_report_on_build,  @minifyjs_on_build_button)
 
     group.pack
 
@@ -272,14 +258,7 @@ def build_buildoption_group(behind)
     group.setLayout( layout )
 
     # -- bare checkbox --
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    @coffeescripts_bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
-    @coffeescripts_bare_button.setText( 'Bare' )
-    @coffeescripts_bare_button.setLayoutData( layoutdata )
-
-    #puts 'fireapp_coffeescript_options: '+Tray.instance.compass_project_config.fireapp_coffeescript_options.to_s
-    #puts Tray.instance.compass_project_config.fireapp_coffeescript_options.is_a?(Hash)
-    @coffeescripts_bare_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_coffeescript_options[:bare]
+    @coffeescripts_bare_button = build_checkbox_button(group, 'Bare', config.fireapp_coffeescript_options[:bare])
 
     group.pack
 
@@ -300,12 +279,7 @@ def build_buildoption_group(behind)
     group.setLayout( layout )
 
     # -- bare checkbox --
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    @livescripts_bare_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
-    @livescripts_bare_button.setText( 'Bare' )
-    @livescripts_bare_button.setLayoutData( layoutdata )
-
-    @livescripts_bare_button.setSelection( true ) if Tray.instance.compass_project_config.fireapp_livescript_options[:bare]
+    @livescripts_bare_button = build_checkbox_button(group, 'Bare', config.fireapp_livescript_options[:bare])
 
     group.pack
 
@@ -338,7 +312,7 @@ def build_buildoption_group(behind)
     layoutdata.top  = Swt::Layout::FormAttachment.new( api_key_label, 0, Swt::SWT::CENTER)
     @api_key_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @api_key_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.the_hold_options[:token]
+    text = config.the_hold_options[:token]
     @api_key_text.setText( text ) if text
 
     # -- user name label --
@@ -356,7 +330,7 @@ def build_buildoption_group(behind)
     layoutdata.top  = Swt::Layout::FormAttachment.new( user_name_label, 0, Swt::SWT::CENTER)
     @user_name_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @user_name_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.the_hold_options[:login]
+    text = config.the_hold_options[:login]
     @user_name_text.setText( text ) if text
 
 
@@ -375,7 +349,7 @@ def build_buildoption_group(behind)
     layoutdata.top  = Swt::Layout::FormAttachment.new( project_name_label, 0, Swt::SWT::CENTER)
     @project_name_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @project_name_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.the_hold_options[:project]
+    text = config.the_hold_options[:project]
     @project_name_text.setText( text ) if text
 
     # -- project password label --
@@ -393,7 +367,7 @@ def build_buildoption_group(behind)
     layoutdata.top  = Swt::Layout::FormAttachment.new( project_password_label, 0, Swt::SWT::CENTER)
     @project_password_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     @project_password_text.setLayoutData( layoutdata )
-    text = Tray.instance.compass_project_config.the_hold_options[:project_site_password]
+    text = config.the_hold_options[:project_site_password]
     @project_password_text.setText( text ) if text
 
     group.pack
@@ -488,7 +462,7 @@ def build_buildoption_group(behind)
       Tray.instance.update_config( "line_comments", @line_comments_button.getSelection )
 
       # -- update sass options --
-      sass_options = Tray.instance.compass_project_config.sass_options
+      sass_options = config.sass_options
       sass_options = {} if !sass_options.is_a? Hash
       sass_options[:debug_info] = @debug_info_button.getSelection
       Tray.instance.update_config( "sass_options", sass_options.inspect )
@@ -498,18 +472,18 @@ def build_buildoption_group(behind)
       
 
       # -- update coffeescript bare -- 
-      fireapp_coffeescript_options = Tray.instance.compass_project_config.fireapp_coffeescript_options
+      fireapp_coffeescript_options = config.fireapp_coffeescript_options
       fireapp_coffeescript_options.update({:bare => @coffeescripts_bare_button.getSelection })
       Tray.instance.update_config( "fireapp_coffeescript_options", fireapp_coffeescript_options.inspect)
 
       # -- update livescript bare -- 
-      fireapp_livescript_options = Tray.instance.compass_project_config.fireapp_livescript_options
+      fireapp_livescript_options = config.fireapp_livescript_options
       fireapp_livescript_options.update({:bare => @livescripts_bare_button.getSelection })
       Tray.instance.update_config( "fireapp_livescript_options", fireapp_livescript_options.inspect)
 
 
       # -- update the_hold bare -- 
-      #the_hold_options = Tray.instance.compass_project_config.the_hold_options
+      #the_hold_options = config.the_hold_options
       #the_hold_options.update({
       #  :login => @user_name_text.getText,
       #  :token => @api_key_text.getText,
