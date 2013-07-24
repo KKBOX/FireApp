@@ -33,7 +33,15 @@ module Compass
     "less"
   end
   Configuration.add_configuration_property(:fireapp_less_options, nil) do
-    {}
+    {
+      :yuicompress => false,
+      :verbose => false,
+      :color => true,
+      :ieCompat => true,
+      :strictImports => false,
+      :strictMath => false,
+      :strictUnits => false
+    }
   end
  
   #-- the hold --

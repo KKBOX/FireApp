@@ -16,16 +16,7 @@ module LessJs
           var parser = new(less.Parser)(options);
           var result
           parser.parse(data, function (err, tree) {
-              var css = tree.toCSS({
-                  silent: options.silent,
-                  verbose: options.verbose,
-                  ieCompat: options.ieCompat,
-                  compress: options.compress,
-                  yuicompress: options.yuicompress,
-                  maxLineLen: options.maxLineLen,
-                  strictMath: options.strictMath,
-                  strictUnits: options.strictUnits
-              });
+              var css = tree.toCSS(options);
               result=[err, css];
             }
           );
