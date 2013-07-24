@@ -63,15 +63,17 @@ class ChangeOptionsPanel
 
     # -- context group --
     @general_group = build_general_group(horizontal_separator)
-    @sass_group = build_sass_group(@general_group)
-    @coffeescript_group = build_coffeescript_group(@sass_group)
+    @coffeescript_group = build_coffeescript_group(@general_group)
     @livescript_group = build_livescript_group(@coffeescript_group)
     @buildoption_group = build_buildoption_group(@livescript_group)
+
+    @sass_group = build_sass_group(@buildoption_group)
+    @less_group = build_less_group(@sass_group)
     # @thehold_group = build_thehold_group(@coffeescript_group)
 
     # -- control button --
     # build_control_button(@thehold_group)
-    build_control_button(@buildoption_group)
+    build_control_button(@less_group)
     
     
     @shell.pack
@@ -264,6 +266,33 @@ class ChangeOptionsPanel
 
     # -- bare checkbox --
     @coffeescripts_bare_button = build_checkbox_button(group, 'Bare', config.fireapp_coffeescript_options[:bare])
+
+    group.pack
+
+    group
+  end
+
+  def build_less_group(behind)
+    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
+    group.setText("Less")
+
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
+    group.setLayoutData( layoutdata )
+
+    layout = Swt::Layout::FormLayout.new
+    layout.marginWidth = layout.marginHeight = 5
+    group.setLayout( layout )
+
+    # -- bare checkbox --
+    @less_compress_button = build_checkbox_button(group, 'Compress', config.fireapp_less_options[:yuicompress])
+    @less_verbose_button = build_checkbox_button(group, 'Verbose', config.fireapp_less_options[:verbose], @less_compress_button)
+    @less_color_button = build_checkbox_button(group, 'Color', config.fireapp_less_options[:color], @less_verbose_button)
+    @less_ieCompat_button = build_checkbox_button(group, 'IE compatibility', config.fireapp_less_options[:ieCompat], @less_color_button)
+    @less_strictImports_button = build_checkbox_button(group, 'Strict Imports', config.fireapp_less_options[:strictImports], @less_ieCompat_button)
+    @less_strictMath_button = build_checkbox_button(group, 'Strict Math', config.fireapp_less_options[:strictMath], @less_strictImports_button)
+    @less_strictUnits_button = build_checkbox_button(group, 'Strict Units', config.fireapp_less_options[:strictUnits], @less_strictMath_button)
 
     group.pack
 
