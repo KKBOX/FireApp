@@ -67,7 +67,16 @@ class ChangeOptionsPanel
     @livescript_group = build_livescript_group(@coffeescript_group)
     @buildoption_group = build_buildoption_group(@livescript_group)
 
-    @sass_group = build_sass_group(@buildoption_group)
+
+    empty_group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
+
+    layoutdata = Swt::Layout::FormData.new(0, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( @general_group, 10, Swt::SWT::RIGHT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @general_group, 10, Swt::SWT::TOP)
+    empty_group.setLayoutData( layoutdata )
+
+
+    @sass_group = build_sass_group(empty_group)
     @less_group = build_less_group(@sass_group)
     # @thehold_group = build_thehold_group(@coffeescript_group)
 
@@ -79,6 +88,9 @@ class ChangeOptionsPanel
     @shell.pack
   end
 
+  def build_basic_group(behind)
+
+  end
 
   def build_dir_label_on_general_group(group, text, align)
     dir_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
