@@ -50,12 +50,12 @@ class ChangeOptionsPanel
     font=Swt::Graphics::Font.new(@display, font_data)
     panel_title_label.setFont(font)
     panel_title_label.setText("Project Options")
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(800, Swt::SWT::DEFAULT)
     panel_title_label.setLayoutData( layoutdata )
 
     # -- horizontal separator --
     horizontal_separator = Swt::Widgets::Label.new(@shell, Swt::SWT::SEPARATOR | Swt::SWT::HORIZONTAL)
-    layoutdata = Swt::Layout::FormData.new(390, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new(800, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( panel_title_label, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( panel_title_label, 10, Swt::SWT::BOTTOM)
     horizontal_separator.setLayoutData( layoutdata )
@@ -67,16 +67,8 @@ class ChangeOptionsPanel
     @livescript_group = build_livescript_group(@coffeescript_group)
     @buildoption_group = build_buildoption_group(@livescript_group)
 
-
-    empty_group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
-
-    layoutdata = Swt::Layout::FormData.new(0, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( @general_group, 10, Swt::SWT::RIGHT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( @general_group, 10, Swt::SWT::TOP)
-    empty_group.setLayoutData( layoutdata )
-
-
-    @sass_group = build_sass_group(empty_group)
+    # -- right --
+    @sass_group = build_sass_group(@general_group)
     @less_group = build_less_group(@sass_group)
     # @thehold_group = build_thehold_group(@coffeescript_group)
 
@@ -90,15 +82,15 @@ class ChangeOptionsPanel
 
   def build_basic_group(text, align, to = 'bottom')
     group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
-    group.setText('General')
+    group.setText(text)
 
     layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
     if to == 'bottom'
       layoutdata.left = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::LEFT )
       layoutdata.top  = Swt::Layout::FormAttachment.new( align, 10, Swt::SWT::BOTTOM)
     elsif to == 'right'
-      layoutdata.left = Swt::Layout::FormAttachment.new( align, 5, Swt::SWT::RIGHT )
-      layoutdata.top  = Swt::Layout::FormAttachment.new( align, 10, Swt::SWT::TOP)
+      layoutdata.left = Swt::Layout::FormAttachment.new( align, 8, Swt::SWT::RIGHT )
+      layoutdata.top  = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::TOP)
     end
     group.setLayoutData( layoutdata )
 
@@ -204,7 +196,7 @@ class ChangeOptionsPanel
   end
 
   def build_sass_group(behind)
-    group = build_basic_group('Sass', behind)
+    group = build_basic_group('Sass', behind, 'right')
 
     # -- output style label -- 
     output_style_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
