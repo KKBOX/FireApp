@@ -256,7 +256,7 @@ class ChangeOptionsPanel
   def build_less_group(behind)
     group = build_basic_group('Less', behind)
 
-    # -- bare checkbox --
+    # -- checkbox --
     @less_compress_button = build_checkbox_button(group, 'Compress', config.fireapp_less_options[:yuicompress])
     @less_verbose_button = build_checkbox_button(group, 'Verbose', config.fireapp_less_options[:verbose], @less_compress_button)
     @less_color_button = build_checkbox_button(group, 'Color', config.fireapp_less_options[:color], @less_verbose_button)
@@ -453,6 +453,18 @@ class ChangeOptionsPanel
       sass_options = {} if !sass_options.is_a? Hash
       sass_options[:debug_info] = @debug_info_button.getSelection
       Tray.instance.update_config( "sass_options", sass_options.inspect )
+
+      # -- update less options --
+      less_options = config.fireapp_less_options
+      less_options = {} if !sass_options.is_a? Hash
+      less_options[:yuicompress] = @less_compress_button.getSelection
+      less_options[:verbose] = @less_verbose_button.getSelection
+      less_options[:color] = @less_color_button.getSelection
+      less_options[:ieCompat] = @less_ieCompat_button.getSelection
+      less_options[:strictImports] = @less_strictImports_button.getSelection
+      less_options[:strictMath] = @less_strictMath_button.getSelection
+      less_options[:strictUnits] = @less_strictUnits_button.getSelection
+      Tray.instance.update_config( "fireapp_less_options", less_options.inspect )
 
       # -- disable line comments & debug info--
       Tray.instance.update_config( "fireapp_disable_linecomments_and_debuginfo_on_build", @disable_linecomments_and_debuginfo_on_build_button.getSelection )
