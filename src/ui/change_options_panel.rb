@@ -146,6 +146,11 @@ class ChangeOptionsPanel
     @sass_dir_text = build_dir_text_on_general_group(group, config.sass_dir, sass_dir_label)
     build_select_button_on_general_group(group, @sass_dir_text)
 
+    # -- less dir --
+    less_dir_label = build_dir_label_on_general_group(group, "Less Dir:", group)
+    @less_dir_text = build_dir_text_on_general_group(group, config.fireapp_less_dir, less_dir_label)
+    build_select_button_on_general_group(group, @less_dir_text)
+
     # -- coffeescripts dir --
     coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", sass_dir_label)
     @coffeescripts_dir_text = build_dir_text_on_general_group(group, config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
@@ -454,6 +459,8 @@ class ChangeOptionsPanel
       Tray.instance.update_config( "fireapp_livescripts_dir", @livescripts_dir_text.getText.inspect )
       Tray.instance.update_config( "fireapp_minifyjs_on_build", @minifyjs_on_build_button.getSelection )
       Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
+      Tray.instance.update_config( "fireapp_less_dir", @less_dir_text.getText.inspect )
+
 
       # -- update output style --
       Tray.instance.update_config( "output_style", ":"+@output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s )
