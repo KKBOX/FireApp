@@ -12,26 +12,26 @@ module Compass
     nil
   end
 
+  #-- coffeescript --
   Configuration.add_configuration_property(:fireapp_coffeescripts_dir, nil) do
     "coffeescripts"
   end
- 
-  Configuration.add_configuration_property(:fireapp_livescripts_dir, nil) do
-    "livescripts"
-  end
-
-  Configuration.add_configuration_property(:fireapp_less_dir, nil) do
-    "less"
-  end
-
   Configuration.add_configuration_property(:fireapp_coffeescript_options, nil) do
     {}
   end
-  
+
+  #-- livescript --
+  Configuration.add_configuration_property(:fireapp_livescripts_dir, nil) do
+    "livescripts"
+  end
   Configuration.add_configuration_property(:fireapp_livescript_options, nil) do
     {}
   end
 
+  #-- less --
+  Configuration.add_configuration_property(:fireapp_less_dir, nil) do
+    "less"
+  end
   Configuration.add_configuration_property(:fireapp_less_options, nil) do
     {}
   end
