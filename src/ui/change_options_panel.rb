@@ -123,67 +123,34 @@ class ChangeOptionsPanel
     layout.marginWidth = layout.marginHeight = 5
     group.setLayout( layout )
 
-    # -- http path label --
-    # http_path_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
-    # layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
-    # http_path_label.setLayoutData( layoutdata )
-    # http_path_label.setText("Http Path:")
-    # http_path_label.pack
-
-    # -- http path text --
-    # layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
-    # layoutdata.left = Swt::Layout::FormAttachment.new( http_path_label, 1, Swt::SWT::RIGHT)
-    # layoutdata.top  = Swt::Layout::FormAttachment.new( http_path_label, 0, Swt::SWT::CENTER)
-    # @http_path_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
-    # @http_path_text.setLayoutData( layoutdata )
-    # text = Tray.instance.compass_project_config.http_path
-    # @http_path_text.setText( text ) if text
-
-
-    # -- sass dir label --
+    # -- sass dir --
     sass_dir_label = build_dir_label_on_general_group(group, "Sass Dir:", group)
-    # -- sass dir text --
     @sass_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.sass_dir, sass_dir_label)
-    ## -- select dir button --
     build_select_button_on_general_group(group, @sass_dir_text)
 
-
-    # -- coffeescripts dir label --
+    # -- coffeescripts dir --
     coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", sass_dir_label)
-    # -- coffeescripts dir text --
     @coffeescripts_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
-    ## -- select dir button --
     build_select_button_on_general_group(group, @coffeescripts_dir_text)
 
-    # -- livescripts dir label --
+    # -- livescripts dir --
     livescripts_dir_label = build_dir_label_on_general_group(group, "LiveScripts Dir:", coffeescripts_dir_label)
-    # -- coffeescripts dir text --
     @livescripts_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.fireapp_livescripts_dir, livescripts_dir_label)
-    ## -- select dir button --
     build_select_button_on_general_group(group, @livescripts_dir_text)
 
-
-    # -- css dir label --
+    # -- css dir --
     css_dir_label = build_dir_label_on_general_group(group, "Css Dir:", livescripts_dir_label)
-    # -- css dir text --
     @css_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.css_dir, css_dir_label)
-    ## -- select dir button --
     build_select_button_on_general_group(group, @css_dir_text)
 
-
-    # -- images dir label --
+    # -- images dir --
     images_dir_label = build_dir_label_on_general_group(group, "Images Dir:", css_dir_label)
-    # -- images dir text --
     @images_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.images_dir, images_dir_label)
-    ## -- select dir button --
     build_select_button_on_general_group(group, @images_dir_text)
 
-
-    # -- javascripts dir label --
+    # -- javascripts dir --
     js_dir_label = build_dir_label_on_general_group(group, "Javascripts Dir:", images_dir_label)
-    # -- javascripts dir text --
     @js_dir_text = build_dir_text_on_general_group(group, Tray.instance.compass_project_config.javascripts_dir, js_dir_label)
-    ## -- select dir button --
     build_select_button_on_general_group(group, @js_dir_text)
 
 
