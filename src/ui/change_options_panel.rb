@@ -88,7 +88,24 @@ class ChangeOptionsPanel
     @shell.pack
   end
 
-  def build_basic_group(behind)
+  def build_basic_group(text, align, to = 'bottom')
+    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
+    group.setText('General')
+
+    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
+    if to == 'bottom'
+      layoutdata.left = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::LEFT )
+      layoutdata.top  = Swt::Layout::FormAttachment.new( align, 10, Swt::SWT::BOTTOM)
+    elsif to == 'right'
+      layoutdata.left = Swt::Layout::FormAttachment.new( align, 5, Swt::SWT::RIGHT )
+      layoutdata.top  = Swt::Layout::FormAttachment.new( align, 10, Swt::SWT::TOP)
+    end
+    group.setLayoutData( layoutdata )
+
+    layout = Swt::Layout::FormLayout.new
+    layout.marginWidth = layout.marginHeight = 5
+    group.setLayout( layout )
+    group
 
   end
 
@@ -143,17 +160,7 @@ class ChangeOptionsPanel
   end
 
   def build_general_group(behind)
-    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
-    group.setText('General')
-
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
-    group.setLayoutData( layoutdata )
-
-    layout = Swt::Layout::FormLayout.new
-    layout.marginWidth = layout.marginHeight = 5
-    group.setLayout( layout )
+    group = build_basic_group('General', behind)
 
     # -- sass dir --
     sass_dir_label = build_dir_label_on_general_group(group, "Sass Dir:", group)
@@ -197,17 +204,7 @@ class ChangeOptionsPanel
   end
 
   def build_sass_group(behind)
-    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
-    group.setText("Sass")
-
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
-    group.setLayoutData( layoutdata )
-
-    layout = Swt::Layout::FormLayout.new
-    layout.marginWidth = layout.marginHeight = 5
-    group.setLayout( layout )
+    group = build_basic_group('Sass', behind)
 
     # -- output style label -- 
     output_style_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -240,17 +237,7 @@ class ChangeOptionsPanel
   end
 
   def build_buildoption_group(behind)
-    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
-    group.setText("Build")
-
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
-    group.setLayoutData( layoutdata )
-
-    layout = Swt::Layout::FormLayout.new
-    layout.marginWidth = layout.marginHeight = 5
-    group.setLayout( layout )
+    group = build_basic_group('Build', behind)
 
     # -- minifyjs_on_build checkbox --
     @minifyjs_on_build_button = build_checkbox_button(group, 'Minifyjs on Build', config.fireapp_minifyjs_on_build)
@@ -264,17 +251,7 @@ class ChangeOptionsPanel
   end
 
   def build_coffeescript_group(behind)
-    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
-    group.setText("CoffeeScript")
-
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
-    group.setLayoutData( layoutdata )
-
-    layout = Swt::Layout::FormLayout.new
-    layout.marginWidth = layout.marginHeight = 5
-    group.setLayout( layout )
+    group = build_basic_group('CoffeeScript', behind)
 
     # -- bare checkbox --
     @coffeescripts_bare_button = build_checkbox_button(group, 'Bare', config.fireapp_coffeescript_options[:bare])
@@ -285,17 +262,7 @@ class ChangeOptionsPanel
   end
 
   def build_less_group(behind)
-    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
-    group.setText("Less")
-
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
-    group.setLayoutData( layoutdata )
-
-    layout = Swt::Layout::FormLayout.new
-    layout.marginWidth = layout.marginHeight = 5
-    group.setLayout( layout )
+    group = build_basic_group('Less', behind)
 
     # -- bare checkbox --
     @less_compress_button = build_checkbox_button(group, 'Compress', config.fireapp_less_options[:yuicompress])
@@ -312,17 +279,7 @@ class ChangeOptionsPanel
   end
 
   def build_livescript_group(behind)
-    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
-    group.setText("LiveScript")
-
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
-    group.setLayoutData( layoutdata )
-
-    layout = Swt::Layout::FormLayout.new
-    layout.marginWidth = layout.marginHeight = 5
-    group.setLayout( layout )
+    group = build_basic_group('LiveScript', behind)
 
     # -- bare checkbox --
     @livescripts_bare_button = build_checkbox_button(group, 'Bare', config.fireapp_livescript_options[:bare])
@@ -333,17 +290,7 @@ class ChangeOptionsPanel
   end
 
   def build_thehold_group(behind)
-    group = Swt::Widgets::Group.new(@shell, Swt::SWT::SHADOW_ETCHED_OUT)
-    group.setText('TheHold')
-
-    layoutdata = Swt::Layout::FormData.new(380, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( behind, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( behind, 10, Swt::SWT::BOTTOM)
-    group.setLayoutData( layoutdata )
-
-    layout = Swt::Layout::FormLayout.new
-    layout.marginWidth = layout.marginHeight = 5
-    group.setLayout( layout )
+    group = build_basic_group('TheHold', behind)
 
     # -- api key label --
     api_key_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
