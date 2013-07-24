@@ -36,18 +36,22 @@ module Compass
     {}
   end
  
-
+  #-- the hold --
   Configuration.add_configuration_property(:the_hold_options, nil) do
     { }
   end
 
+  #-- build --
   Configuration.add_configuration_property(:fireapp_minifyjs_on_build, nil) do
     false
   end  
-
   Configuration.add_configuration_property(:fireapp_always_report_on_build, nil) do
     true
-  end 
+  end
+  Configuration.add_configuration_property(:fireapp_disable_linecomments_and_debuginfo_on_build, nil) do
+    true
+  end
+
 
   # default sass_options is nil
   Configuration.add_configuration_property(:sass_options, nil) do

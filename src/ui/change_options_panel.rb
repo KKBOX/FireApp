@@ -239,6 +239,17 @@ class ChangeOptionsPanel
     @debug_info_button.setLayoutData( layoutdata )
     @debug_info_button.setSelection(true) if Tray.instance.compass_project_config.sass_options && Tray.instance.compass_project_config.sass_options[:debug_info] 
 
+    # -- disable on build checkbox --
+    layoutdata = Swt::Layout::FormData.new(350, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( @debug_info_button, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @debug_info_button, 10, Swt::SWT::BOTTOM)
+    @disable_linecomments_and_debuginfo_on_build_button = Swt::Widgets::Button.new(group, Swt::SWT::CHECK )
+    @disable_linecomments_and_debuginfo_on_build_button.setText( 'Disable Line Comments ＆ Debug Info on Build' )
+    @disable_linecomments_and_debuginfo_on_build_button.setLayoutData( layoutdata )
+    @disable_linecomments_and_debuginfo_on_build_button.setSelection(true) if Tray.instance.compass_project_config.fireapp_disable_linecomments_and_debuginfo_on_build 
+
+
+
     group.pack
 
     group
@@ -514,6 +525,10 @@ def build_buildoption_group(behind)
       sass_options = {} if !sass_options.is_a? Hash
       sass_options[:debug_info] = @debug_info_button.getSelection
       Tray.instance.update_config( "sass_options", sass_options.inspect )
+
+      # -- disable line comments & debug info--
+      Tray.instance.update_config( "fireapp_disable_linecomments_and_debuginfo_on_build", @disable_linecomments_and_debuginfo_on_build_button.getSelection )
+      
 
       # -- update coffeescript bare -- 
       fireapp_coffeescript_options = Tray.instance.compass_project_config.fireapp_coffeescript_options
