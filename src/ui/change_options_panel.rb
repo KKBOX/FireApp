@@ -148,7 +148,7 @@ class ChangeOptionsPanel
     checkbox_button.setText( text )
     checkbox_button.setLayoutData( layoutdata )
     checkbox_button.setSelection(true) if selected
-    checkbox_button.addListener(Swt::SWT::Modify, change_handler)
+    checkbox_button.addListener(Swt::SWT::Selection, change_handler)
     
     checkbox_button
   end
