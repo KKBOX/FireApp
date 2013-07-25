@@ -119,7 +119,7 @@ class ChangeOptionsPanel
     dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
     dir_text.setLayoutData( layoutdata )
     dir_text.setText( text ) if text
-    dir_text.addListener(Swt::SWT::Selection, change_handler)
+    dir_text.addListener(Swt::SWT::Modify, change_handler)
     dir_text
   end
 
@@ -148,6 +148,8 @@ class ChangeOptionsPanel
     checkbox_button.setText( text )
     checkbox_button.setLayoutData( layoutdata )
     checkbox_button.setSelection(true) if selected
+    checkbox_button.addListener(Swt::SWT::Modify, change_handler)
+    
     checkbox_button
   end
 
@@ -391,6 +393,7 @@ class ChangeOptionsPanel
   def change_handler
     Swt::Widgets::Listener.impl do |method, evt|   
       @isChanged = true
+      puts "change!"
     end
   end
 
