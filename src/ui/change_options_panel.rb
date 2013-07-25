@@ -430,75 +430,77 @@ class ChangeOptionsPanel
       #App.alert("Already stop watch project") Tray.instance.watching_dir
       #evt.widget.shell.dispose if Tray.instance.watching_dir
 
-      msg_window = ProgressWindow.new
-      msg_window.replace('Regenerating...', false, true)
+      if @isChanged
+        msg_window = ProgressWindow.new
+        msg_window.replace('Regenerating...', false, true)
 
-      # -- update general --
-      # Tray.instance.update_config( "http_path", @http_path_text.getText.inspect )
-      Tray.instance.update_config( "css_dir", @css_dir_text.getText.inspect )
-      Tray.instance.update_config( "sass_dir", @sass_dir_text.getText.inspect )
-      Tray.instance.update_config( "images_dir", @images_dir_text.getText.inspect )
-      Tray.instance.update_config( "javascripts_dir", @js_dir_text.getText.inspect )
-      Tray.instance.update_config( "fireapp_coffeescripts_dir", @coffeescripts_dir_text.getText.inspect )
-      Tray.instance.update_config( "fireapp_livescripts_dir", @livescripts_dir_text.getText.inspect )
-      Tray.instance.update_config( "fireapp_minifyjs_on_build", @minifyjs_on_build_button.getSelection )
-      Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
-      Tray.instance.update_config( "fireapp_less_dir", @less_dir_text.getText.inspect )
+        # -- update general --
+        # Tray.instance.update_config( "http_path", @http_path_text.getText.inspect )
+        Tray.instance.update_config( "css_dir", @css_dir_text.getText.inspect )
+        Tray.instance.update_config( "sass_dir", @sass_dir_text.getText.inspect )
+        Tray.instance.update_config( "images_dir", @images_dir_text.getText.inspect )
+        Tray.instance.update_config( "javascripts_dir", @js_dir_text.getText.inspect )
+        Tray.instance.update_config( "fireapp_coffeescripts_dir", @coffeescripts_dir_text.getText.inspect )
+        Tray.instance.update_config( "fireapp_livescripts_dir", @livescripts_dir_text.getText.inspect )
+        Tray.instance.update_config( "fireapp_minifyjs_on_build", @minifyjs_on_build_button.getSelection )
+        Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
+        Tray.instance.update_config( "fireapp_less_dir", @less_dir_text.getText.inspect )
 
+        # -- update output style --
+        Tray.instance.update_config( "output_style", ":"+@output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s )
 
-      # -- update output style --
-      Tray.instance.update_config( "output_style", ":"+@output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s )
+        # -- update line comments --
+        Tray.instance.update_config( "line_comments", @line_comments_button.getSelection )
 
-      # -- update line comments --
-      Tray.instance.update_config( "line_comments", @line_comments_button.getSelection )
+        # -- update sass options --
+        sass_options = config.sass_options
+        sass_options = {} if !sass_options.is_a? Hash
+        sass_options[:debug_info] = @debug_info_button.getSelection
+        Tray.instance.update_config( "sass_options", sass_options.inspect )
 
-      # -- update sass options --
-      sass_options = config.sass_options
-      sass_options = {} if !sass_options.is_a? Hash
-      sass_options[:debug_info] = @debug_info_button.getSelection
-      Tray.instance.update_config( "sass_options", sass_options.inspect )
+        # -- update less options --
+        less_options = config.fireapp_less_options
+        less_options = {} if !sass_options.is_a? Hash
+        less_options[:yuicompress] = @less_compress_button.getSelection
+        less_options[:verbose] = @less_verbose_button.getSelection
+        less_options[:color] = @less_color_button.getSelection
+        less_options[:ieCompat] = @less_ieCompat_button.getSelection
+        less_options[:strictImports] = @less_strictImports_button.getSelection
+        less_options[:strictMath] = @less_strictMath_button.getSelection
+        less_options[:strictUnits] = @less_strictUnits_button.getSelection
+        Tray.instance.update_config( "fireapp_less_options", less_options.inspect )
 
-      # -- update less options --
-      less_options = config.fireapp_less_options
-      less_options = {} if !sass_options.is_a? Hash
-      less_options[:yuicompress] = @less_compress_button.getSelection
-      less_options[:verbose] = @less_verbose_button.getSelection
-      less_options[:color] = @less_color_button.getSelection
-      less_options[:ieCompat] = @less_ieCompat_button.getSelection
-      less_options[:strictImports] = @less_strictImports_button.getSelection
-      less_options[:strictMath] = @less_strictMath_button.getSelection
-      less_options[:strictUnits] = @less_strictUnits_button.getSelection
-      Tray.instance.update_config( "fireapp_less_options", less_options.inspect )
-
-      # -- disable line comments & debug info--
-      Tray.instance.update_config( "fireapp_disable_linecomments_and_debuginfo_on_build", @disable_linecomments_and_debuginfo_on_build_button.getSelection )
+        # -- disable line comments & debug info--
+        Tray.instance.update_config( "fireapp_disable_linecomments_and_debuginfo_on_build", @disable_linecomments_and_debuginfo_on_build_button.getSelection )
       
 
-      # -- update coffeescript bare -- 
-      fireapp_coffeescript_options = config.fireapp_coffeescript_options
-      fireapp_coffeescript_options.update({:bare => @coffeescripts_bare_button.getSelection })
-      Tray.instance.update_config( "fireapp_coffeescript_options", fireapp_coffeescript_options.inspect)
+        # -- update coffeescript bare -- 
+        fireapp_coffeescript_options = config.fireapp_coffeescript_options
+        fireapp_coffeescript_options.update({:bare => @coffeescripts_bare_button.getSelection })
+        Tray.instance.update_config( "fireapp_coffeescript_options", fireapp_coffeescript_options.inspect)
 
-      # -- update livescript bare -- 
-      fireapp_livescript_options = config.fireapp_livescript_options
-      fireapp_livescript_options.update({:bare => @livescripts_bare_button.getSelection })
-      Tray.instance.update_config( "fireapp_livescript_options", fireapp_livescript_options.inspect)
+        # -- update livescript bare -- 
+        fireapp_livescript_options = config.fireapp_livescript_options
+        fireapp_livescript_options.update({:bare => @livescripts_bare_button.getSelection })
+        Tray.instance.update_config( "fireapp_livescript_options", fireapp_livescript_options.inspect)
 
 
-      # -- update the_hold bare -- 
-      #the_hold_options = config.the_hold_options
-      #the_hold_options.update({
-      #  :login => @user_name_text.getText,
-      #  :token => @api_key_text.getText,
-      #  :project => @project_name_text.getText,
-      #  :project_site_password => @project_password_text.getText
-      #})
-      #Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
+        # -- update the_hold bare -- 
+        #the_hold_options = config.the_hold_options
+        #the_hold_options.update({
+        #  :login => @user_name_text.getText,
+        #  :token => @api_key_text.getText,
+        #  :project => @project_name_text.getText,
+        #  :project_site_password => @project_password_text.getText
+        #})
+        #Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
 
-      # Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
-      Tray.instance.clean_project
+        # Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
+        Tray.instance.clean_project
 
-      msg_window.dispose
+        msg_window.dispose
+      end
+
       close
     end
   end
