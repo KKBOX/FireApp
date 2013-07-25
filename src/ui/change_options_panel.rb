@@ -394,7 +394,6 @@ class ChangeOptionsPanel
   def change_handler
     Swt::Widgets::Listener.impl do |method, evt|   
       @isChanged = true
-      puts "change!"
     end
   end
 
