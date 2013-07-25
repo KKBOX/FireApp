@@ -215,6 +215,7 @@ class ChangeOptionsPanel
       @output_style_combo.add(output_style)
     end
     @output_style_combo.setText( config.output_style.to_s )
+    @output_style_combo.addListener(Swt::SWT::Selection, change_handler)
 
     # -- line comments checkbox --
     @line_comments_button = build_checkbox_button(group, 'Line Comments', config.line_comments, output_style_label)
