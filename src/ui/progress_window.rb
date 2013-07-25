@@ -42,6 +42,8 @@ class ProgressWindow
       @img_label.redraw
       @img_label.update
       @replace_count = 0
+
+      @start_time = Time.now
   end
 
   def replace(msg, countable = true, force_show = false)
@@ -59,6 +61,8 @@ class ProgressWindow
   end
 
   def dispose
+    interval = Time.now - @start_time
+    sleep(2 - interval) if interval < 2
     @shell.dispose
   end
 
