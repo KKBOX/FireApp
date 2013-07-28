@@ -263,7 +263,7 @@ class ChangeOptionsPanel
     @less_compress_button = build_checkbox_button(group, 'Compress', config.fireapp_less_options[:yuicompress])
     #@less_verbose_button = build_checkbox_button(group, 'Verbose', config.fireapp_less_options[:verbose], @less_compress_button)
     #@less_color_button = build_checkbox_button(group, 'Color', config.fireapp_less_options[:color], @less_verbose_button)
-    @less_ieCompat_button = build_checkbox_button(group, 'IE compatibility', config.fireapp_less_options[:ieCompat], @less_color_button)
+    @less_ieCompat_button = build_checkbox_button(group, 'IE compatibility', config.fireapp_less_options[:ieCompat], @less_compress_button)
     #@less_strictImports_button = build_checkbox_button(group, 'Strict Imports', config.fireapp_less_options[:strictImports], @less_ieCompat_button)
     #@less_strictMath_button = build_checkbox_button(group, 'Strict Math', config.fireapp_less_options[:strictMath], @less_strictImports_button)
     #@less_strictUnits_button = build_checkbox_button(group, 'Strict Units', config.fireapp_less_options[:strictUnits], @less_strictMath_button)
