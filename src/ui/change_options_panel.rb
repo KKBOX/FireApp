@@ -162,7 +162,7 @@ class ChangeOptionsPanel
     build_select_button_on_general_group(group, @sass_dir_text)
 
     # -- less dir --
-    less_dir_label = build_dir_label_on_general_group(group, "Less Dir:", group, sass_dir_label)
+    less_dir_label = build_dir_label_on_general_group(group, "Less Dir:", sass_dir_label)
     @less_dir_text = build_dir_text_on_general_group(group, config.fireapp_less_dir, less_dir_label)
     build_select_button_on_general_group(group, @less_dir_text)
 
