@@ -224,7 +224,7 @@ class ChangeOptionsPanel
     @debug_info_button = build_checkbox_button(group, 'Debug Info', config.sass_options && config.sass_options[:debug_info],  @line_comments_button)
 
     # -- disable on build checkbox --
-    @disable_linecomments_and_debuginfo_on_build_button = build_checkbox_button(group, 'Disable Line Comments ＆ Debug Info on Build', config.fireapp_disable_linecomments_and_debuginfo_on_build,  @debug_info_button)
+    #@disable_linecomments_and_debuginfo_on_build_button = build_checkbox_button(group, 'Disable Line Comments ＆ Debug Info on Build', config.fireapp_disable_linecomments_and_debuginfo_on_build,  @debug_info_button)
 
     group.pack
 
@@ -238,7 +238,7 @@ class ChangeOptionsPanel
     @minifyjs_on_build_button = build_checkbox_button(group, 'Minifyjs on Build', config.fireapp_minifyjs_on_build)
 
     # -- always_report_on_build checkbox --
-    #@always_report_on_build_button = build_checkbox_button(group, 'Always Report on Build', config.fireapp_always_report_on_build,  @minifyjs_on_build_button)
+    @always_report_on_build_button = build_checkbox_button(group, 'Always Report on Build', config.fireapp_always_report_on_build,  @minifyjs_on_build_button)
 
     group.pack
 
