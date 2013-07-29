@@ -238,7 +238,7 @@ class ChangeOptionsPanel
     @minifyjs_on_build_button = build_checkbox_button(group, 'Minifyjs on Build', config.fireapp_minifyjs_on_build)
 
     # -- always_report_on_build checkbox --
-    @always_report_on_build_button = build_checkbox_button(group, 'Always Report on Build', config.fireapp_always_report_on_build,  @minifyjs_on_build_button)
+    #@always_report_on_build_button = build_checkbox_button(group, 'Always Report on Build', config.fireapp_always_report_on_build,  @minifyjs_on_build_button)
 
     group.pack
 
@@ -470,7 +470,7 @@ class ChangeOptionsPanel
         Tray.instance.update_config( "fireapp_less_options", less_options.inspect )
 
         # -- disable line comments & debug info--
-        Tray.instance.update_config( "fireapp_disable_linecomments_and_debuginfo_on_build", @disable_linecomments_and_debuginfo_on_build_button.getSelection )
+        #Tray.instance.update_config( "fireapp_disable_linecomments_and_debuginfo_on_build", @disable_linecomments_and_debuginfo_on_build_button.getSelection )
       
 
         # -- update coffeescript bare -- 
