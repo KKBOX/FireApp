@@ -70,11 +70,11 @@ class ChangeOptionsPanel
     # -- right --
     @sass_group = build_sass_group(@general_group)
     @less_group = build_less_group(@sass_group)
-    # @thehold_group = build_thehold_group(@coffeescript_group)
+    @thehold_group = build_thehold_group(@less_group)
 
     # -- control button --
-    # build_control_button(@thehold_group)
-    build_control_button(@less_group)
+    build_control_button(@thehold_group)
+    #build_control_button(@less_group)
     
     
     @shell.pack
@@ -112,8 +112,8 @@ class ChangeOptionsPanel
     dir_label
   end
 
-  def build_dir_text_on_general_group(group, text, align)
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
+  def build_dir_text_on_general_group(group, text, align, size = 180)
+    layoutdata = Swt::Layout::FormData.new(size, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( align, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::CENTER)
     dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
@@ -485,14 +485,14 @@ class ChangeOptionsPanel
 
 
         # -- update the_hold bare -- 
-        #the_hold_options = config.the_hold_options
-        #the_hold_options.update({
-        #  :login => @user_name_text.getText,
-        #  :token => @api_key_text.getText,
-        #  :project => @project_name_text.getText,
-        #  :project_site_password => @project_password_text.getText
-        #})
-        #Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
+        the_hold_options = config.the_hold_options
+        the_hold_options.update({
+          :login => @user_name_text.getText,
+          :token => @api_key_text.getText,
+          :project => @project_name_text.getText,
+          :project_site_password => @project_password_text.getText
+        })
+        Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
 
         # Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
         Tray.instance.clean_project
