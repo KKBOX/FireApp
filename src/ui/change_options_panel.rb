@@ -308,6 +308,7 @@ class ChangeOptionsPanel
     @api_key_text.setLayoutData( layoutdata )
     text = config.the_hold_options[:token]
     @api_key_text.setText( text ) if text
+    @api_key_text.addListener(Swt::SWT::Modify, change_handler)
 
     # -- user name label --
     user_name_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -326,6 +327,7 @@ class ChangeOptionsPanel
     @user_name_text.setLayoutData( layoutdata )
     text = config.the_hold_options[:login]
     @user_name_text.setText( text ) if text
+    @user_name_text.addListener(Swt::SWT::Modify, change_handler)
 
 
     # -- project name label --
@@ -345,6 +347,7 @@ class ChangeOptionsPanel
     @project_name_text.setLayoutData( layoutdata )
     text = config.the_hold_options[:project]
     @project_name_text.setText( text ) if text
+    @project_name_text.addListener(Swt::SWT::Modify, change_handler)
 
     # -- project password label --
     project_password_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -363,6 +366,26 @@ class ChangeOptionsPanel
     @project_password_text.setLayoutData( layoutdata )
     text = config.the_hold_options[:project_site_password]
     @project_password_text.setText( text ) if text
+    @project_password_text.addListener(Swt::SWT::Modify, change_handler)
+
+    # -- project host label --
+    project_host_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( project_password_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( project_password_label, 10, Swt::SWT::BOTTOM)
+    project_host_label.setLayoutData( layoutdata )
+    project_host_label.setText("Host:")
+    project_host_label.pack
+
+    # -- project host text --
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( project_host_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( project_host_label, 0, Swt::SWT::CENTER)
+    @project_host_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    @project_host_text.setLayoutData( layoutdata )
+    text = config.the_hold_options[:host]
+    @project_host_text.setText( text ) if text
+    @project_host_text.addListener(Swt::SWT::Modify, change_handler)
 
     group.pack
 
@@ -496,7 +519,8 @@ class ChangeOptionsPanel
           :login => @user_name_text.getText,
           :token => @api_key_text.getText,
           :project => @project_name_text.getText,
-          :project_site_password => @project_password_text.getText
+          :project_site_password => @project_password_text.getText,
+          :host => @project_host_text.getText
         })
         Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
 
