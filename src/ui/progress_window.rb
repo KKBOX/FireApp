@@ -62,7 +62,7 @@ class ProgressWindow
 
   def dispose
     interval = Time.now - @start_time
-    sleep(2 - interval) if interval < 2
+    sleep(0.7 - interval) if interval < 0.7
     @shell.dispose
   end
 
