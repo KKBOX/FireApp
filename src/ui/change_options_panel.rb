@@ -54,11 +54,7 @@ class ChangeOptionsPanel
     panel_title_label.setLayoutData( layoutdata )
 
     # -- horizontal separator --
-    horizontal_separator = Swt::Widgets::Label.new(@shell, Swt::SWT::SEPARATOR | Swt::SWT::HORIZONTAL)
-    layoutdata = Swt::Layout::FormData.new(800, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( panel_title_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( panel_title_label, 10, Swt::SWT::BOTTOM)
-    horizontal_separator.setLayoutData( layoutdata )
+    horizontal_separator = build_separator(panel_title_label)
 
 
     # -- context group --
@@ -70,14 +66,24 @@ class ChangeOptionsPanel
     # -- right --
     @sass_group = build_sass_group(@general_group)
     @less_group = build_less_group(@sass_group)
-    # @thehold_group = build_thehold_group(@coffeescript_group)
+    @thehold_group = build_thehold_group(@less_group)
 
+    horizontal_separator = build_separator(@buildoption_group)
     # -- control button --
-    # build_control_button(@thehold_group)
-    build_control_button(@less_group)
+    build_control_button(horizontal_separator)
+    #build_control_button(@less_group)
     
     
     @shell.pack
+  end
+
+  def build_separator(align)
+    horizontal_separator = Swt::Widgets::Label.new(@shell, Swt::SWT::SEPARATOR | Swt::SWT::HORIZONTAL)
+    layoutdata = Swt::Layout::FormData.new(800, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( align, 10, Swt::SWT::BOTTOM)
+    horizontal_separator.setLayoutData( layoutdata )
+    horizontal_separator
   end
 
   def build_basic_group(text, align, to = 'bottom')
@@ -112,8 +118,8 @@ class ChangeOptionsPanel
     dir_label
   end
 
-  def build_dir_text_on_general_group(group, text, align)
-    layoutdata = Swt::Layout::FormData.new(180, Swt::SWT::DEFAULT)
+  def build_dir_text_on_general_group(group, text, align, size = 180)
+    layoutdata = Swt::Layout::FormData.new(size, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( align, 1, Swt::SWT::RIGHT)
     layoutdata.top  = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::CENTER)
     dir_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
@@ -162,12 +168,12 @@ class ChangeOptionsPanel
     build_select_button_on_general_group(group, @sass_dir_text)
 
     # -- less dir --
-    less_dir_label = build_dir_label_on_general_group(group, "Less Dir:", group)
+    less_dir_label = build_dir_label_on_general_group(group, "Less Dir:", sass_dir_label)
     @less_dir_text = build_dir_text_on_general_group(group, config.fireapp_less_dir, less_dir_label)
     build_select_button_on_general_group(group, @less_dir_text)
 
     # -- coffeescripts dir --
-    coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", sass_dir_label)
+    coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", less_dir_label)
     @coffeescripts_dir_text = build_dir_text_on_general_group(group, config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
     build_select_button_on_general_group(group, @coffeescripts_dir_text)
 
@@ -224,7 +230,7 @@ class ChangeOptionsPanel
     @debug_info_button = build_checkbox_button(group, 'Debug Info', config.sass_options && config.sass_options[:debug_info],  @line_comments_button)
 
     # -- disable on build checkbox --
-    @disable_linecomments_and_debuginfo_on_build_button = build_checkbox_button(group, 'Disable Line Comments ＆ Debug Info on Build', config.fireapp_disable_linecomments_and_debuginfo_on_build,  @debug_info_button)
+    #@disable_linecomments_and_debuginfo_on_build_button = build_checkbox_button(group, 'Disable Line Comments ＆ Debug Info on Build', config.fireapp_disable_linecomments_and_debuginfo_on_build,  @debug_info_button)
 
     group.pack
 
@@ -261,12 +267,12 @@ class ChangeOptionsPanel
 
     # -- checkbox --
     @less_compress_button = build_checkbox_button(group, 'Compress', config.fireapp_less_options[:yuicompress])
-    @less_verbose_button = build_checkbox_button(group, 'Verbose', config.fireapp_less_options[:verbose], @less_compress_button)
-    @less_color_button = build_checkbox_button(group, 'Color', config.fireapp_less_options[:color], @less_verbose_button)
-    @less_ieCompat_button = build_checkbox_button(group, 'IE compatibility', config.fireapp_less_options[:ieCompat], @less_color_button)
-    @less_strictImports_button = build_checkbox_button(group, 'Strict Imports', config.fireapp_less_options[:strictImports], @less_ieCompat_button)
-    @less_strictMath_button = build_checkbox_button(group, 'Strict Math', config.fireapp_less_options[:strictMath], @less_strictImports_button)
-    @less_strictUnits_button = build_checkbox_button(group, 'Strict Units', config.fireapp_less_options[:strictUnits], @less_strictMath_button)
+    #@less_verbose_button = build_checkbox_button(group, 'Verbose', config.fireapp_less_options[:verbose], @less_compress_button)
+    #@less_color_button = build_checkbox_button(group, 'Color', config.fireapp_less_options[:color], @less_verbose_button)
+    @less_ieCompat_button = build_checkbox_button(group, 'IE compatibility', config.fireapp_less_options[:ieCompat], @less_compress_button)
+    #@less_strictImports_button = build_checkbox_button(group, 'Strict Imports', config.fireapp_less_options[:strictImports], @less_ieCompat_button)
+    #@less_strictMath_button = build_checkbox_button(group, 'Strict Math', config.fireapp_less_options[:strictMath], @less_strictImports_button)
+    #@less_strictUnits_button = build_checkbox_button(group, 'Strict Units', config.fireapp_less_options[:strictUnits], @less_strictMath_button)
 
     group.pack
 
@@ -302,6 +308,7 @@ class ChangeOptionsPanel
     @api_key_text.setLayoutData( layoutdata )
     text = config.the_hold_options[:token]
     @api_key_text.setText( text ) if text
+    @api_key_text.addListener(Swt::SWT::Modify, change_handler)
 
     # -- user name label --
     user_name_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -320,6 +327,7 @@ class ChangeOptionsPanel
     @user_name_text.setLayoutData( layoutdata )
     text = config.the_hold_options[:login]
     @user_name_text.setText( text ) if text
+    @user_name_text.addListener(Swt::SWT::Modify, change_handler)
 
 
     # -- project name label --
@@ -339,6 +347,7 @@ class ChangeOptionsPanel
     @project_name_text.setLayoutData( layoutdata )
     text = config.the_hold_options[:project]
     @project_name_text.setText( text ) if text
+    @project_name_text.addListener(Swt::SWT::Modify, change_handler)
 
     # -- project password label --
     project_password_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
@@ -357,6 +366,26 @@ class ChangeOptionsPanel
     @project_password_text.setLayoutData( layoutdata )
     text = config.the_hold_options[:project_site_password]
     @project_password_text.setText( text ) if text
+    @project_password_text.addListener(Swt::SWT::Modify, change_handler)
+
+    # -- project host label --
+    project_host_label = Swt::Widgets::Label.new(group, Swt::SWT::PUSH)
+    layoutdata = Swt::Layout::FormData.new(120, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( project_password_label, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( project_password_label, 10, Swt::SWT::BOTTOM)
+    project_host_label.setLayoutData( layoutdata )
+    project_host_label.setText("Host:")
+    project_host_label.pack
+
+    # -- project host text --
+    layoutdata = Swt::Layout::FormData.new(200, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( project_host_label, 1, Swt::SWT::RIGHT)
+    layoutdata.top  = Swt::Layout::FormAttachment.new( project_host_label, 0, Swt::SWT::CENTER)
+    @project_host_text  = Swt::Widgets::Text.new(group, Swt::SWT::BORDER)
+    @project_host_text.setLayoutData( layoutdata )
+    text = config.the_hold_options[:host]
+    @project_host_text.setText( text ) if text
+    @project_host_text.addListener(Swt::SWT::Modify, change_handler)
 
     group.pack
 
@@ -461,16 +490,16 @@ class ChangeOptionsPanel
         less_options = config.fireapp_less_options
         less_options = {} if !sass_options.is_a? Hash
         less_options[:yuicompress] = @less_compress_button.getSelection
-        less_options[:verbose] = @less_verbose_button.getSelection
-        less_options[:color] = @less_color_button.getSelection
+        #less_options[:verbose] = @less_verbose_button.getSelection
+        #less_options[:color] = @less_color_button.getSelection
         less_options[:ieCompat] = @less_ieCompat_button.getSelection
-        less_options[:strictImports] = @less_strictImports_button.getSelection
-        less_options[:strictMath] = @less_strictMath_button.getSelection
-        less_options[:strictUnits] = @less_strictUnits_button.getSelection
+        #less_options[:strictImports] = @less_strictImports_button.getSelection
+        #less_options[:strictMath] = @less_strictMath_button.getSelection
+        #less_options[:strictUnits] = @less_strictUnits_button.getSelection
         Tray.instance.update_config( "fireapp_less_options", less_options.inspect )
 
         # -- disable line comments & debug info--
-        Tray.instance.update_config( "fireapp_disable_linecomments_and_debuginfo_on_build", @disable_linecomments_and_debuginfo_on_build_button.getSelection )
+        #Tray.instance.update_config( "fireapp_disable_linecomments_and_debuginfo_on_build", @disable_linecomments_and_debuginfo_on_build_button.getSelection )
       
 
         # -- update coffeescript bare -- 
@@ -485,14 +514,15 @@ class ChangeOptionsPanel
 
 
         # -- update the_hold bare -- 
-        #the_hold_options = config.the_hold_options
-        #the_hold_options.update({
-        #  :login => @user_name_text.getText,
-        #  :token => @api_key_text.getText,
-        #  :project => @project_name_text.getText,
-        #  :project_site_password => @project_password_text.getText
-        #})
-        #Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
+        the_hold_options = config.the_hold_options
+        the_hold_options.update({
+          :login => @user_name_text.getText,
+          :token => @api_key_text.getText,
+          :project => @project_name_text.getText,
+          :project_site_password => @project_password_text.getText,
+          :host => @project_host_text.getText
+        })
+        Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
 
         # Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
         Tray.instance.clean_project
