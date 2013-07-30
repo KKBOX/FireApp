@@ -54,11 +54,7 @@ class ChangeOptionsPanel
     panel_title_label.setLayoutData( layoutdata )
 
     # -- horizontal separator --
-    horizontal_separator = Swt::Widgets::Label.new(@shell, Swt::SWT::SEPARATOR | Swt::SWT::HORIZONTAL)
-    layoutdata = Swt::Layout::FormData.new(800, Swt::SWT::DEFAULT)
-    layoutdata.left = Swt::Layout::FormAttachment.new( panel_title_label, 0, Swt::SWT::LEFT )
-    layoutdata.top  = Swt::Layout::FormAttachment.new( panel_title_label, 10, Swt::SWT::BOTTOM)
-    horizontal_separator.setLayoutData( layoutdata )
+    horizontal_separator = build_separator(panel_title_label)
 
 
     # -- context group --
@@ -72,12 +68,22 @@ class ChangeOptionsPanel
     @less_group = build_less_group(@sass_group)
     @thehold_group = build_thehold_group(@less_group)
 
+    horizontal_separator = build_separator(@buildoption_group)
     # -- control button --
-    build_control_button(@thehold_group)
+    build_control_button(horizontal_separator)
     #build_control_button(@less_group)
     
     
     @shell.pack
+  end
+
+  def build_separator(align)
+    horizontal_separator = Swt::Widgets::Label.new(@shell, Swt::SWT::SEPARATOR | Swt::SWT::HORIZONTAL)
+    layoutdata = Swt::Layout::FormData.new(800, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( align, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( align, 10, Swt::SWT::BOTTOM)
+    horizontal_separator.setLayoutData( layoutdata )
+    horizontal_separator
   end
 
   def build_basic_group(text, align, to = 'bottom')
