@@ -34,6 +34,8 @@ module LessJs
     # Compile a script (String or IO) to CSS.
     def compile(script, options = {})
       script = script.read if script.respond_to?(:read)
+      options[:syncImport]= true
+
       error, data = Source.context.call('compile', script , options)
       if error
         raise ParseError, error.inspect
