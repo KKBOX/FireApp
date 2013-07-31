@@ -97,13 +97,13 @@ class LessCompiler
   end
 
   def get_css
-    #begin
+    begin
       options = @compile_options || {}
       (options["paths"] ||= []) << Compass.configuration.fireapp_less_dir
       LessJs.compile @less_path.read , @compile_options
-    #rescue Exception=>e
-    #  "document.write("+ "#{@less_path}: #{e.message}".to_json + ")"
-    #end
+    rescue Exception=>e
+      "document.write("+ "#{@less_path}: #{e.message}".to_json + ")"
+    end
   end
 
   def self.get_cache_dir(base_dir)
