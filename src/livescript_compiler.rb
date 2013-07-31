@@ -98,7 +98,9 @@ class LiveScriptCompiler
     begin
       LiveScript.compile @livescript_path.read, @compile_options
     rescue Exception=>e
-      "document.write("+ "#{@livescript_path}: #{e.message}".to_json + ")"
+      error_text = "#{@livescript_path}: #{e.message}"
+      LiveScriptCompiler.log( :error, error_text)
+      "document.write("+ error_text.to_json + ")"
     end
   end
 

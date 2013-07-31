@@ -102,7 +102,9 @@ class LessCompiler
       (options["paths"] ||= []) << Compass.configuration.fireapp_less_dir
       LessJs.compile @less_path.read , @compile_options
     rescue Exception=>e
-      "body:before { white-space: pre; font-family: monospace; content: "+"#{@less_path}: #{e.message}".to_json+"; }"
+      error_text = "#{@less_path}: #{e.message}"
+      LessCompiler.log( :error, error_text)
+      "body:before { white-space: pre; font-family: monospace; content: "+error_text.to_json+"; }"
     end
   end
 
