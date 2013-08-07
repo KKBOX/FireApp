@@ -474,7 +474,7 @@ class ChangeOptionsPanel
         Tray.instance.update_config( "fireapp_livescripts_dir", @livescripts_dir_text.getText.inspect )
         Tray.instance.update_config( "fireapp_minifyjs_on_build", @minifyjs_on_build_button.getSelection )
         Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
-        Tray.instance.update_config( "fireapp_less_dir", @less_dir_text.getText.inspect )
+        # Tray.instance.update_config( "fireapp_less_dir", @less_dir_text.getText.inspect )
 
         
         # -- update output style --
