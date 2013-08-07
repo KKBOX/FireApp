@@ -65,8 +65,8 @@ class ChangeOptionsPanel
 
     # -- right --
     @sass_group = build_sass_group(@general_group)
-    @less_group = build_less_group(@sass_group)
-    @thehold_group = build_thehold_group(@less_group)
+    #@less_group = build_less_group(@sass_group)
+    #@thehold_group = build_thehold_group(@less_group)
 
     horizontal_separator = build_separator(@buildoption_group)
     # -- control button --
