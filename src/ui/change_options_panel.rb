@@ -522,15 +522,15 @@ class ChangeOptionsPanel
 
 
         # -- update the_hold bare -- 
-        the_hold_options = config.the_hold_options
-        the_hold_options.update({
-          :login => @user_name_text.getText,
-          :token => @api_key_text.getText,
-          :project => @project_name_text.getText,
-          :project_site_password => @project_password_text.getText,
-          :host => @project_host_text.getText
-        })
-        Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
+        #the_hold_options = config.the_hold_options
+        #the_hold_options.update({
+        #  :login => @user_name_text.getText,
+        #  :token => @api_key_text.getText,
+        #  :project => @project_name_text.getText,
+        #  :project_site_password => @project_password_text.getText,
+        #  :host => @project_host_text.getText
+        #})
+        #Tray.instance.update_config( "the_hold_options", the_hold_options.inspect)
 
         # Compass::Commands::CleanProject.new(Tray.instance.watching_dir, {}).perform
         Tray.instance.clean_project
