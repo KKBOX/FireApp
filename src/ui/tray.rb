@@ -363,24 +363,6 @@ class Tray
         build_path = Compass.configuration.fireapp_build_path  || "build_#{Time.now.strftime('%Y%m%d%H%M%S')}"
         build_path = Pathname.new(build_path).realpath.to_s
         
-        regenerate = Tray.instance.compass_project_config.fireapp_disable_linecomments_and_debuginfo_on_build && ( Tray.instance.compass_project_config.line_comments || Tray.instance.compass_project_config.sass_options[:debug_info])
-        if regenerate
-          # -- original setting --
-          original_line_comments = Tray.instance.compass_project_config.line_comments
-          original_debug_info =  Tray.instance.compass_project_config.sass_options[:debug_info]    
-
-          # -- change line comments to false --
-          Tray.instance.update_config( "line_comments", false )
-
-          # -- change debug info to false --
-          sass_options = Tray.instance.compass_project_config.sass_options
-          sass_options = {} if !sass_options.is_a? Hash
-          sass_options[:debug_info] = false
-          Tray.instance.update_config( "sass_options", sass_options.inspect )
-
-          clean_project({:show_progress => true})
-        end
-
         # -- init report -- 
         report_window = App.report('Start build project!') do
           Swt::Program.launch(build_path)
@@ -391,19 +373,6 @@ class Tray
           report_window.append msg if report_window
         end
         report_window.append "Done!" if report_window
-
-        if regenerate
-          # -- change line comments to original --
-          Tray.instance.update_config( "line_comments", original_line_comments )
-
-          # -- change debug info to original --
-          sass_options = Tray.instance.compass_project_config.sass_options
-          sass_options = {} if !sass_options.is_a? Hash
-          sass_options[:debug_info] = original_debug_info
-          Tray.instance.update_config( "sass_options", sass_options.inspect )
-
-          clean_project
-        end
 
         if !Tray.instance.compass_project_config.fireapp_always_report_on_build
           if Notifier.is_support
