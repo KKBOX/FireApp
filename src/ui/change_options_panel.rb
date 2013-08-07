@@ -168,12 +168,12 @@ class ChangeOptionsPanel
     build_select_button_on_general_group(group, @sass_dir_text)
 
     # -- less dir --
-    less_dir_label = build_dir_label_on_general_group(group, "Less Dir:", sass_dir_label)
-    @less_dir_text = build_dir_text_on_general_group(group, config.fireapp_less_dir, less_dir_label)
-    build_select_button_on_general_group(group, @less_dir_text)
+    #less_dir_label = build_dir_label_on_general_group(group, "Less Dir:", sass_dir_label)
+    #@less_dir_text = build_dir_text_on_general_group(group, config.fireapp_less_dir, less_dir_label)
+    #build_select_button_on_general_group(group, @less_dir_text)
 
     # -- coffeescripts dir --
-    coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", less_dir_label)
+    coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", sass_dir_label)
     @coffeescripts_dir_text = build_dir_text_on_general_group(group, config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
     build_select_button_on_general_group(group, @coffeescripts_dir_text)
 
