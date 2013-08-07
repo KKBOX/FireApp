@@ -3,8 +3,8 @@ class Report
   def initialize(msg, target_display = nil, options={}, &block)
     report_text_area=nil
     @target_display = Swt::Widgets::Display.get_current unless target_display
-    @target_display.syncExec(
-      Swt::RRunnable.new do | runnable |
+    #@target_display.syncExec(
+    #  Swt::RRunnable.new do | runnable |
     shell = Swt::Widgets::Shell.new(@target_display, Swt::SWT::DIALOG_TRIM)
     shell.setText("Fire.app Report")
     shell.setBackgroundMode(Swt::SWT::INHERIT_DEFAULT)
@@ -108,12 +108,11 @@ class Report
         @target_display.sleep if(!@target_display.read_and_dispatch)
       end
     end
-      end)
+    #  end)
     @text = report_text_area
 
 
     @text.update if @text
-    @ok_btn.update if @ok_btn
     @icon_label.update if @icon_label
     @title_label.update if @title_label
   end

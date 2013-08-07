@@ -612,5 +612,33 @@ class Tray
     @tray_item.image = @standby_icon
   end
 
+
+  def stop_livereload
+    SimpleLivereload.instance.unwatch if defined?(SimpleLivereload)
+    [@simplelivereload_thread].each do |x|
+      x.kill if x && x.alive?
+    end
+    @simplelivereload_thread = nil
+  end
+
+  def start_livereload
+    @simplelivereload_thread = Thread.new do
+      SimpleLivereload.instance.watch(Compass.configuration.project_path, { :port => App::CONFIG["services_livereload_port"] }) 
+    end
+  end
+
+  def stop_watcher
+    if @compass_thread 
+      @compass_thread[:watcher].stop 
+    end
+
+    [@compass_thread].each do |x|
+      x.kill if x && x.alive?
+    end
+
+    @compass_thread = nil
+  end
+
+
 end
 

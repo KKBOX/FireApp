@@ -148,6 +148,9 @@ class ProjectBuilder
 
   def build(build_path)
 
+    Tray.instance.stop_livereload
+    Tray.instance.stop_watcher
+    
     release_dir = File.expand_path( build_path )
     
     FileUtils.rm_r( release_dir) if File.exists?(release_dir)
@@ -161,6 +164,8 @@ class ProjectBuilder
       yield msg
     end
     
+    Tray.instance.rewatch
+
     return release_dir
   end
 
