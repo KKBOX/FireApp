@@ -223,8 +223,10 @@ class ChangeOptionsPanel
     @output_style_combo.setText( config.output_style.to_s )
     @output_style_combo.addListener(Swt::SWT::Selection, change_handler)
 
+    @relative_assets_button = build_checkbox_button(group, 'Relative Assets', config.relative_assets, output_style_label)
+
     # -- line comments checkbox --
-    @line_comments_button = build_checkbox_button(group, 'Line Comments', config.line_comments, output_style_label)
+    @line_comments_button = build_checkbox_button(group, 'Line Comments', config.line_comments, @relative_assets_button)
 
     # -- debug info checkbox --
     @debug_info_button = build_checkbox_button(group, 'Debug Info', config.sass_options && config.sass_options[:debug_info],  @line_comments_button)
@@ -474,8 +476,12 @@ class ChangeOptionsPanel
         Tray.instance.update_config( "fireapp_always_report_on_build", @always_report_on_build_button.getSelection )
         Tray.instance.update_config( "fireapp_less_dir", @less_dir_text.getText.inspect )
 
+        
         # -- update output style --
         Tray.instance.update_config( "output_style", ":"+@output_style_combo.getItem(@output_style_combo.getSelectionIndex).to_s )
+
+        # -- relative_assets --
+        Tray.instance.update_config( "relative_assets", @relative_assets_button.getSelection )
 
         # -- update line comments --
         Tray.instance.update_config( "line_comments", @line_comments_button.getSelection )
