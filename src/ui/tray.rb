@@ -384,13 +384,13 @@ class Tray
         ProjectBuilder.new(Compass.configuration.project_path).build( build_path ) do |msg|
           report_window.append msg if report_window
         end
-        report_window.append "Done!" if report_window
+        report_window.append "Done" if report_window
 
         if !Tray.instance.compass_project_config.fireapp_always_report_on_build
           if Notifier.is_support
-            Notifier.notify("Done!", {:execute => "open #{build_path}"})
+            Notifier.notify("Build is completed", {:execute => "open #{build_path}"})
           else
-            App.notify("Done!", App.display) 
+            App.notify("Build is completed", App.display) 
           end
         end
 

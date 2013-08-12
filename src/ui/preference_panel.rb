@@ -58,7 +58,7 @@ class PreferencePanel
     clear_history_button.text = "Clear History"
     clear_history_button.addListener(Swt::SWT::Selection, Swt::Widgets::Listener.impl do |method, evt| 
       Tray.instance.clear_history
-      App.alert('done')
+      App.alert('Done')
     end)
     composite
   end
