@@ -163,7 +163,7 @@ class ChangeOptionsPanel
     group = build_basic_group('General', behind)
 
     # -- sass dir --
-    sass_dir_label = build_dir_label_on_general_group(group, "Sass Dir:", group)
+    sass_dir_label = build_dir_label_on_general_group(group, "Sass Folder", group)
     @sass_dir_text = build_dir_text_on_general_group(group, config.sass_dir, sass_dir_label)
     build_select_button_on_general_group(group, @sass_dir_text)
 
@@ -172,28 +172,28 @@ class ChangeOptionsPanel
     #@less_dir_text = build_dir_text_on_general_group(group, config.fireapp_less_dir, less_dir_label)
     #build_select_button_on_general_group(group, @less_dir_text)
 
-    # -- coffeescripts dir --
-    coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScripts Dir:", sass_dir_label)
-    @coffeescripts_dir_text = build_dir_text_on_general_group(group, config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
-    build_select_button_on_general_group(group, @coffeescripts_dir_text)
-
-    # -- livescripts dir --
-    livescripts_dir_label = build_dir_label_on_general_group(group, "LiveScripts Dir:", coffeescripts_dir_label)
-    @livescripts_dir_text = build_dir_text_on_general_group(group, config.fireapp_livescripts_dir, livescripts_dir_label)
-    build_select_button_on_general_group(group, @livescripts_dir_text)
-
     # -- css dir --
-    css_dir_label = build_dir_label_on_general_group(group, "Css Dir:", livescripts_dir_label)
+    css_dir_label = build_dir_label_on_general_group(group, "CSS Folder", sass_dir_label)
     @css_dir_text = build_dir_text_on_general_group(group, config.css_dir, css_dir_label)
     build_select_button_on_general_group(group, @css_dir_text)
 
     # -- images dir --
-    images_dir_label = build_dir_label_on_general_group(group, "Images Dir:", css_dir_label)
+    images_dir_label = build_dir_label_on_general_group(group, "Image Folder", css_dir_label)
     @images_dir_text = build_dir_text_on_general_group(group, config.images_dir, images_dir_label)
     build_select_button_on_general_group(group, @images_dir_text)
 
+    # -- coffeescripts dir --
+    coffeescripts_dir_label = build_dir_label_on_general_group(group, "CoffeeScript Folder", images_dir_label)
+    @coffeescripts_dir_text = build_dir_text_on_general_group(group, config.fireapp_coffeescripts_dir, coffeescripts_dir_label)
+    build_select_button_on_general_group(group, @coffeescripts_dir_text)
+
+    # -- livescripts dir --
+    livescripts_dir_label = build_dir_label_on_general_group(group, "LiveScript Folder", coffeescripts_dir_label)
+    @livescripts_dir_text = build_dir_text_on_general_group(group, config.fireapp_livescripts_dir, livescripts_dir_label)
+    build_select_button_on_general_group(group, @livescripts_dir_text)
+
     # -- javascripts dir --
-    js_dir_label = build_dir_label_on_general_group(group, "Javascripts Dir:", images_dir_label)
+    js_dir_label = build_dir_label_on_general_group(group, "JavaScript Folder", livescripts_dir_label)
     @js_dir_text = build_dir_text_on_general_group(group, config.javascripts_dir, js_dir_label)
     build_select_button_on_general_group(group, @js_dir_text)
 
@@ -243,10 +243,10 @@ class ChangeOptionsPanel
     group = build_basic_group('Build', behind)
 
     # -- minifyjs_on_build checkbox --
-    @minifyjs_on_build_button = build_checkbox_button(group, 'Minifyjs on Build', config.fireapp_minifyjs_on_build)
+    @minifyjs_on_build_button = build_checkbox_button(group, 'Minify JavaScript (Uglifier)', config.fireapp_minifyjs_on_build)
 
     # -- always_report_on_build checkbox --
-    @always_report_on_build_button = build_checkbox_button(group, 'Always Report on Build', config.fireapp_always_report_on_build,  @minifyjs_on_build_button)
+    @always_report_on_build_button = build_checkbox_button(group, 'Report', config.fireapp_always_report_on_build,  @minifyjs_on_build_button)
 
     group.pack
 
