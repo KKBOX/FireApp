@@ -191,12 +191,11 @@ class Tray
 
   def build_compass_framework_menuitem( submenu, handler )
     Compass::Frameworks::ALL.each do | framework |
-      puts framework.inspect
       next if framework.name =~ /^_/
       next if framework.template_directories.empty?
 
       # get default compass extension name from folder name
-      if framework.templates_directory =~ /compass_extensions\/([^\/\\]+)/
+      if framework.templates_directory =~ /lib[\/\\]ruby[\/\\]compass_extensions[\/\\]([^\/\\]+)/
         framework_name = $1
       else
         framework_name = framework.name
