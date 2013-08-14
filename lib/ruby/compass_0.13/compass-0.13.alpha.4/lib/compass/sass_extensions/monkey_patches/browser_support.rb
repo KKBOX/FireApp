@@ -1,8 +1,8 @@
-require 'sass/script/node'
-require 'sass/script/literal'
-require 'sass/script/funcall'
+require 'sass/script/tree/node'
+require 'sass/script/tree/literal'
+require 'sass/script/tree/funcall'
 
-module Sass::Script
+module Sass::Script:Tree
   module HasSimpleCrossBrowserFunctionSupport
     def supports?(aspect)
       return true if Compass::BrowserSupport.supports?(name, aspect)
@@ -61,7 +61,6 @@ module Sass::Script
     end
 
   end
-
   class Funcall < Node
     include HasSimpleCrossBrowserFunctionSupport
 

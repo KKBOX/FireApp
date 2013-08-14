@@ -99,8 +99,6 @@ begin
   end
 
 
-  App.clear_autocomplete_cache
-
   Tray.instance.run(:watch => options[:watch_dir])
 
 rescue Exception => e
