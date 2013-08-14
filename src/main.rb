@@ -76,7 +76,6 @@ begin
     require "less_compiler.rb"
     require "app_watcher.rb"
     require "compass_patch.rb"
-    require "sass_patch.rb"
     require "the_hold_uploader.rb"
     require "project_builder.rb"
     require "notifier"
