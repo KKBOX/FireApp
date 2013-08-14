@@ -140,14 +140,16 @@ module Compass
 
     # Compile one Sass file
     def compile(sass_filename, css_filename)
+      sourcemap_filename = css_filename+".sourcemap"
       start_time = end_time = nil
-      css_content = logger.red do
+      css_content, sourcemap_content = logger.red do
         timed do
-          engine(sass_filename, css_filename).render
+          engine(sass_filename, css_filename).render_with_sourcemap(File.basename(sourcemap_filename))
         end
       end
       duration = options[:time] ? "(#{(css_content.__duration * 1000).round / 1000.0}s)" : ""
       write_file(css_filename, css_content, options.merge(:force => true, :extra => duration))
+      write_file(sourcemap_filename, sourcemap_content, options.merge(:force => true, :extra => duration)) if sass_options[:debug_info] || sass_options[:sourcemap]
       Compass.configuration.run_stylesheet_saved(css_filename)
     end
 
