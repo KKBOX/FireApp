@@ -150,7 +150,7 @@ module Compass
       duration = options[:time] ? "(#{(css_content.__duration * 1000).round / 1000.0}s)" : ""
       write_file(css_filename, css_content, options.merge(:force => true, :extra => duration))
       if sass_options[:sourcemap]
-        write_file(sourcemap_filename, sourcemap.to_json(:css_path => File.basename(css_filename), :sourcemap_path=> File.basename(sourcemap_filename)), options.merge(:force => true, :extra => duration)) 
+        write_file(sourcemap_filename, sourcemap.to_json(:css_path => css_filename, :sourcemap_path=> sourcemap_filename), options.merge(:force => true, :extra => duration)) 
       end
       Compass.configuration.run_stylesheet_saved(css_filename)
     end
