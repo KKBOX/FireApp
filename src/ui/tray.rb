@@ -130,7 +130,7 @@ class Tray
       #  favorite_icon = App.create_image("icon/16@2x.png")
       #else 
         history_icon = App.create_image("icon/history-16.png")
-        favorite_icon = App.create_image("icon/history-16.png")
+        favorite_icon = App.create_image("icon/favorite-16.png")
       #end
       if type == :history
         menuitem.setImage(history_icon)
@@ -576,7 +576,7 @@ class Tray
       @menu.items.each do |item|
         item.dispose if history.include?(item.text) || favorite.include?(item.text)
       end
-      
+
       if favorite.delete(dir)
         favorite.unshift(dir)
       else 
