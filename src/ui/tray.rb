@@ -129,8 +129,8 @@ class Tray
       #  history_icon = App.create_image("icon/16_dark@2x.png")
       #  favorite_icon = App.create_image("icon/16@2x.png")
       #else 
-        history_icon = App.create_image("icon/16_dark.png")
-        favorite_icon = App.create_image("icon/16.png")
+        history_icon = App.create_image("icon/history-16.png")
+        favorite_icon = App.create_image("icon/history-16.png")
       #end
       if type == :history
         menuitem.setImage(history_icon)
