@@ -576,11 +576,12 @@ class Tray
       @menu.items.each do |item|
         item.dispose if history.include?(item.text) || favorite.include?(item.text)
       end
-      if history.delete(dir)
-        history.unshift(dir)
-      end
+      
       if favorite.delete(dir)
         favorite.unshift(dir)
+      else 
+        history.delete(dir)
+        history.unshift(dir)
       end
       App.set_favorite(favorite)
       App.set_histoy(history)
