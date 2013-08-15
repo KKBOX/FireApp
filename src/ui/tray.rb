@@ -125,24 +125,14 @@ class Tray
       menuitem.text = "#{dir}"
       menuitem.addListener(Swt::SWT::Selection, compass_switch_handler(dir))
 
-      #if org.jruby.platform.Platform::IS_MAC
-      #  history_icon = App.create_image("icon/16_dark@2x.png")
-      #  favorite_icon = App.create_image("icon/16@2x.png")
-      #else 
-        history_icon = App.create_image("icon/history-16.png")
-        favorite_icon = App.create_image("icon/favorite-16.png")
-      #end
+      
       if type == :history
-        menuitem.setImage(history_icon)
+        #history_icon = App.create_image("icon/history-16.png")
+        #menuitem.setImage(history_icon)
       else
+        favorite_icon = App.create_image("icon/favorite-16.png")
         menuitem.setImage(favorite_icon)
       end
-
-
-      #menuitem.menu = Swt::Widgets::Menu.new( @menu  )
-
-      #add_menu_item("Watch it", compass_switch_handler(dir), Swt::SWT::PUSH, menuitem.menu)
-      #add_menu_item("Add to Favorite", nil, Swt::SWT::PUSH, menuitem.menu)
 
       menuitem
     end
