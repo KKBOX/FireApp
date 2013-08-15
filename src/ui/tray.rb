@@ -8,7 +8,6 @@ class Tray
     @compass_thread = nil
     @watching_dir = nil
     @logger = nil
-    @history_dirs  = App.get_history
     @shell    = App.create_shell(Swt::SWT::ON_TOP | Swt::SWT::MODELESS)
 
     if org.jruby.platform.Platform::IS_MAC
@@ -156,12 +155,8 @@ class Tray
   end
 
   def clear_history
-    @menu.items.each do |item|
-      item.dispose if @history_dirs.include?(item.text)
-    end
-    @history_dirs = []
     App.clear_histoy
-    build_history_menuitem
+    rebuild_history_menuitem
   end
 
   def add_favorite_handler(dir)
@@ -178,8 +173,7 @@ class Tray
       App.set_favorite(favorite)
       @is_favorite_item.setSelection( true ) if App.get_favorite.include?(dir) && @is_favorite_item && !@is_favorite_item.isDisposed
 
-      @history_dirs = history
-      App.set_histoy(@history_dirs[0, App::CONFIG["num_of_history"]])
+      App.set_histoy(history)
 
       rebuild_history_menuitem
       
@@ -267,7 +261,7 @@ class Tray
   def build_history_menuitem
     @history_menuitem ||= [] 
 
-    @history_dirs.reverse.each do | dir |
+    App.get_history.reverse.each do | dir |
       @history_menuitem.push add_compass_item(dir, :history)
     end
 
@@ -275,7 +269,6 @@ class Tray
       @history_menuitem.push add_compass_item(dir, :favorite)
     end
 
-    App.set_histoy(@history_dirs[0, App::CONFIG["num_of_history"]])
   end
 
   def show_system_properties_handler
@@ -396,7 +389,6 @@ class Tray
   def exit_handler
     Swt::Widgets::Listener.impl do |method, evt|
       stop_watch
-      App.set_histoy(@history_dirs[0,App::CONFIG["num_of_history"]])
       @shell.close
     end
   end
@@ -577,11 +569,22 @@ class Tray
 
       @tray_item.image = @watching_icon
       @watching_dir = dir
+
+      favorite = App.get_favorite
+      history = App.get_history
+
       @menu.items.each do |item|
-        item.dispose if @history_dirs.include?(item.text)
+        item.dispose if history.include?(item.text) || favorite.include?(item.text)
       end
-      @history_dirs.delete_if { |x| x == dir }
-      @history_dirs.unshift(dir)
+      if history.delete(dir)
+        history.unshift(dir)
+      end
+      if favorite.delete(dir)
+        favorite.unshift(dir)
+      end
+      App.set_favorite(favorite)
+      App.set_histoy(history)
+      
       build_history_menuitem
 
 
