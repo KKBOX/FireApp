@@ -181,6 +181,7 @@ class Tray
       @history_dirs = history
       App.set_histoy(@history_dirs[0, App::CONFIG["num_of_history"]])
 
+      build_history_menuitem
       
     end
   end
