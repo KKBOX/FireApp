@@ -310,7 +310,7 @@ EOL
   end
 
   def not_found
-    [404, {'Content-Type' => 'text/plain' }, ["Not Fonud"]]
+    [404, {'Content-Type' => 'text/plain' }, ["Not Found"]]
   end
 
   def forbidden
