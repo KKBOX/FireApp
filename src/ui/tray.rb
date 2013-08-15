@@ -120,11 +120,31 @@ class Tray
     menuitem
   end
 
-  def add_compass_item(dir)
+  def add_compass_item(dir, type = :history)
     if File.exists?(dir)
       menuitem = Swt::Widgets::MenuItem.new(@menu , Swt::SWT::PUSH, @menu.indexOf(@history_item) + 1 )
       menuitem.text = "#{dir}"
-      menuitem.addListener(Swt::SWT::Selection, compass_switch_handler)
+      menuitem.addListener(Swt::SWT::Selection, compass_switch_handler(dir))
+
+      #if org.jruby.platform.Platform::IS_MAC
+      #  history_icon = App.create_image("icon/16_dark@2x.png")
+      #  favorite_icon = App.create_image("icon/16@2x.png")
+      #else 
+        history_icon = App.create_image("icon/16_dark.png")
+        favorite_icon = App.create_image("icon/16.png")
+      #end
+      if type == :history
+        menuitem.setImage(history_icon)
+      else
+        menuitem.setImage(favorite_icon)
+      end
+
+
+      #menuitem.menu = Swt::Widgets::Menu.new( @menu  )
+
+      #add_menu_item("Watch it", compass_switch_handler(dir), Swt::SWT::PUSH, menuitem.menu)
+      #add_menu_item("Add to Favorite", nil, Swt::SWT::PUSH, menuitem.menu)
+
       menuitem
     end
   end
@@ -144,9 +164,30 @@ class Tray
     build_history_menuitem
   end
 
-  def compass_switch_handler
+  def add_favorite_handler(dir)
     Swt::Widgets::Listener.impl do |method, evt|
-      watch(evt.widget.text, {:show_progress => true})
+      favorite = App.get_favorite
+      history = App.get_history
+      if favorite.include?(dir)
+        favorite.delete(dir)
+        history.unshift(dir)
+      else
+        favorite.unshift(dir)
+        history.delete(dir)
+      end
+      App.set_favorite(favorite)
+      @is_favorite_item.setSelection( true ) if App.get_favorite.include?(dir) && @is_favorite_item && !@is_favorite_item.isDisposed
+
+      @history_dirs = history
+      App.set_histoy(@history_dirs[0, App::CONFIG["num_of_history"]])
+
+      
+    end
+  end
+
+  def compass_switch_handler(dir)
+    Swt::Widgets::Listener.impl do |method, evt|
+      watch(dir, {:show_progress => true})
     end
   end
 
@@ -211,8 +252,13 @@ class Tray
   end
 
   def build_history_menuitem
+
+    App.get_favorite.reverse.each do | dir |
+      add_compass_item(dir, :favorite)
+    end
+
     @history_dirs.reverse.each do | dir |
-      add_compass_item(dir)
+      add_compass_item(dir, :history)
     end
     App.set_histoy(@history_dirs[0, App::CONFIG["num_of_history"]])
   end
@@ -526,11 +572,18 @@ class Tray
 
       @watch_item.text="Stop watching " + dir
 
+      @is_favorite_item = add_menu_item( "Favorite", 
+                                          add_favorite_handler(dir), 
+                                          Swt::SWT::CHECK,
+                                          @menu, 
+                                          @menu.indexOf(@watch_item) +1 )
+      @is_favorite_item.setSelection( true ) if App.get_favorite.include?(dir)
+
       @open_project_item =  add_menu_item( "Open Project Folder", 
                                           open_project_handler, 
                                           Swt::SWT::PUSH,
                                           @menu, 
-                                          @menu.indexOf(@watch_item) +1 )
+                                          @menu.indexOf(@is_favorite_item) +1 )
 
       @install_item =  add_menu_item( "Install...", 
                                      install_project_handler, 
@@ -616,6 +669,7 @@ class Tray
     @watch_item.text="Watch a Folder..."
     @install_item.dispose() if @install_item && !@install_item.isDisposed
     @clean_item.dispose()   if @clean_item && !@clean_item.isDisposed
+    @is_favorite_item.dispose()   if @is_favorite_item && !@is_favorite_item.isDisposed
     @open_project_item.dispose()   if @open_project_item && !@open_project_item.isDisposed
     @build_project_item.dispose()  if @build_project_item && !@build_project_item.isDisposed
     @deploy_project_item.dispose() if @deploy_project_item && !@deploy_project_item.isDisposed
