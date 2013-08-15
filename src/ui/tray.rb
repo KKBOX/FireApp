@@ -267,13 +267,14 @@ class Tray
   def build_history_menuitem
     @history_menuitem ||= [] 
 
+    @history_dirs.reverse.each do | dir |
+      @history_menuitem.push add_compass_item(dir, :history)
+    end
+
     App.get_favorite.reverse.each do | dir |
       @history_menuitem.push add_compass_item(dir, :favorite)
     end
 
-    @history_dirs.reverse.each do | dir |
-      @history_menuitem.push add_compass_item(dir, :history)
-    end
     App.set_histoy(@history_dirs[0, App::CONFIG["num_of_history"]])
   end
 
@@ -690,6 +691,8 @@ class Tray
     @changeoptions_item.dispose()  if @changeoptions_item && !@changeoptions_item.isDisposed
     @watching_dir = nil
     @tray_item.image = @standby_icon
+
+    rebuild_history_menuitem
   end
 
 
