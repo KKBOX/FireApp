@@ -181,7 +181,7 @@ class Tray
       @history_dirs = history
       App.set_histoy(@history_dirs[0, App::CONFIG["num_of_history"]])
 
-      build_history_menuitem
+      rebuild_history_menuitem
       
     end
   end
@@ -252,14 +252,27 @@ class Tray
     end
   end
 
+  def rebuild_history_menuitem
+    delete_history_menuitem
+    build_history_menuitem
+  end
+
+  def delete_history_menuitem
+    @history_menuitem.each do |x|
+      x.dispose if x && !x.isDisposed
+    end if @history_menuitem
+    @history_menuitem = []
+  end
+
   def build_history_menuitem
+    @history_menuitem ||= [] 
 
     App.get_favorite.reverse.each do | dir |
-      add_compass_item(dir, :favorite)
+      @history_menuitem.push add_compass_item(dir, :favorite)
     end
 
     @history_dirs.reverse.each do | dir |
-      add_compass_item(dir, :history)
+      @history_menuitem.push add_compass_item(dir, :history)
     end
     App.set_histoy(@history_dirs[0, App::CONFIG["num_of_history"]])
   end
