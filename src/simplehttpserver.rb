@@ -68,7 +68,7 @@ class SimpleHTTPServer
   end
 
   def stop
-    @webrick_server.shutdown if @webrick_server
+    @webrick_server.shutdown if @webrick_server && @webrick_server.respond_to?(:shutdown)
     @webrick_server = nil
     @http_server_thread.kill if @http_server_thread && @http_server_thread.alive?
     sleep 1 if org.jruby.platform.Platform::IS_WINDOWS # windows need time to release port end
