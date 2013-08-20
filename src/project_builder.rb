@@ -16,7 +16,6 @@ class ProjectBuilder
   end
 
   def initialize(project_path)
-    require 'tilt'
     @project_path = project_path
   end
 
@@ -58,7 +57,11 @@ class ProjectBuilder
         "Gemfile.lock",
         "config.ru"
       ]
-      blacklist << File.basename(Compass.detect_configuration_file) if is_compass_project
+
+      compass_config_file = Compass.detect_configuration_file 
+      if is_compass_project && compass_config_file
+        blacklist << File.basename(compass_config_file) 
+      end
 
       Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? } if include_tilt_key
 
