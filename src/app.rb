@@ -22,6 +22,7 @@ module App
   Dir.mkdir( CONFIG_DIR ) unless File.exists?( CONFIG_DIR )
   Dir.mkdir( AUTOCOMPLTETE_CACHE_DIR ) unless File.exists?( AUTOCOMPLTETE_CACHE_DIR )
 
+  FAVORITE_FILE =  File.join( CONFIG_DIR, 'favorite')
   HISTORY_FILE =  File.join( CONFIG_DIR, 'history')
   CONFIG_FILE  =  File.join( CONFIG_DIR, 'config')
 
@@ -145,7 +146,20 @@ module App
     set_histoy([])
   end
 
+  def set_favorite(dirs)
+    File.open(FAVORITE_FILE, 'w') do |out|
+      YAML.dump(dirs, out)
+    end 
+  end 
+
+  def get_favorite
+    dirs = YAML.load_file( FAVORITE_FILE ) if File.exists?(FAVORITE_FILE)
+    return dirs if dirs
+    return []
+  end 
+
   def set_histoy(dirs)
+    dirs = dirs[0, App::CONFIG["num_of_history"]]
     File.open(HISTORY_FILE, 'w') do |out|
       YAML.dump(dirs, out)
     end 
