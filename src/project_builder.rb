@@ -71,16 +71,28 @@ class ProjectBuilder
 
 
     def build_html(release_dir, blacklist)
+      
+      # add fire.app project source code folder to blacklist
+      blacklist << File.join(Compass.configuration.sass_dir, "*")
+      blacklist << File.join(Compass.configuration.fireapp_coffeescripts_dir,"*")
+      blacklist << File.join(Compass.configuration.fireapp_livescripts_dir,"*")
+      blacklist << File.join(Compass.configuration.fireapp_less_dir,"*")
+
       #build html 
-      Dir.glob( File.join(@project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
+      Dir.glob( File.join(@project_path, '**', "[^_]*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
         if file =~ /build_\d{14}/ || file.index(release_dir)
           next 
         end
         extname=File.extname(file)
         if Tilt[ extname[1..-1] ]
-          request_path = file[@project_path.length ... (-1*extname.size)]
+          request_path = if extname == '.html' # *.html should not remove extname
+                           file[@project_path.length .. -1] 
+                         else
+                           file[@project_path.length ... (-1*extname.size)] 
+                         end
           pass = false
           blacklist.each do |pattern|
+
             if File.fnmatch(pattern, request_path[1..-1])
               pass = true
               break
@@ -175,7 +187,6 @@ class ProjectBuilder
   def write_dynamaic_file(release_dir, request_path )
     new_file = File.join(release_dir, request_path)
     FileUtils.mkdir_p( File.dirname(  new_file ))
-    puts request_path
     File.open(new_file, 'w') {|f| f.write( open("http://127.0.0.1:#{App::CONFIG['services_http_port']}#{URI.escape(request_path)}").read ) } 
   end 
 
