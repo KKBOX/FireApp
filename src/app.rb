@@ -1,8 +1,15 @@
-require "compile_version.rb"
+begin
+  require "compile_version.rb"
+rescue
+  module CompileVersion
+    COMPILE_TIME = Time.now.to_s
+    REVISION = 'development'
+  end
+end
 
 module App
   extend self
-
+  
   include CompileVersion
   VERSION = "1.12"
   OS = org.jruby.platform.Platform::OS 
