@@ -54,6 +54,7 @@ INFO_ENDL
       %x{mv #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/Java #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Java  }
 
       %x{chmod 644 #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/Java/fire-app.jar}
+      
       Dir.chdir CONFIG.osx_output_dir
       %x{mv #{CONFIG.project_name}.app Fire.app;}
       @osx_bundle_file="fire.app.osx.#{@compile_time}-#{@revision}.zip"

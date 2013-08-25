@@ -28,7 +28,7 @@ There is no need to **install** Fire.app. You can just unzip and put it anywhere
 
 ## Build Your Own
 
-If you want to build your own copy, you will need [JRuby](http://jruby.org/) and [rawr](http://rawr.rubyforge.org/).
+If you want to build your own copy, you will need Java 7, [JRuby](http://jruby.org/) and [rawr](http://rawr.rubyforge.org/).
 
 ## License
 

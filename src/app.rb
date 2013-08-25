@@ -13,7 +13,7 @@ module App
   end
 
   def compile_version
-    "#{OS}.#{OS_VERSION}.#{org.jruby.platform.Platform::ARCH}.ruby-#{::Object::VERSION}.#{COMPILE_TIME}.#{REVISION}"
+    "#{OS}.#{OS_VERSION}.#{org.jruby.platform.Platform::ARCH}.ruby-#{RUBY_VERSION}.#{COMPILE_TIME}.#{REVISION}"
   end
 
   
