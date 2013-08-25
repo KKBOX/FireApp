@@ -2,16 +2,10 @@ INITAT=Time.now
 
 require 'java'
 $LOAD_PATH << 'src'
-<<<<<<< HEAD
-require 'uri'
-resources_dir = File.join(File.dirname( File.dirname(File.dirname( URI.parse(__FILE__).path ))), 'Resources')
-if File.exists?( File.join(resources_dir, 'lib','ruby'))
-=======
 require 'pathname'
 resources_dir =  Pathname.new(__FILE__).dirname().dirname().dirname().to_s()[5..-1]
 puts resources_dir
 if resources_dir && File.exists?( File.join(resources_dir, 'lib','ruby'))
->>>>>>> master
   LIB_PATH = File.join(resources_dir, 'lib')
 else
   LIB_PATH = File.expand_path 'lib' 
