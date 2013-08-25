@@ -1,3 +1,4 @@
+
 require 'time'
 require 'pathname'
 require 'coffee_script'
@@ -6,7 +7,7 @@ require 'json'
 class CoffeeCompiler
 
   def self.log(type, msg)
-    msg = msg.gsub(/#{File.expand_path(Compass.configuration.project_path)}/, '')[1..-1] if defined?(Tray) 
+    msg = msg.sub(File.expand_path(Compass.configuration.project_path), '')[1..-1] if defined?(Tray) 
 
     if defined?(Tray) && Tray.instance.logger
       Tray.instance.logger.record type, msg
@@ -15,7 +16,7 @@ class CoffeeCompiler
     end
   end
 
-  def self.compile_folder( coffeescripts_dir, javascripts_dir )
+  def self.compile_folder( coffeescripts_dir, javascripts_dir, options={} )
     coffeescripts_dir = File.expand_path(coffeescripts_dir)
     javascripts_dir = File.expand_path(javascripts_dir)
     
@@ -24,7 +25,7 @@ class CoffeeCompiler
 
       new_js_path = get_new_js_path(coffeescripts_dir, full_path, javascripts_dir)
 
-      CoffeeCompiler.new(full_path, new_js_path, get_cache_dir(coffeescripts_dir) ).compile
+      CoffeeCompiler.new(full_path, new_js_path, get_cache_dir(coffeescripts_dir), options ).compile
     end
   end
 
@@ -48,15 +49,16 @@ class CoffeeCompiler
 
   def self.get_new_js_path(coffeescripts_dir, full_path, javascripts_dir)
     full_path=File.expand_path(full_path)
-    new_dir  = File.dirname(full_path.gsub(/#{coffeescripts_dir}/, ''))
+    new_dir  = File.dirname(full_path.to_s.sub(coffeescripts_dir, ''))
     new_file = File.basename(full_path).gsub(/\.coffee/,".js").gsub(/js\.js/,'js')
     return  File.join(javascripts_dir, new_dir, new_file)
   end
 
-  def initialize(coffeescript_path, javascript_path, cache_dir=nil)
+  def initialize(coffeescript_path, javascript_path, cache_dir=nil, options={})
     @coffeescript_path = Pathname.new(coffeescript_path)
     @javascript_path   = Pathname.new(javascript_path)
     @cache_dir   = cache_dir ? Pathname.new(cache_dir) : nil
+    @compile_options = options
   end
 
   def compile()
@@ -96,9 +98,11 @@ class CoffeeCompiler
 
   def get_js
     begin
-      CoffeeScript.compile @coffeescript_path.read
+      CoffeeScript.compile @coffeescript_path.read, @compile_options
     rescue Exception=>e
-      "document.write("+ "#{@coffeescript_path}: #{e.message}".to_json + ")"
+      error_text = "#{@coffeescript_path}: #{e.message}"
+      CoffeeCompiler.log( :error, error_text)
+      "document.write("+ error_text.to_json + ")"
     end
   end
 

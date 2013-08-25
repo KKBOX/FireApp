@@ -4,7 +4,7 @@ module App
   extend self
 
   include CompileVersion
-  VERSION = "1.4"
+  VERSION = "1.12"
   OS = org.jruby.platform.Platform::OS 
   OS_VERSION = java.lang.System.getProperty("os.version")
 
@@ -17,14 +17,15 @@ module App
   end
 
   
-  CONFIG_DIR = File.join( java.lang.System.getProperty("user.home") , '.fire-app' )
-  AUTOCOMPLTETE_CACHE_DIR = File.join( java.lang.System.getProperty("user.home") , '.fire-app', 'autocomplete_cache' )
+  AUTOCOMPLTETE_CACHE_DIR = File.join( CONFIG_DIR , 'autocomplete_cache' )
 
   Dir.mkdir( CONFIG_DIR ) unless File.exists?( CONFIG_DIR )
   Dir.mkdir( AUTOCOMPLTETE_CACHE_DIR ) unless File.exists?( AUTOCOMPLTETE_CACHE_DIR )
 
+  FAVORITE_FILE =  File.join( CONFIG_DIR, 'favorite')
   HISTORY_FILE =  File.join( CONFIG_DIR, 'history')
   CONFIG_FILE  =  File.join( CONFIG_DIR, 'config')
+
   @notifications = []
   def notifications
     @notifications
@@ -60,6 +61,7 @@ module App
 
     x.delete("services_http_port") unless x["services_http_port"].to_i > 0
     x.delete("services_livereload_port") unless x["services_livereload_port"].to_i > 0
+    x.delete("num_of_history") unless x["num_of_history"].to_i > 0
                                 
     config={
       "show_welcome" => true,
@@ -70,9 +72,10 @@ module App
       "services" => [ :http, :livereload],
       "services_http_port" => 24681,
       "services_livereload_port" => 35729,
-      "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,coffee,markdown,mkd,md",
+      "services_livereload_extensions" => "css,png,jpg,gif,html,erb,haml,coffee,js,markdown,mkd,md",
       "preferred_syntax" => "scss",
-      "force_enable_fsevent" => false
+      "force_enable_fsevent" => false,
+      "num_of_history" => 5
     }
 
     config.merge!(x)
@@ -96,8 +99,11 @@ module App
       # make sure use java version library, ex json-java, eventmachine-java
       jruby_gems_path = File.join(LIB_PATH, "ruby", "jruby" )
       scan_library( jruby_gems_path )
-      require "fssm" if (OS == 'darwin' && OS_VERSION.to_f >= 10.6 ) || OS == 'linux' || OS == 'windows'
       
+      require 'rb-fsevent' if OS == 'darwin' && App::CONFIG['force_enable_fsevent'] 
+      require 'rb-inotify' if OS == 'linux' 
+      require 'listen'
+
       require "compass"
       require "compass/exec"
       
@@ -140,7 +146,20 @@ module App
     set_histoy([])
   end
 
+  def set_favorite(dirs)
+    File.open(FAVORITE_FILE, 'w') do |out|
+      YAML.dump(dirs, out)
+    end 
+  end 
+
+  def get_favorite
+    dirs = YAML.load_file( FAVORITE_FILE ) if File.exists?(FAVORITE_FILE)
+    return dirs if dirs
+    return []
+  end 
+
   def set_histoy(dirs)
+    dirs = dirs[0, App::CONFIG["num_of_history"]]
     File.open(HISTORY_FILE, 'w') do |out|
       YAML.dump(dirs, out)
     end 
@@ -152,8 +171,8 @@ module App
     return []
   end 
 
-  def display
-    Swt::Widgets::Display.get_current
+  def display 
+    @display ||= Swt::Widgets::Display.get_current
   end
 
   def create_shell(style = nil)
@@ -180,10 +199,12 @@ module App
   end
 
   def notify(msg, target_display = nil )
-    if org.jruby.platform.Platform::IS_MAC
-      system('/usr/bin/osascript', "#{LIB_PATH}/applescript/growl.scpt", msg )
+    if Notifier.is_support
+      Notifier.notify(msg)
+      #system('/usr/bin/osascript', "#{LIB_PATH}/applescript/growl.scpt", msg )
     else
       Notification.new(msg, target_display)
+      target_display.wake if target_display
     end
   end
 
@@ -208,7 +229,6 @@ module App
       lib_path = File.expand_path( File.join(dir, subfolder,'lib') )
       $LOAD_PATH.unshift( lib_path ) if File.exists?(lib_path)
     end
-
   end
   
   def clear_autocomplete_cache
@@ -228,6 +248,15 @@ module App
           end
         end
       end
+  end
+
+  def  shared_extensions_path
+    home_dir = java.lang.System.getProperty("user.home")
+    if File.directory?(home_dir) && File.writable?( home_dir ) 
+      folder_path = File.join( home_dir, '.compass','extensions' )
+    else
+      folder_path = File.join( File.dirname( CONFIG_DIR), 'extensions')
+    end
   end
 end
 

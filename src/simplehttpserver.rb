@@ -9,15 +9,27 @@ require "kramdown"
 require 'serve/application'
 require 'sass/plugin/rack'
 require 'rack/coffee'
-
+require 'haml'
+require 'haml/filters'
+require 'haml_patch.rb'
 class SimpleHTTPServer
   include Singleton
   def start(dir, options)
     Dir.chdir(dir)
+
+    mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
+    mime_types.store 'eot', 'application/vnd.ms-fontobject'
+    mime_types.store 'js', 'application/javascript'
+    mime_types.store 'svg', 'image/svg+xml'
+    mime_types.store 'svgz', 'image/svg+xml'
+    mime_types.store 'ttf', 'application/x-font-ttf'
+    mime_types.store 'woff', 'application/x-font-woff'
+
     options={
-      :Port => 24681
+      :Port => 24681,
+      :MimeTypes => mime_types
     }.merge(options)
-    
+
     stop 
 
     app = Rack::Builder.new do
@@ -35,13 +47,13 @@ class SimpleHTTPServer
 
       if( File.exists?(views_dir) && File.exists?(public_dir))
         run Rack::Cascade.new([
-          Serve::RackAdapter.new( views_dir ),
-          Rack::Directory.new( public_dir)
+                              Serve::RackAdapter.new( views_dir ),
+                              Rack::Directory.new( public_dir)
         ]) 
       else 
         run Rack::Cascade.new([
-          Serve::RackAdapter.new( dir ),
-          Rack::Directory.new( dir )
+                              Serve::RackAdapter.new( dir ),
+                              Rack::Directory.new( dir )
         ]) 
       end
     end
@@ -59,7 +71,7 @@ class SimpleHTTPServer
     @webrick_server.shutdown if @webrick_server
     @webrick_server = nil
     @http_server_thread.kill if @http_server_thread && @http_server_thread.alive?
+    sleep 1 if org.jruby.platform.Platform::IS_WINDOWS # windows need time to release port end
+
   end
-
 end
-

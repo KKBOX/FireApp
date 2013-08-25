@@ -46,12 +46,12 @@ class  Notification
         alpha = 255
         NOTIFICATIONS.each do | s |
           next if s.isDisposed 
-        s.setAlpha(alpha)
-        s.setLocation( m.getBounds().width - s.getBounds().width , height )
-        height = height + s.getBounds().height
-        alpha -= 30
+          s.setAlpha(alpha)
+          s.setLocation( m.getBounds().width - s.getBounds().width , height )
+          height = height + s.getBounds().height
+          alpha -= 30
         end
-        shell.open
+        shell.setVisible(true)
 
         target_display.timerExec(5000, Swt::RRunnable.new do
           shell.dispose

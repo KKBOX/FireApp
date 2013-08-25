@@ -1,5 +1,5 @@
 module Compass
-  
+
   # for add fireapp_build_path configuration property
   module Configuration
     def self.strip_trailing_separator(*args)
@@ -11,97 +11,73 @@ module Compass
   Configuration.add_configuration_property(:fireapp_build_path, nil) do
     nil
   end
-  
+
+  #-- coffeescript --
   Configuration.add_configuration_property(:fireapp_coffeescripts_dir, nil) do
     "coffeescripts"
   end
+  Configuration.add_configuration_property(:fireapp_coffeescript_options, nil) do
+    {}
+  end
+
+  #-- livescript --
+  Configuration.add_configuration_property(:fireapp_livescripts_dir, nil) do
+    "livescripts"
+  end
+  Configuration.add_configuration_property(:fireapp_livescript_options, nil) do
+    {}
+  end
+
+  #-- less --
+  Configuration.add_configuration_property(:fireapp_less_dir, nil) do
+    "less"
+  end
+  Configuration.add_configuration_property(:fireapp_less_options, nil) do
+    {
+      :yuicompress => false,
+      :verbose => false,
+      :color => true,
+      :ieCompat => true,
+      :strictImports => false,
+      :strictMath => false,
+      :strictUnits => false
+    }
+  end
+ 
+  #-- the hold --
+  Configuration.add_configuration_property(:the_hold_options, nil) do
+    { }
+  end
+
+  #-- build --
+  Configuration.add_configuration_property(:fireapp_minifyjs_on_build, nil) do
+    false
+  end  
+  Configuration.add_configuration_property(:fireapp_always_report_on_build, nil) do
+    true
+  end
+  Configuration.add_configuration_property(:fireapp_disable_linecomments_and_debuginfo_on_build, nil) do
+    true
+  end
+
+
+  # default sass_options is nil
+  Configuration.add_configuration_property(:sass_options, nil) do
+    {}
+  end 
 
   module Commands
-    class WatchProject 
-
-      def perform # we remove  Signal.trap("INT"), add version check on configuration.watches
-        check_for_sass_files!(new_compiler_instance)
-        recompile
-        require 'fssm'
-        if options[:poll]
-          require "fssm/backends/polling"
-          # have to silence the ruby warning about chaning a constant.
-          stderr, $stderr = $stderr, StringIO.new
-          FSSM::Backends.const_set("Default", FSSM::Backends::Polling)
-          $stderr = stderr
-        end
-
-        action = FSSM::Backends::Default.to_s == "FSSM::Backends::Polling" ? "polling" : "watching"
-
-        puts ">>> Compass is #{action} for changes. Press Ctrl-C to Stop."
-
-        begin
-          FSSM.monitor do |monitor|
-            Compass.configuration.sass_load_paths.each do |load_path|
-              load_path = load_path.root if load_path.respond_to?(:root)
-              next unless load_path.is_a? String
-              monitor.path load_path do |path|
-                path.glob '**/*.s[ac]ss'
-
-                path.update &method(:recompile)
-                path.delete {|base, relative| remove_obsolete_css(base,relative); recompile(base, relative)}
-                path.create &method(:recompile)
-              end
-            end
-            
-            # for coffeescripts
-            if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-              monitor.path Compass.configuration.fireapp_coffeescripts_dir do |path|
-                path.glob '**/*.coffee'
-                path.update do |base, relative|
-                  puts ">>> Change detected to: #{relative}"
-                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
-                end
-                path.create do |base, relative|
-                  puts ">>> New file detected: #{relative}"
-                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
-                end
-                path.delete do |base, relative|
-                  puts ">>> File Removed: #{relative}"
-                  CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
-                end
-              end
-            end 
-            Compass.configuration.watches.each do |glob, callback|
-              monitor.path Compass.configuration.project_path do |path|
-                path.glob glob
-                path.update do |base, relative|
-                  puts ">>> Change detected to: #{relative}"
-                  callback.call(base, relative)
-                end
-                path.create do |base, relative|
-                  puts ">>> New file detected: #{relative}"
-                  callback.call(base, relative)
-                end
-                path.delete do |base, relative|
-                  puts ">>> File Removed: #{relative}"
-                  callback.call(base, relative)
-                end
-              end
-            end
-
-          end
-        rescue FSSM::CallbackError => e
-          # FSSM catches exit? WTF.
-          if e.message =~ /exit/
-            exit
-          end
-        end
-
-      end
-    end
-
     class UpdateProject
       def perform
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-          CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir );
+          CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
         end
-
+        if File.exists?( Compass.configuration.fireapp_livescripts_dir )
+          LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_livescript_options );
+        end
+        if File.exists?( Compass.configuration.fireapp_less_dir )
+          LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir, Compass.configuration.fireapp_less_options );
+        end
         compiler = new_compiler_instance
         check_for_sass_files!(compiler)
         compiler.clean! if compiler.new_config?
@@ -114,6 +90,12 @@ module Compass
       def perform
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
           CoffeeCompiler.clean_compile_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
+        end
+        if File.exists?( Compass.configuration.fireapp_livescripts_dir )
+          LiveScriptCompiler.clean_compile_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )
+        end
+        if File.exists?( Compass.configuration.fireapp_less_dir )
+          LessCompiler.clean_compile_folder(Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir )
         end
         compiler = new_compiler_instance
         compiler.clean!
@@ -153,6 +135,8 @@ module Compass
 
     # Record an action that has occurred
     def record(action, *arguments)
+
+      #puts "App::CONFIG['notifications'].include?(action) #{App::CONFIG['notifications'].include?(action)}"
       msg = "#{action_padding(action)}#{action} #{arguments.join(' ')}"
       if App::CONFIG["notifications"].include?(action)
         App.notify( msg.strip, @display )
@@ -168,18 +152,14 @@ module Compass
     def log(msg)
       puts msg
       if App::CONFIG["save_notification_to_file"] && @log_dir
-        @logfile = open(@log_dir + '/fire_app_log.txt','a+') unless @logfile
-        @logfile.puts Time.now.strftime("%Y-%m-%d %H:%M:%S") + " " + msg
-        @logfile.flush
-      else
-        @logfile.close if @logfile
-        @logfile = nil
+        open(@log_dir + '/fire_app_log.txt','a+') do |f| 
+          f.puts Time.now.strftime("%Y-%m-%d %H:%M:%S") + " " + msg
+        end
       end
     end
   end
 
   class Compiler
-
     # Compile one Sass file
     def compile(sass_filename, css_filename)
       start_time = end_time = nil 
@@ -190,9 +170,9 @@ module Compass
       end 
       duration = options[:time] ? "(#{(css_content.__duration * 1000).round / 1000.0}s)" : ""
       write_file(css_filename, css_content, options.merge(:force => true, :extra => duration))
-     
+
       Compass.configuration.run_stylesheet_saved(css_filename)
-      
+
       # PATCH: write wordlist File
       sass_filename_str = sass_filename.gsub(/[^a-z0-9]/i, '_')
       File.open( File.join( App::AUTOCOMPLTETE_CACHE_DIR, sass_filename_str + "_project" ), 'w' ) do |f|
@@ -216,15 +196,21 @@ module Compass
         end
       end
     end 
+
+    # monkey patch for compass issue 
+    # https://github.com/chriseppstein/compass/issues/1168
+    def css_files
+      @css_files = sass_files.map{|sass_file| corresponding_css_file(sass_file)}
+    end 
+
   end
 end
 
 
-default_path = File.join( java.lang.System.getProperty("user.home"), '.compass','extensions' )
 
-if File.exists?( default_path ) 
-  App.scan_library( default_path )
-  Compass::Frameworks.discover( default_path ) 
+if File.exists?( App.shared_extensions_path ) 
+  App.scan_library( App.shared_extensions_path )
+  Compass::Frameworks.discover( App.shared_extensions_path ) 
 end 
 
 

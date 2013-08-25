@@ -42,7 +42,10 @@ INFO_ENDL
       %x{mkdir -p  #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/swt}
       %x{cp -R lib/swt/swt_osx* #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/swt}
 
-      %w{ruby images applescript javascripts}.each do | copy_dir |
+      %x{mkdir -p  #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/nodejs/osx}
+      %x{cp -R lib/nodejs/osx/node* #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/nodejs/osx/node}
+
+      %w{ruby images applescript documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib }
       end
 
@@ -50,6 +53,7 @@ INFO_ENDL
       %x{cp lib/java-appbundler/JavaAppLauncher #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/MacOS }
       %x{mv #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/Java #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Java  }
 
+      %x{chmod 644 #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/Java/fire-app.jar}
       Dir.chdir CONFIG.osx_output_dir
       %x{mv #{CONFIG.project_name}.app Fire.app;}
       @osx_bundle_file="fire.app.osx.#{@compile_time}-#{@revision}.zip"
@@ -66,12 +70,15 @@ INFO_ENDL
 
       %x{mkdir -p  #{CONFIG.windows_output_dir}/lib/swt}
       %x{cp -R lib/swt/swt_win* #{CONFIG.windows_output_dir}/lib/swt}
+      
+      %x{mkdir -p  #{CONFIG.windows_output_dir}/lib/nodejs/win}
+      %x{cp -R lib/nodejs/win/node-win* #{CONFIG.windows_output_dir}/lib/nodejs/win/node.exe}
 
-      %w{ruby images javascripts}.each do | copy_dir |
+      %w{ruby images documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} #{CONFIG.windows_output_dir}/lib }
       end
       
-      %x{mv package/windows/package/windows/*.exe package/windows}
+      %x{chmod 644 #{CONFIG.windows_output_dir}/fire-app.jar}
       %x{rm -rf package/windows/package}
       Dir.chdir 'package'
       %x{rm -rf fire.app windows/*.xml; mv windows fire.app}
@@ -86,15 +93,19 @@ INFO_ENDL
       %x{mkdir -p  package/jar/lib/swt}
       %x{cp -R lib/swt/swt_linux* package/jar/lib/swt}
 
-      %w{ruby images javascripts}.each do | copy_dir |
+      %x{mkdir -p  package/jar/lib/nodejs/linux}
+      %x{cp -R lib/nodejs/linux/node* package/jar/lib/nodejs/linux/node}
+
+      %w{ruby images documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} package/jar/lib }
       end
       
       %x{mv package/jar package/fire.app}
       File.open('package/fire.app/run.sh','w') do |f|
-        f.write("#!/usr/bin/env bash\ncd $(dirname $0)\njava -client -jar fire-app.jar $1")
+        f.write("#!/usr/bin/env bash\ncd $(dirname $0)\njava -client -jar fire-app.jar $@")
       end
       %x{chmod +x package/fire.app/run.sh}
+      %x{chmod 644 package/fire.app/fire-app.jar}
       Dir.chdir 'package'
       @linux_bundle_file="fire.app.linux.#{@compile_time}-#{@revision}.zip"
       %x{zip -9 -r #{@packages_dir}/#{@linux_bundle_file} fire.app}
