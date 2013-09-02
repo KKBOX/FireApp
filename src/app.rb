@@ -104,6 +104,9 @@ module App
       # make sure use java version library, ex json-java, eventmachine-java
       jruby_gems_path = File.join(LIB_PATH, "ruby", "jruby" )
       scan_library( jruby_gems_path )
+
+      common_lib_path = File.join(LIB_PATH, "ruby", "common" )
+      scan_library( common_lib_path )
       
       require 'rb-fsevent' if OS == 'darwin' && App::CONFIG['force_enable_fsevent'] 
       require 'rb-inotify' if OS == 'linux' 
