@@ -49,8 +49,6 @@ class FSEvent
   end
 
   def stop
-
-   def stop
     unless @pipe.nil? || @pipe.closed?
       Process.kill('KILL', @pipe.pid)
       @pipe.close
