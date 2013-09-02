@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.email       = ["nick@nicksieger.com"]
   s.homepage    = "https://github.com/nicksieger/multipart-post"
   s.summary     = %q{A multipart form post accessory for Net::HTTP.}
+  s.license     = "MIT"
   s.description = %q{Use with Net::HTTP to do multipart form posts.  IO values that have #content_type, #original_filename, and #local_path will be posted as a binary file.}
 
   s.rubyforge_project = "caldersphere"

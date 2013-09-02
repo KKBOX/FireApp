@@ -17,39 +17,40 @@ class CompositeReadIO
   # respond to #read in a manner consistent with IO.
   def initialize(*ios)
     @ios = ios.flatten
+    @index = 0
   end
 
-  # Read from the IO object, overlapping across underlying streams as necessary.
-  def read(amount = nil, buf = nil)
-    buffer = buf || ''
-    done = if amount; nil; else ''; end
-    partial_amount = amount
-    parts = @ios.dup
+  # Read from IOs in order until `length` bytes have been received.
+  def read(length = nil, outbuf = nil)
+    got_result = false
+    outbuf = outbuf ? outbuf.replace("") : ""
 
-    loop do
-      result = done
-
-      while !parts.empty? && (result = parts.first.read(partial_amount)) == done
-        parts.shift
+    while io = current_io
+      if result = io.read(length)
+        got_result ||= !result.nil?
+        result.force_encoding("BINARY") if result.respond_to?(:force_encoding)
+        outbuf << result
+        length -= result.length if length
+        break if length == 0
       end
-
-      result.force_encoding("BINARY") if result.respond_to?(:force_encoding)
-      buffer << result if result
-      partial_amount -= result.length if partial_amount && result != done
-
-      break if partial_amount && partial_amount <= 0
-      break if result == done
+      advance_io
     end
-
-    if buffer.length > 0
-      buffer
-    else
-      done
-    end
+    (!got_result && length) ? nil : outbuf
   end
-  
+
   def rewind
     @ios.each { |io| io.rewind }
+    @index = 0
+  end
+
+  private
+
+  def current_io
+    @ios[@index]
+  end
+
+  def advance_io
+    @index += 1
   end
 end
 

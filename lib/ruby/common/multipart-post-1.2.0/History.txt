@@ -1,3 +1,7 @@
+=== 1.2.0 / 2013-02-25
+
+- #25: Ruby 2 compatibility (thanks mislav)
+
 === 1.1.5 / 2012-02-12
 
 - Fix length/bytesize of parts in 1.9 (#7, #14) (Jason Moore)
