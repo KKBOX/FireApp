@@ -1,4 +1,4 @@
-![Fire.app](https://github.com/handlino/FireApp/raw/master/lib/images/icon/256.png)
+![Fire.app](https://github.com/kkbox/FireApp/raw/master/lib/images/icon/256.png)
 
 # Fire.app
 

@@ -10,7 +10,7 @@ require 'redis'
 require 'yaml'
 require 'json'
 
-DOMAIN = "the-hold.handlino.com"
+DOMAIN = "the-hold.kkbox.com"
 
 module Rack
   module Session

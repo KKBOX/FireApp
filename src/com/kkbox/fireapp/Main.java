@@ -1,4 +1,4 @@
-package com.handlino.fireapp;
+package com.kkbox.fireapp;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

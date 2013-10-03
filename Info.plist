@@ -29,7 +29,7 @@
             <key>JVMVersion</key>
             <string>1.6*</string>
             <key>MainClass</key>
-            <string>com.handlino.fireapp.Main</string>
+            <string>com.kkbox.fireapp.Main</string>
             <key>ClassPath</key>
             <array>
                 <string>$JAVAROOT/fire-app.jar</string>
