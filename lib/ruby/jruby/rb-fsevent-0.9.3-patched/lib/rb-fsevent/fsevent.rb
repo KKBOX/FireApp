@@ -49,11 +49,6 @@ class FSEvent
   end
 
   def stop
-<<<<<<< HEAD:lib/ruby/jruby/rb-fsevent-0.9.3-patched/lib/rb-fsevent/fsevent.rb
-=======
-
-   def stop
->>>>>>> ce34bf05291fb19abe9ccfb07ccfd8f87437a614:lib/ruby/jruby/rb-fsevent-0.9.3-patched/lib/rb-fsevent/fsevent.rb
     unless @pipe.nil? || @pipe.closed?
       Process.kill('KILL', @pipe.pid)
       @pipe.close
