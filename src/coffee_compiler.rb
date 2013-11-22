@@ -100,7 +100,9 @@ class CoffeeCompiler
     begin
       CoffeeScript.compile @coffeescript_path.read, @compile_options
     rescue Exception=>e
-      "document.write("+ "#{@coffeescript_path}: #{e.message}".to_json + ")"
+      error_text = "#{@coffeescript_path}: #{e.message}"
+      CoffeeCompiler.log( :error, error_text)
+      "document.write("+ error_text.to_json + ")"
     end
   end
 

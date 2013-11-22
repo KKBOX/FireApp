@@ -12,34 +12,54 @@ module Compass
     nil
   end
 
+  #-- coffeescript --
   Configuration.add_configuration_property(:fireapp_coffeescripts_dir, nil) do
     "coffeescripts"
   end
- 
-  Configuration.add_configuration_property(:fireapp_livescripts_dir, nil) do
-    "livescripts"
-  end
-
   Configuration.add_configuration_property(:fireapp_coffeescript_options, nil) do
     {}
   end
-  
+
+  #-- livescript --
+  Configuration.add_configuration_property(:fireapp_livescripts_dir, nil) do
+    "livescripts"
+  end
   Configuration.add_configuration_property(:fireapp_livescript_options, nil) do
     {}
   end
- 
 
+  #-- less --
+  Configuration.add_configuration_property(:fireapp_less_dir, nil) do
+    "less"
+  end
+  Configuration.add_configuration_property(:fireapp_less_options, nil) do
+    {
+      :yuicompress => false,
+      :verbose => false,
+      :color => true,
+      :ieCompat => true,
+      :strictImports => false,
+      :strictMath => false,
+      :strictUnits => false
+    }
+  end
+ 
+  #-- the hold --
   Configuration.add_configuration_property(:the_hold_options, nil) do
     { }
   end
 
+  #-- build --
   Configuration.add_configuration_property(:fireapp_minifyjs_on_build, nil) do
     false
   end  
-
   Configuration.add_configuration_property(:fireapp_always_report_on_build, nil) do
     true
-  end 
+  end
+  Configuration.add_configuration_property(:fireapp_disable_linecomments_and_debuginfo_on_build, nil) do
+    true
+  end
+
 
   # default sass_options is nil
   Configuration.add_configuration_property(:sass_options, nil) do
@@ -54,6 +74,9 @@ module Compass
         end
         if File.exists?( Compass.configuration.fireapp_livescripts_dir )
           LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_livescript_options );
+        end
+        if File.exists?( Compass.configuration.fireapp_less_dir )
+          LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir, Compass.configuration.fireapp_less_options );
         end
         compiler = new_compiler_instance
         check_for_sass_files!(compiler)
@@ -70,6 +93,9 @@ module Compass
         end
         if File.exists?( Compass.configuration.fireapp_livescripts_dir )
           LiveScriptCompiler.clean_compile_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )
+        end
+        if File.exists?( Compass.configuration.fireapp_less_dir )
+          LessCompiler.clean_compile_folder(Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir )
         end
         compiler = new_compiler_instance
         compiler.clean!
@@ -134,42 +160,6 @@ module Compass
   end
 
   class Compiler
-    # Compile one Sass file
-    def compile(sass_filename, css_filename)
-      start_time = end_time = nil 
-      css_content = logger.red do
-        timed do
-          engine(sass_filename, css_filename).render
-        end 
-      end 
-      duration = options[:time] ? "(#{(css_content.__duration * 1000).round / 1000.0}s)" : ""
-      write_file(css_filename, css_content, options.merge(:force => true, :extra => duration))
-
-      Compass.configuration.run_stylesheet_saved(css_filename)
-
-      # PATCH: write wordlist File
-      sass_filename_str = sass_filename.gsub(/[^a-z0-9]/i, '_')
-      File.open( File.join( App::AUTOCOMPLTETE_CACHE_DIR, sass_filename_str + "_project" ), 'w' ) do |f|
-        f.write Compass.configuration.project_path
-      end
-
-      if ::Sass::Tree::MixinDefNode.mixins
-        File.open( File.join( App::AUTOCOMPLTETE_CACHE_DIR, sass_filename_str + "_mixin" ), 'w' ) do |f|
-
-          ::Sass::Tree::MixinDefNode.mixins.uniq.sort.each do |name|
-            f.puts "\"#{name}\""
-          end
-        end
-      end
-
-      if  ::Sass::Tree::VariableNode.variables
-        File.open( File.join( App::AUTOCOMPLTETE_CACHE_DIR, sass_filename_str + "_variable" ), 'w' ) do |f|
-          ::Sass::Tree::VariableNode.variables.uniq.sort.each do |name|
-            f.puts "\"$#{name}\""
-          end
-        end
-      end
-    end 
 
     # monkey patch for compass issue 
     # https://github.com/chriseppstein/compass/issues/1168

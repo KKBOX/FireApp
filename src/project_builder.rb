@@ -16,7 +16,6 @@ class ProjectBuilder
   end
 
   def initialize(project_path)
-    require 'tilt'
     @project_path = project_path
   end
 
@@ -52,12 +51,17 @@ class ProjectBuilder
         "*/.coffeescript-cache",
         "*/compass_app_log.txt",
         "*/fire_app_log.txt",
+        "*/.listen_test",
         "view_helpers.rb",
         "Gemfile",
         "Gemfile.lock",
         "config.ru"
       ]
-      blacklist << File.basename(Compass.detect_configuration_file) if is_compass_project
+
+      compass_config_file = Compass.detect_configuration_file 
+      if is_compass_project && compass_config_file
+        blacklist << File.basename(compass_config_file) 
+      end
 
       Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? } if include_tilt_key
 
@@ -67,16 +71,28 @@ class ProjectBuilder
 
 
     def build_html(release_dir, blacklist)
+      
+      # add fire.app project source code folder to blacklist
+      blacklist << File.join(Compass.configuration.sass_dir, "*")
+      blacklist << File.join(Compass.configuration.fireapp_coffeescripts_dir,"*")
+      blacklist << File.join(Compass.configuration.fireapp_livescripts_dir,"*")
+      blacklist << File.join(Compass.configuration.fireapp_less_dir,"*")
+
       #build html 
-      Dir.glob( File.join(@project_path, '**', "[^_]*.*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
+      Dir.glob( File.join(@project_path, '**', "[^_]*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
         if file =~ /build_\d{14}/ || file.index(release_dir)
           next 
         end
         extname=File.extname(file)
         if Tilt[ extname[1..-1] ]
-          request_path = file[@project_path.length ... (-1*extname.size)]
+          request_path = if extname == '.html' # *.html should not remove extname
+                           file[@project_path.length .. -1] 
+                         else
+                           file[@project_path.length ... (-1*extname.size)] 
+                         end
           pass = false
           blacklist.each do |pattern|
+
             if File.fnmatch(pattern, request_path[1..-1])
               pass = true
               break
@@ -147,6 +163,9 @@ class ProjectBuilder
 
   def build(build_path)
 
+    Tray.instance.stop_livereload
+    Tray.instance.stop_watcher
+    
     release_dir = File.expand_path( build_path )
     
     FileUtils.rm_r( release_dir) if File.exists?(release_dir)
@@ -160,13 +179,14 @@ class ProjectBuilder
       yield msg
     end
     
+    Tray.instance.rewatch
+
     return release_dir
   end
 
   def write_dynamaic_file(release_dir, request_path )
     new_file = File.join(release_dir, request_path)
     FileUtils.mkdir_p( File.dirname(  new_file ))
-    puts request_path
     File.open(new_file, 'w') {|f| f.write( open("http://127.0.0.1:#{App::CONFIG['services_http_port']}#{URI.escape(request_path)}").read ) } 
   end 
 

@@ -10,7 +10,7 @@ require 'redis'
 require 'yaml'
 require 'json'
 
-DOMAIN = "the-hold.handlino.com"
+DOMAIN = "the-hold.kkbox.com"
 
 module Rack
   module Session
@@ -22,7 +22,11 @@ module Rack
 
             patten = Regexp.new("(?<version>\\d{8}-\\d{6})?\\.?(?<project>.+?)\\.(?<login>.+)\\.#{DOMAIN}$")
             project_route = request.host.match(patten)
-            cookie[:domain] = ".#{project_route[:project]}.#{project_route[:login]}.#{DOMAIN}"
+            if project_route
+                cookie[:domain] = ".#{project_route[:project]}.#{project_route[:login]}.#{DOMAIN}"
+            else
+                cookie[:domain] = request.host
+            end
 
             Utils.set_cookie_header!(headers, @key, cookie)
           end
@@ -45,8 +49,12 @@ class TheHoldApp
 
     patten = Regexp.new("(?<version>\\d{8}-\\d{6})?\\.?(?<project>.+?)\\.(?<login>.+)\\.#{DOMAIN}$")
     project_route = req.host.match(patten)
-
-    site_key = "site-#{project_route[:project]}.#{project_route[:login]}.#{DOMAIN}"
+    if project_route
+        site_key = "site-#{project_route[:project]}.#{project_route[:login]}.#{DOMAIN}"
+    else
+        site_key = "site-#{req.host}"
+        project_route={version: nil}
+    end
     site   = @redis.hgetall(site_key)
 
     return not_found               if !( site["login"] && site["project"] )
@@ -282,8 +290,8 @@ EOL
       cname = params["cname"]
       begin
         dns = Resolv::DNS.new
-        target_name = dns.getresources(cname, Resolv::DNS::Resource::IN::CNAME).first.try(:name)
-        if target_name && target_name.to_s == project_hostname
+        target_record = dns.getresources(cname, Resolv::DNS::Resource::IN::CNAME).first
+        if target_record && target_record.name.to_s == project_hostname
           @redis.hmset("site-#{cname}",       :login, params["login"], :project, params["project"] );
         end
       end
@@ -302,7 +310,7 @@ EOL
   end
 
   def not_found
-    [404, {'Content-Type' => 'text/plain' }, ["Not Fonud"]]
+    [404, {'Content-Type' => 'text/plain' }, ["Not Found"]]
   end
 
   def forbidden

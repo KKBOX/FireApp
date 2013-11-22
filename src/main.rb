@@ -74,18 +74,19 @@ begin
     require "fsevent_patch" if App::OS == 'darwin'
     require "coffee_compiler.rb"
     require "livescript_compiler.rb"
+    require "less_compiler.rb"
     require "app_watcher.rb"
     require "compass_patch.rb"
-    require "sass_patch.rb"
     require "the_hold_uploader.rb"
     require "project_builder.rb"
+    require "notifier"
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
   end
 
   require 'json'
 
-  %w{ninesixty html5-boilerplate compass-h5bp bootstrap-sass susy zurb-foundation fireapp-example}.each do |x|
+  %w{ninesixty html5-boilerplate compass-h5bp compass-normalize bootstrap-sass susy zurb-foundation fireapp-example}.each do |x|
     begin
       require x
     rescue LoadError

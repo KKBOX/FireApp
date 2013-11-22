@@ -1,3 +1,0 @@
-[submodule "templates/project/source"]
-	path = templates/project/source
-	url = git@github.com:handlino/fire-app-sample-project.git

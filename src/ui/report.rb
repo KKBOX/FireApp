@@ -3,8 +3,8 @@ class Report
   def initialize(msg, target_display = nil, options={}, &block)
     report_text_area=nil
     @target_display = Swt::Widgets::Display.get_current unless target_display
-    @target_display.syncExec(
-      Swt::RRunnable.new do | runnable |
+    #@target_display.syncExec(
+    #  Swt::RRunnable.new do | runnable |
     shell = Swt::Widgets::Shell.new(@target_display, Swt::SWT::DIALOG_TRIM)
     shell.setText("Fire.app Report")
     shell.setBackgroundMode(Swt::SWT::INHERIT_DEFAULT)
@@ -18,9 +18,9 @@ class Report
       gridData.horizontalAlignment = Swt::SWT::LEFT;
       gridData.verticalAlignment = Swt::SWT::TOP;
       gridData.verticalSpan=2
-      label = Swt::Widgets::Label.new(shell, Swt::SWT::LEFT)
-      label.setImage( App.create_image('icon/64.png') )
-      label.setLayoutData(gridData)
+      @icon_label = Swt::Widgets::Label.new(shell, Swt::SWT::LEFT)
+      @icon_label.setImage( App.create_image('icon/64.png') )
+      @icon_label.setLayoutData(gridData)
     else
       layout.numColumns=1
     end 
@@ -39,7 +39,7 @@ class Report
       label.setText('Fire.app Report:')
     end
     label.setLayoutData(gridData)
-
+    @title_label = label
 
     gridData = Swt::Layout::GridData.new
     gridData.horizontalAlignment = Swt::SWT::FILL;
@@ -86,10 +86,10 @@ class Report
       end
 
     else
-      btn = Swt::Widgets::Button.new(shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
-      btn.setText('OK')
-      btn.setLayoutData(gridData)
-      btn.addListener(Swt::SWT::Selection,Swt::Widgets::Listener.impl do |method, evt|   
+      @ok_btn = Swt::Widgets::Button.new(shell, Swt::SWT::PUSH | Swt::SWT::CENTER)
+      @ok_btn.setText('OK')
+      @ok_btn.setLayoutData(gridData)
+      @ok_btn.addListener(Swt::SWT::Selection,Swt::Widgets::Listener.impl do |method, evt|   
         block.call if block_given?
         evt.widget.shell.dispose();
       end)
@@ -108,9 +108,13 @@ class Report
         @target_display.sleep if(!@target_display.read_and_dispatch)
       end
     end
-      end)
+    #  end)
     @text = report_text_area
 
+
+    @text.update if @text
+    @icon_label.update if @icon_label
+    @title_label.update if @title_label
   end
 
   def append(text, &block)

@@ -1,10 +1,17 @@
-require "compile_version.rb"
+begin
+  require "compile_version.rb"
+rescue
+  module CompileVersion
+    COMPILE_TIME = Time.now.to_s
+    REVISION = 'development'
+  end
+end
 
 module App
   extend self
-
+  
   include CompileVersion
-  VERSION = "1.11"
+  VERSION = "1.12"
   OS = org.jruby.platform.Platform::OS 
   OS_VERSION = java.lang.System.getProperty("os.version")
 
@@ -22,6 +29,7 @@ module App
   Dir.mkdir( CONFIG_DIR ) unless File.exists?( CONFIG_DIR )
   Dir.mkdir( AUTOCOMPLTETE_CACHE_DIR ) unless File.exists?( AUTOCOMPLTETE_CACHE_DIR )
 
+  FAVORITE_FILE =  File.join( CONFIG_DIR, 'favorite')
   HISTORY_FILE =  File.join( CONFIG_DIR, 'history')
   CONFIG_FILE  =  File.join( CONFIG_DIR, 'config')
 
@@ -145,7 +153,20 @@ module App
     set_histoy([])
   end
 
+  def set_favorite(dirs)
+    File.open(FAVORITE_FILE, 'w') do |out|
+      YAML.dump(dirs, out)
+    end 
+  end 
+
+  def get_favorite
+    dirs = YAML.load_file( FAVORITE_FILE ) if File.exists?(FAVORITE_FILE)
+    return dirs if dirs
+    return []
+  end 
+
   def set_histoy(dirs)
+    dirs = dirs[0, App::CONFIG["num_of_history"]]
     File.open(HISTORY_FILE, 'w') do |out|
       YAML.dump(dirs, out)
     end 
@@ -185,13 +206,13 @@ module App
   end
 
   def notify(msg, target_display = nil )
-    #puts "+ notify: " + msg
-
-    #if org.jruby.platform.Platform::IS_MAC
-    #  system('/usr/bin/osascript', "#{LIB_PATH}/applescript/growl.scpt", msg )
-    #else
+    if Notifier.is_support
+      Notifier.notify(msg)
+      #system('/usr/bin/osascript', "#{LIB_PATH}/applescript/growl.scpt", msg )
+    else
       Notification.new(msg, target_display)
-    #end
+      target_display.wake if target_display
+    end
   end
 
   def report(msg, target_display = nil, options={}, &block)
@@ -215,7 +236,6 @@ module App
       lib_path = File.expand_path( File.join(dir, subfolder,'lib') )
       $LOAD_PATH.unshift( lib_path ) if File.exists?(lib_path)
     end
-
   end
   
   def clear_autocomplete_cache
