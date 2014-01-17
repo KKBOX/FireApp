@@ -1,4 +1,4 @@
-![Fire.app](https://github.com/handlino/FireApp/raw/master/lib/images/icon/256.png)
+![Fire.app](https://github.com/kkbox/FireApp/raw/master/lib/images/icon/256.png)
 
 # Fire.app
 
@@ -32,8 +32,8 @@ If you want to build your own copy, you will need [JRuby](http://jruby.org/) and
 
 ## License
 
-Copyright (c) 2012 Handlino Inc.
+Copyright (c) 2012 KKBOX Inc.
 Licensed under GPL v2.
 
-[fireapp]: http://fireapp.handlino.com/
-[fireapp-github]: http://github.com/handlino/fireapp
+[fireapp]: http://fireapp.kkbox.com/
+[fireapp-github]: http://github.com/kkbox/fireapp

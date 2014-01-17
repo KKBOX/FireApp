@@ -243,7 +243,7 @@ class ChangeOptionsPanel
     group = build_basic_group('Build', behind)
 
     # -- minifyjs_on_build checkbox --
-    @minifyjs_on_build_button = build_checkbox_button(group, 'Minify JavaScript (UgligyJS)', config.fireapp_minifyjs_on_build)
+    @minifyjs_on_build_button = build_checkbox_button(group, 'Minify JavaScript (UglifyJS)', config.fireapp_minifyjs_on_build)
 
     # -- always_report_on_build checkbox --
     @always_report_on_build_button = build_checkbox_button(group, 'Report', config.fireapp_always_report_on_build,  @minifyjs_on_build_button)
