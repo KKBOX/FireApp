@@ -186,6 +186,17 @@ class ProjectBuilder
 
   def write_dynamaic_file(release_dir, request_path )
     new_file = File.join(release_dir, request_path)
+    unless new_file =~ /\.html\z/
+      new_file +=".html"
+    end
+
+    views_dir = File.join(@project_path, 'views')
+    public_dir = File.join(@project_path, 'public')
+    if File.exists?(views_dir) && File.exists?(public_dir) && request_path =~ /\A\/views/
+        request_path = request_path[6..-1]
+        new_file.gsub!(/\/views\//, '/public/')
+    end
+    
     FileUtils.mkdir_p( File.dirname(  new_file ))
     File.open(new_file, 'w') {|f| f.write( open("http://127.0.0.1:#{App::CONFIG['services_http_port']}#{URI.escape(request_path)}").read ) } 
   end 

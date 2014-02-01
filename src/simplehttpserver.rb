@@ -2,16 +2,18 @@ require 'rack'
 require 'rack/builder'
 require "singleton"
 require "webrick"
-require 'serve'
-require 'slim'
+
 require 'tilt'
-require "kramdown"
-require 'serve/application'
-require 'sass/plugin/rack'
-require 'rack/coffee'
+require 'slim'
 require 'haml'
 require 'haml/filters'
 require 'haml_patch.rb'
+require "kramdown"
+
+require 'serve'
+require 'serve/application'
+require 'sass/plugin/rack'
+require 'rack/coffee'
 class SimpleHTTPServer
   include Singleton
   def start(dir, options)
