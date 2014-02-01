@@ -22,7 +22,7 @@ configuration do |c|
 	# The fully-qualified name of the main Java file used to initiate the application.
 	# default value: "org.monkeybars.rawr.Main"
 	#
-	c.main_java_file = "com.handlino.fireapp.Main"
+	c.main_java_file = "com.kkbox.fireapp.Main"
 
 	# A list of directories where source files reside
 	# default value: ["src"]
