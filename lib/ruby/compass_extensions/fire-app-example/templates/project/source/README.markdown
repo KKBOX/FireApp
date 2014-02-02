@@ -18,4 +18,4 @@ Fire.app is a **menubar only app** for fast HTML prototyping.
 Copyright (c) 2012 Handlino Inc.
 Licensed under GPL v2.
 
-[fireapp]: http://fireapp.handlino.com/
+[fireapp]: http://fireapp.kkbox.com/

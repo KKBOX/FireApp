@@ -6,32 +6,48 @@ end
 require 'livereload.rb'
 module Compass
   module Watcher
+
+    class LivereloadWatch < Watch
+      def match?(changed_path)
+        @glob.split(/,/).each do  |ext|
+          changed_path =~ Regexp.new("#{ext}\\Z")
+        end
+      end
+    end
+
     class  AppWatcher < ProjectWatcher
       def initialize(project_path, watches=[], options={}, poll=false)
         super
-        @sass_watchers += coffeescript_watchers
-        @sass_watchers += livescript_watchers
-        @sass_watchers += livereload_watchers
-        #@sass_watchers += less_watchers
+        @watchers << livereload_watchers
+        @watchers += livescript_watchers
+        @watchers += coffeescript_watchers
         setup_listener
       end
 
-      def listen_callback(modified_file, added_file, removed_file)
-        #log_action(:info, ">>> Listen Callback fired added: #{added_file}, mod: #{modified_file}, rem: #{removed_file}", {})
-        action = nil
-        action ||= :modified unless modified_file.empty?
-        action ||= :added unless added_file.empty?
-        action ||= :removed unless removed_file.empty?
+      def listen_callback(modified_files, added_files, removed_files)
+        #log_action(:info, ">>> Listen Callback fired added: #{added_files}, mod: #{modified_files}, rem: #{removed_files}", {})
+        files = {:modified => modified_files,
+                 :added    => added_files,
+                 :removed  => removed_files}
 
-        files = modified_file + added_file + removed_file
-        # run watchers
-        sass_watchers.each do |watcher|
-          files.each do |file|
-            if watcher.is_a? Array # for compass 0.12 watcher format
-              glob,callback = watcher
-              callback.call(project_path, file, action) if File.fnmatch(glob, file)
-            else
-              watcher.run_callback(project_path, file, action) if watcher.match?(file)
+        run_once, run_each = watchers.partition {|w| w.run_once_per_changeset?}
+
+        run_once.each do |watcher|
+          if file = files.values.flatten.detect{|f| watcher.match?(f) }
+            action = files.keys.detect{|k| files[k].include?(file) }
+            watcher.run_callback(project_path, relative_to(file, project_path), action)
+          end
+        end
+
+        run_each.each do |watcher|
+          files.each do |action, list|
+            list.each do |file|
+              if watcher.is_a? Array # for compass 0.12 watcher format
+                glob,callback = watcher
+                callback.call(project_path, file, action) if File.fnmatch(glob, file)
+              else
+                watcher.run_callback(project_path, relative_to(file, project_path), action) if watcher.match?(file)
+              end
             end
           end
         end
@@ -86,10 +102,7 @@ module Compass
       end
 
       def livereload_watchers
-       ::App::CONFIG["services_livereload_extensions"].split(/,/).map do |ext|
-         filter = "**.#{ext}"
-         Watcher::Watch.new(filter, &method(:livereload_callback)) 
-       end
+       Watcher::LivereloadWatch.new(::App::CONFIG["services_livereload_extensions"], &method(:livereload_callback))
       end
 
       def livereload_callback(base, file, action)
