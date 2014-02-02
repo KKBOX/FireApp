@@ -1,4 +1,3 @@
-
 require 'tilt'
 
 class ProjectBuilder
@@ -163,6 +162,8 @@ class ProjectBuilder
 
   def build(build_path)
 
+    Compass.configuration.fireapp_before_build.call(build_path) if Compass.configuration.fireapp_before_build
+
     Tray.instance.stop_livereload
     Tray.instance.stop_watcher
     
@@ -178,6 +179,8 @@ class ProjectBuilder
     build_static_file(release_dir, get_black_list(true)) do |msg|
       yield msg
     end
+    
+    Compass.configuration.fireapp_after_build.call(build_path) if Compass.configuration.fireapp_after_build
     
     Tray.instance.rewatch
 

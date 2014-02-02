@@ -53,13 +53,22 @@ module Compass
   Configuration.add_configuration_property(:fireapp_minifyjs_on_build, nil) do
     false
   end  
+ 
   Configuration.add_configuration_property(:fireapp_always_report_on_build, nil) do
     true
   end
+ 
   Configuration.add_configuration_property(:fireapp_disable_linecomments_and_debuginfo_on_build, nil) do
     true
   end
 
+  Configuration.add_configuration_property(:fireapp_before_build, nil) do
+    nil
+  end
+  
+  Configuration.add_configuration_property(:fireapp_after_build, nil) do
+    nil
+  end
 
   # default sass_options is nil
   Configuration.add_configuration_property(:sass_options, nil) do
