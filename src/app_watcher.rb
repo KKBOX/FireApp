@@ -46,7 +46,7 @@ module Compass
                 glob,callback = watcher
                 callback.call(project_path, file, action) if File.fnmatch(glob, file)
               else
-                watcher.run_callback(project_path, relative_to(file, project_path), action) if watcher.match?(file)
+                watcher.run_callback(project_path, relative_to(file.force_encoding('utf-8').encode, project_path), action) if watcher.match?(file)
               end
             end
           end
