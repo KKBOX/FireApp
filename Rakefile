@@ -45,7 +45,7 @@ INFO_ENDL
       %x{mkdir -p  #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/nodejs/osx}
       %x{cp -R lib/nodejs/osx/node* #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib/nodejs/osx/node}
 
-      %w{ruby images applescript documents javascripts}.each do | copy_dir |
+      %w{ruby images documents javascripts}.each do | copy_dir |
         %x{cp -R lib/#{copy_dir} #{CONFIG.osx_output_dir}/#{CONFIG.project_name}.app/Contents/Resources/lib }
       end
 
