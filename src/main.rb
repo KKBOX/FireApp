@@ -85,7 +85,15 @@ begin
 
   require 'json'
 
-  %w{ninesixty html5-boilerplate compass-h5bp compass-normalize bootstrap-sass susy zurb-foundation fireapp-example}.each do |x|
+  %w{ninesixty
+    html5-boilerplate 
+    compass-h5bp 
+    compass-normalize 
+    bootstrap-sass 
+    susy 
+    zurb-foundation 
+    zurb-foundation-compass-template
+    fireapp-example}.each do |x|
     begin
       require x
     rescue LoadError
