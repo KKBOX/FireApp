@@ -231,6 +231,11 @@ class ChangeOptionsPanel
     # -- debug info checkbox --
     @debug_info_button = build_checkbox_button(group, 'Debug Info', config.sass_options && config.sass_options[:debug_info],  @line_comments_button)
 
+    # -- sourcemap checkbox --
+    if App::CONFIG['use_version'] == 1.0
+        @sourcemap_button = build_checkbox_button(group, 'Enable Sourcemap', config.sourcemap,  @debug_info_button)
+    end
+
     # -- disable on build checkbox --
     #@disable_linecomments_and_debuginfo_on_build_button = build_checkbox_button(group, 'Disable Line Comments ＆ Debug Info on Build', config.fireapp_disable_linecomments_and_debuginfo_on_build,  @debug_info_button)
 
@@ -491,6 +496,12 @@ class ChangeOptionsPanel
         sass_options = {} if !sass_options.is_a? Hash
         sass_options[:debug_info] = @debug_info_button.getSelection
         Tray.instance.update_config( "sass_options", sass_options.inspect )
+
+
+        # -- update sourcemap options --
+        if App::CONFIG['use_version'] == 1.0
+            Tray.instance.update_config( "sourcemap", @sourcemap_button.getSelection )
+        end
 
         # -- update less options --
         #less_options = config.fireapp_less_options
