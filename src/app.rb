@@ -98,6 +98,10 @@ module App
         ENV["GEM_HOME"] = CONFIG["gem_path"]
         ENV["GEM_PATH"] = CONFIG["gem_path"]
         require "rubygems"
+      else
+        # we dont use system rubygem
+        ENV["GEM_HOME"] = ""
+        ENV["GEM_PATH"] = ""
       end
 
       # make sure use java version library, ex json-java, eventmachine-java
@@ -110,7 +114,7 @@ module App
 
       require "compass"
       require "compass/exec"
-      
+
     rescue LoadError => e
       if CONFIG["use_specify_gem_path"]
         alert("Load custom Compass fail, use default Compass v0.12 library, please check the Gem Path")
