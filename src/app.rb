@@ -24,10 +24,7 @@ module App
   end
 
   
-  AUTOCOMPLTETE_CACHE_DIR = File.join( CONFIG_DIR , 'autocomplete_cache' )
-
   Dir.mkdir( CONFIG_DIR ) unless File.exists?( CONFIG_DIR )
-  Dir.mkdir( AUTOCOMPLTETE_CACHE_DIR ) unless File.exists?( AUTOCOMPLTETE_CACHE_DIR )
 
   FAVORITE_FILE =  File.join( CONFIG_DIR, 'favorite')
   HISTORY_FILE =  File.join( CONFIG_DIR, 'history')
@@ -101,6 +98,10 @@ module App
         ENV["GEM_HOME"] = CONFIG["gem_path"]
         ENV["GEM_PATH"] = CONFIG["gem_path"]
         require "rubygems"
+      else
+        # we dont use system rubygem
+        ENV["GEM_HOME"] = ""
+        ENV["GEM_PATH"] = ""
       end
 
       # make sure use java version library, ex json-java, eventmachine-java
@@ -113,7 +114,7 @@ module App
 
       require "compass"
       require "compass/exec"
-      
+
     rescue LoadError => e
       if CONFIG["use_specify_gem_path"]
         alert("Load custom Compass fail, use default Compass v0.12 library, please check the Gem Path")
@@ -238,25 +239,6 @@ module App
     end
   end
   
-  def clear_autocomplete_cache
-    history_dirs=App.get_history
-      Dir.glob(File.join(App::AUTOCOMPLTETE_CACHE_DIR, '*project')).each do |f|
-        need_delete=true
-        f_project = IO.read(f)
-        history_dirs.each do |history_string|
-          if f_project == history_string
-            need_delete = false 
-            break
-          end
-        end
-        if need_delete
-          [f, f.gsub(/project$/, 'mixin'), f.gsub(/project$/, 'variable')].each do |fn|
-            File.delete(fn)  if File.exists?(fn)
-          end
-        end
-      end
-  end
-
   def  shared_extensions_path
     home_dir = java.lang.System.getProperty("user.home")
     if File.directory?(home_dir) && File.writable?( home_dir ) 
