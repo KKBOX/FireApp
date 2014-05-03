@@ -69,7 +69,7 @@ module App
                                 
     config={
       "show_welcome" => true,
-      "use_version" => 0.12,
+      "use_version" => 1.0,
       "use_specify_gem_path" => false,
       "notifications" => [ :error, :warning ],
       "save_notification_to_file" => true,
