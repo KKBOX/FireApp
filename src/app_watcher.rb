@@ -19,8 +19,12 @@ module Compass
       def initialize(project_path, watches=[], options={}, poll=false)
         super
         @watchers << livereload_watchers
-        @watchers += livescript_watchers
-        @watchers += coffeescript_watchers
+        #@watchers += livescript_watchers
+        #@watchers += coffeescript_watchers
+        
+        @watchers += custom_watcher(Compass.configuration.fireapp_coffeescripts_dir, "*.coffee", &method(:coffee_callback))
+        @watchers += custom_watcher(Compass.configuration.fireapp_livescripts_dir, "*.ls", &method(:livescript_callback))
+
         setup_listener
       end
 
@@ -68,6 +72,15 @@ module Compass
         end
 
       end
+
+
+      def custom_watcher(dir, extensions, callback)
+        filter = File.join(dir, extensions)
+        childe_filter = File.join(dir, "**", extensions)
+        [Watcher::Watch.new(filter, callback),
+         Watcher::Watch.new(childe_filter, callback)]
+      end
+
 
       def coffeescript_watchers
         coffee_filter = File.join(Compass.configuration.fireapp_coffeescripts_dir,  "*.coffee")
