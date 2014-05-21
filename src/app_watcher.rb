@@ -22,8 +22,8 @@ module Compass
         #@watchers += livescript_watchers
         #@watchers += coffeescript_watchers
         
-        @watchers += custom_watcher(Compass.configuration.fireapp_coffeescripts_dir, "*.coffee", &method(:coffee_callback))
-        @watchers += custom_watcher(Compass.configuration.fireapp_livescripts_dir, "*.ls", &method(:livescript_callback))
+        @watchers += custom_watcher(Compass.configuration.fireapp_coffeescripts_dir, "*.coffee", method(:coffee_callback))
+        @watchers += custom_watcher(Compass.configuration.fireapp_livescripts_dir, "*.ls", method(:livescript_callback))
 
         setup_listener
       end
@@ -77,17 +77,9 @@ module Compass
       def custom_watcher(dir, extensions, callback)
         filter = File.join(dir, extensions)
         childe_filter = File.join(dir, "**", extensions)
-        [Watcher::Watch.new(filter, callback),
-         Watcher::Watch.new(childe_filter, callback)]
-      end
 
-
-      def coffeescript_watchers
-        coffee_filter = File.join(Compass.configuration.fireapp_coffeescripts_dir,  "*.coffee")
-        child_coffee_filter = File.join(Compass.configuration.fireapp_coffeescripts_dir, "**", "*.coffee")
-
-        [ Watcher::Watch.new(child_coffee_filter, &method(:coffee_callback) ),
-          Watcher::Watch.new(coffee_filter, &method(:coffee_callback) ) ]
+        [Watcher::Watch.new(filter, &callback),
+         Watcher::Watch.new(childe_filter, &callback)]
       end
 
       def coffee_callback(base, file, action)
@@ -96,14 +88,6 @@ module Compass
         CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir,
                                       Compass.configuration.javascripts_dir, 
                                       Compass.configuration.fireapp_coffeescript_options );
-      end
-      
-      def livescript_watchers
-        filter = File.join(Compass.configuration.fireapp_livescripts_dir,  "*.ls")
-        child_filter = File.join(Compass.configuration.fireapp_livescripts_dir, "**", "*.ls")
-
-        [ Watcher::Watch.new(child_filter, &method(:livescript_callback) ),
-          Watcher::Watch.new(filter, &method(:livescript_callback) ) ]
       end
 
       def livescript_callback(base, file, action)
