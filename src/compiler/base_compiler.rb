@@ -12,7 +12,7 @@ class BaseCompiler
     end
   end
 
-  def self.compile(src_file_path, dst_file_path, options)
+  def self._compile(src_file_path, dst_file_path, options)
     src_file_path = Pathname.new(src_file_path)
     dst_file_path = Pathname.new(dst_file_path)
 
@@ -23,7 +23,7 @@ class BaseCompiler
       content = cache.get(src_file_path)
 
       if content.nil?
-        content = yield(src_file_path, options)
+        content = yield
         cache.update(src_file_path, content)
       end
 
@@ -37,7 +37,10 @@ class BaseCompiler
       "document.write("+ error_msg.to_json + ")"
     end
 
-    # raise "You should implement this method: #{__method__}"
+  end
+
+  def self.compile
+    raise "You should implement this method: #{__method__}"
   end
 
   def self.write_dst_file(dst_file_path, content)
@@ -53,13 +56,18 @@ class BaseCompiler
     end
   end
 
-  def self.ext
-    # "*.coffee"
+  def self.src_file_ext
+    # "coffee"
+    raise "You should implement this method: #{__method__}"
+  end
+
+  def self.dst_file_ext
+    # "js"
     raise "You should implement this method: #{__method__}"
   end
 
   def self.cache_folder_name
-    # "*.coffeescript-cache"
+    # "coffeescript-cache"
     raise "You should implement this method: #{__method__}"
   end
 
@@ -67,7 +75,7 @@ class BaseCompiler
   def self.compile_folder(src_dir, dst_dir, options = {})
     src_dir = File.expand_path(src_dir)
     dst_dir = File.expand_path(dst_dir)
-    src_files = File.join(src_dir, "**", self.ext)
+    src_files = File.join(src_dir, "**", "*.#{self.src_file_ext}")
 
 
     Dir.glob( src_files ) do |path|
@@ -76,26 +84,31 @@ class BaseCompiler
       # CoffeeCompiler.new(full_path, new_js_path, get_cache_dir(coffeescripts_dir), options ).compile
       compile(
         path, 
-        dst_file_path(src_dir, path, dst_dir),
+        get_dst_file_path(src_dir, path, dst_dir),
         options
       )
 
     end
   end
 
-  def self.cache_dir
-    if not defined?(App)
-      raise "You shoulod have App"
-    end
+  # def self.cache_dir
+  #   if not defined?(App)
+  #     raise "You shoulod have App"
+  #   end
 
-    dir = File.expand_path( File.join(Compass.configuration.project_path, self.cache_folder_name))
-    FileUtils.mkdir_p(dir) unless  File.exists?(dir)
-    return dir
+  #   dir = File.expand_path( File.join(Compass.configuration.project_path, self.cache_folder_name))
+  #   FileUtils.mkdir_p(dir) unless  File.exists?(dir)
+  #   return dir
 
-  end
+  # end
 
-  def self.dst_file_path(src_dir, src_file_path, dst_dir)
+  def self.get_dst_file_path(src_dir, src_file_path, dst_dir)
+    src_file_path = File.expand_path(src_file_path)
 
+    new_dir  = File.dirname(src_file_path.to_s.sub(coffeescripts_dir, ""))
+    new_file = File.basename(src_file_path).gsub(/\.#{self.src_file_ext}/,".#{self.dst_file_ext}").gsub(/#{self.dst_file_ext}\.#{self.dst_file_ext}/,"#{self.dst_file_ext}")
+    
+    return  File.join(dst_dir, new_dir, new_file)
   end
 
   def self.clean_folder(src_dir, dst_dir)
