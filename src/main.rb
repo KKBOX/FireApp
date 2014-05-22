@@ -38,6 +38,11 @@ require "yaml"
   require "ui/#{f}"
 end
 
+# require 'pathname'
+# Pathname.new("compiler").children.each do |c|
+#   require c.to_s if c.extname == ".rb"
+# end
+
 require 'optparse'
 options = {}
 OptionParser.new do |opts|
