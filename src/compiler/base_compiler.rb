@@ -16,7 +16,41 @@ class BaseCompiler
     src_file_path = Pathname.new(src_file_path)
     dst_file_path = Pathname.new(dst_file_path)
 
-    raise "You should implement this method: #{__method__}"
+    cache = CompilationCache.new(cache_folder_name)
+
+    begin
+
+      content = cache.get(src_file_path)
+
+      if content.nil?
+        content = yield(src_file_path, options)
+        cache.update(src_file_path, content)
+      end
+
+      write_dst_file(dst_file_path, content)
+      content
+
+    rescue Exception => e
+      error_msg = "#{src_file_path}: #{e.message}"
+      log(:error, error_msg)
+
+      "document.write("+ error_msg.to_json + ")"
+    end
+
+    # raise "You should implement this method: #{__method__}"
+  end
+
+  def self.write_dst_file(dst_file_path, content)
+    dst_file_path.parent.mkdir unless dst_file_path.parent.exist?
+    if dst_file_path.exist?
+      log( :overwrite, dst_file_path.to_s)
+    else
+      log( :create, dst_file_path.to_s)
+    end
+
+    dst_file_path.open("w") do |f| 
+      f.write(content)
+    end
   end
 
   def self.ext
