@@ -38,10 +38,10 @@ require "yaml"
   require "ui/#{f}"
 end
 
-# require 'pathname'
-# Pathname.new("compiler").children.each do |c|
-#   require c.to_s if c.extname == ".rb"
-# end
+
+
+
+
 
 require 'optparse'
 options = {}
@@ -76,7 +76,7 @@ begin
     $LOAD_PATH.unshift('src')
     require 'execjs'
     require "fsevent_patch" if App::OS == 'darwin'
-    require "coffee_compiler.rb"
+    # require "coffee_compiler.rb"
     require "livescript_compiler.rb"
     require "less_compiler.rb"
     require "app_watcher.rb"
@@ -84,6 +84,16 @@ begin
     require "the_hold_uploader.rb"
     require "project_builder.rb"
     require "notifier"
+
+# require 'pathname'
+# Pathname.new("compiler").children.each do |c|
+#   require c.to_s if c.extname == ".rb"
+# end
+
+    %w{compilation_cache base_compiler coffee_compiler}.each do | f |
+      require "compiler/#{f}"
+    end
+    
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
   end
