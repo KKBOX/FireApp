@@ -1,7 +1,6 @@
 
-require 'base_compiler'
 require 'coffee_script'
-
+require 'pathname'
 
 class CoffeeCompiler < BaseCompiler
 
@@ -20,7 +19,7 @@ class CoffeeCompiler < BaseCompiler
   def self.compile(src_file_path, dst_file_path, options = {})
 
     self._compile(src_file_path, dst_file_path, options) do 
-      CoffeeScript.compile src_file_path.read, options
+      CoffeeScript.compile Pathname.new(src_file_path).read, options
     end
 
   end

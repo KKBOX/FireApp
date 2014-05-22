@@ -1,6 +1,7 @@
 
 require 'time'
 require 'fileutils'
+require 'pathname'
 
 class CompilationCache
 
@@ -31,7 +32,7 @@ class CompilationCache
   private
 
     def get_cache_file(file_name)
-      @cache_dir + file_name.to_s.gsub(/[^a-z0-9]/,"_")
+      Pathname.new( @cache_dir + file_name.to_s.gsub(/[^a-z0-9]/,"_") )
     end
 
 
