@@ -10,7 +10,8 @@ class CompilationCache
       raise "You shoulod have App"
     end
 
-    @cache_dir = File.expand_path( File.join(Compass.configuration.project_path, cache_folder_name))
+    @project_dir = Pathname.new( Compass.configuration.project_path )
+    @cache_dir = File.expand_path( File.join(@project_dir, cache_folder_name))
     FileUtils.mkdir_p(@cache_dir) unless  File.exists?(@cache_dir)
   end
 
@@ -28,20 +29,33 @@ class CompilationCache
 
   def update(file_name, content)
     cache_file = get_cache_file(file_name)
-    cache_file.open('w') do|f|
-      f.write JSON.dump({"mtime" => cache_file.mtime.to_i, "content" => content})
+
+    rel_file_name = Pathname.new(file_name).relative_path_from(@project_dir)
+    cache_file.open('w') do |f|
+      f.write JSON.dump({
+        "mtime" => cache_file.mtime.to_i, 
+        "content" => content, 
+        "file_path" => rel_file_name.to_s
+      })
     end
   end
 
   def clear
     FileUtils.rm_rf(@cache_dir)
-    FileUtils.mkdir_p(@cache_dir) unless  File.exists?(@cache_dir)
+    FileUtils.mkdir_p(@cache_dir) unless File.exists?(@cache_dir)
+  end
+
+  def cached_file_list
+    Pathname.new(@cache_dir).children.map do |c|
+      JSON.load( c.read )["file_path"]
+    end
   end
 
   private
 
     def get_cache_file(file_name)
-      Pathname.new( File.join(@cache_dir, file_name.to_s.gsub(/[^a-z0-9]/,"_")) )
+      
+      Pathname.new( File.join(@cache_dir, file_name.to_s.gsub(/[^\w]/,"_")))
     end
 
 
