@@ -85,7 +85,7 @@ module Compass
       def coffee_callback(base, file, action)
         log_action(:info, "#{file} was #{action}", options)
         puts( "#{file} was #{action}", options)
-        CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir,
+        CoffeeScriptCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir,
                                       Compass.configuration.javascripts_dir, 
                                       Compass.configuration.fireapp_coffeescript_options );
       end
