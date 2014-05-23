@@ -76,8 +76,6 @@ begin
     $LOAD_PATH.unshift('src')
     require 'execjs'
     require "fsevent_patch" if App::OS == 'darwin'
-    # require "coffee_compiler.rb"
-    # require "livescript_compiler.rb"
     require "less_compiler.rb"
     require "app_watcher.rb"
     require "compass_patch.rb"
