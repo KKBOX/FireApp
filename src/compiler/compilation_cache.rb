@@ -48,7 +48,7 @@ class CompilationCache
   def cached_file_list
     Pathname.new(@cache_dir).children.map do |c|
       JSON.load( c.read )["file_path"]
-    end
+    end.compact
   end
 
   private
