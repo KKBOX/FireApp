@@ -98,7 +98,7 @@ module Compass
     class CleanProject
       def perform
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-          CoffeeCompiler.clean_compile_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
+          CoffeeCompiler.clean_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
         end
         if File.exists?( Compass.configuration.fireapp_livescripts_dir )
           LiveScriptCompiler.clean_compile_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )

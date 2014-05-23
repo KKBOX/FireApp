@@ -14,6 +14,10 @@ class CompilationCache
     FileUtils.mkdir_p(@cache_dir) unless  File.exists?(@cache_dir)
   end
 
+  def cache_dir
+    @cache_dir
+  end
+
   def get(file_name)
     cache_file = get_cache_file(file_name)
     cache_object = JSON.load( cache_file.read ) if cache_file.file?
@@ -29,10 +33,15 @@ class CompilationCache
     end
   end
 
+  def clear
+    FileUtils.rm_rf(@cache_dir)
+    FileUtils.mkdir_p(@cache_dir) unless  File.exists?(@cache_dir)
+  end
+
   private
 
     def get_cache_file(file_name)
-      Pathname.new( @cache_dir + file_name.to_s.gsub(/[^a-z0-9]/,"_") )
+      Pathname.new( File.join(@cache_dir, file_name.to_s.gsub(/[^a-z0-9]/,"_")) )
     end
 
 
