@@ -48,7 +48,7 @@ class BaseCompiler
 
     cache.cached_file_list.each do |path|
       dst_file = get_dst_file_path(src_dir, path, dst_dir)
-      
+
       if File.exists?(dst_file)
         log( :remove, dst_file)
         FileUtils.rm_rf(dst_file)
@@ -66,7 +66,7 @@ class BaseCompiler
 
 
     cache.clear
-    CoffeeCompiler.log( :remove, "#{cache.cache_dir}/")
+    log( :remove, "#{cache.cache_dir}/")
   end
 
 
