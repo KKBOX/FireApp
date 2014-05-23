@@ -2,7 +2,7 @@
 require 'coffee_script'
 require 'pathname'
 
-class CoffeeCompiler < BaseCompiler
+class CoffeeScriptCompiler < BaseCompiler
 
   def self.src_file_ext
     "coffee"

@@ -1,5 +1,5 @@
 
-require 'coffee_script'
+require 'livescript'
 require 'pathname'
 
 class LiveScriptCompiler < BaseCompiler
