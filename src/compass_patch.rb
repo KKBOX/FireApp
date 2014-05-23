@@ -101,7 +101,7 @@ module Compass
           CoffeeScriptCompiler.clean_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
         end
         if File.exists?( Compass.configuration.fireapp_livescripts_dir )
-          LiveScriptCompiler.clean_compile_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )
+          LiveScriptCompiler.clean_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )
         end
         if File.exists?( Compass.configuration.fireapp_less_dir )
           LessCompiler.clean_compile_folder(Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir )
