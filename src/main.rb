@@ -24,6 +24,7 @@ elsif org.jruby.platform.Platform::IS_LINUX
 end
 
 
+
 require "swt_wrapper"
 require "ui/splash_window"
 SplashWindow.instance.replace('Loading...')
@@ -36,6 +37,11 @@ require "open-uri"
 require "yaml"
 %w{alert notification quit_window tray preference_panel report welcome_window change_options_panel progress_window}.each do | f |
   require "ui/#{f}"
+end
+
+java_version = java.lang.System::getProperty("java.version")
+if java_version.to_f < 1.7 then
+  Alert.new "Your JRE version is #{java_version}. \nJRE version 1.7 is needed to run Fire.app"
 end
 
 require 'optparse'
@@ -66,7 +72,7 @@ begin
 
   require "app.rb"
   App.require_compass
- 
+
   begin
     $LOAD_PATH.unshift('src')
     require 'execjs'
