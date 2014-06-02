@@ -6,7 +6,13 @@ module Serve #:nodoc:
     
     def self.extensions
       # Get extensions from Tilt, ugly but it works
-      @extensions ||= (Tilt.mappings.map { |k,v| ["#{k}", "html.#{k}"] }).flatten
+      @extensions ||= (Tilt.mappings.map { |k,v| 
+        if %w{sass scss}.include?(k) # direct output sass&scss
+          []
+        else
+          ["#{k}", "html.#{k}"] 
+        end
+      }).flatten
     end
     
     def extensions
