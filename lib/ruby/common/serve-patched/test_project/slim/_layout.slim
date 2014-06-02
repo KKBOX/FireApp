@@ -1,0 +1,17 @@
+html
+  head
+    title= @title
+    link rel="stylesheet" type="text/css" href="/styles.css"
+    sass:
+      #content
+        float: left
+        width: 70%
+      #sidebar
+        float: right
+        width: 28%
+  body
+    #content
+      h1= @title
+      == yield
+    - if content_for? :sidebar
+      #sidebar== yield :sidebar
