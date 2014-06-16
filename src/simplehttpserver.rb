@@ -13,7 +13,6 @@ require "kramdown"
 require 'serve'
 require 'serve/application'
 require 'sass/plugin/rack'
-require 'rack/coffee'
 class SimpleHTTPServer
   include Singleton
   def start(dir, options)

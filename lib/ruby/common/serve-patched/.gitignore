@@ -1,0 +1,14 @@
+.DS_Store
+*.tmproj
+tmtags
+*~
+\#*
+.\#*
+*.swp
+coverage
+rdoc
+pkg
+.bundle
+.sass-cache/**/*
+test_project/.sass-cache/**/*
+junk/*

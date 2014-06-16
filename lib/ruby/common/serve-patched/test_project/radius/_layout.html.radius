@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Radius Tests</title>
+    <link href="/styles.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <h1>Radius Tests</h1>
+    <r:yield />
+  </body>
+</html>

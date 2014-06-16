@@ -1,0 +1,151 @@
+= Serve - Delicious ERB, Haml, and Sass
+
+link:../../downloads/jlong/serve/logo-hifi-3.png
+
+Serve is a small Rack-based web server that makes it easy to serve HTML, ERB,
+Haml, or a variety of template languages from any directory.
+
+Serve is meant to be a lightweight version of the Views part of the Rails MVC.
+This makes Serve an ideal framework for prototyping Rails applications or
+creating simple websites. Serve has full support for Rails-style partials
+and layouts.
+
+Serve is made with Rack & Tilt.
+
+
+== Installation
+
+Serve is distributed as a Ruby gem and can be installed from the command
+prompt. Just type:
+
+  gem install serve
+
+Some systems, like the Mac, may require that you type:
+
+  sudo gem install serve
+
+If you are new to the command prompt and are a Mac user see:
+
+http://wiseheartdesign.com/articles/2010/11/12/the-designers-guide-to-the-osx-command-prompt/
+
+Search Google for "command prompt windows" if you are on a PC to find a simple
+tutorial.
+
+
+== Basic Usage
+
+Once the gem is installed the `serve` command will be available from the
+command prompt. To launch Serve, just type the command and press enter:
+
+  serve
+
+This will launch a simple web server which you can access from any web browser
+at the following address:
+
+  http://localhost:4000
+
+Once the server is going it will output a running log of its activity. To
+stop the server at any time, type CTRL+C at the command prompt.
+
+Learn more: http://get-serve.com/documentation/usage
+
+
+== Creating a Structured Serve Project
+
+For simple projects, you don't need to structure your files in a specific
+way. All ERB, Haml, and Sass files will be processed wherever they are found
+in the project root. But for more complex projects you may want add a bit of structure.
+
+To create a structured Serve project in the "project" directory, type the
+following on the command line:
+
+  serve create project   # create a new project in the project directory
+
+Lear more: http://get-serve.com/documentation/create
+
+
+== Layouts & Partials
+
+Serve has full support for Rails-style layouts and partials.
+
+Serve layouts are stored in "_layout.erb" or "_layout.haml" files in the same directory as the page they are rendering.
+
+Learn more: http://get-serve.com/documentation/layouts
+
+Serve partials (much like PHP includes) are rendered using the familiar render syntax:
+
+  <%= render "footer" %>
+
+Learn more: http://get-serve.com/documentation/partials
+
+
+== View Helpers
+
+If you drop a file called "view_helpers.rb" in your views directory, you can
+define custom helpers for your Haml and ERB views. Just create a ViewHelpers
+module and define your custom helper methods there:
+
+  module ViewHelpers
+    
+    # Calculate the years for a copyright
+    def copyright_years(start_year)
+      end_year = Date.today.year
+      if start_year == end_year
+        start_year
+      else
+        start_year.to_s + "&#8211;" + end_year.to_s
+      end
+    end
+    
+  end
+
+You can then use your custom helper methods inside a view or layout:
+
+  <%= copyright_years(2010) %>
+
+Serve also provides a number of stock helpers methods that are very similar to their Rails counter parts.
+
+Learn more: http://get-serve.com/documentation/view-helpers
+
+
+== Exporting
+
+To export your project, use the new "export" command:
+
+  serve export project output
+
+Where "project" is the path to the project and "output" is the path to the
+directory where you would like your HTML and CSS generated.
+
+Learn more: http://get-serve.com/documentation/export
+
+== "Design First" Prototyping
+
+If you use a "Design First" methodology, you may find Serve especially useful
+for prototyping your applications. Create a separate "prototype" project for
+your application (using Serve) and copy views over into actual application
+when they are ready to go. This workflow allows the designer to focus on
+presentation and flow, while the developer can focuses on implementation. One
+benefit to this approach is that the designer can identify and fix a large
+number of design-related problems before a feature is ever touched by the
+developer. Once a feature has been completed in the prototype project it can
+also be estimated with a high degree of accuracy.
+
+
+== Website & Documentation
+
+Detailed documentation is available on the Serve website: http://get-serve.com
+
+
+== Mailing List
+
+Have questions? Please don't be ashamed to ask. Post them on the mailing list:
+
+http://groups.google.com/group/serve-users
+
+
+== License
+
+Serve is released under a MIT-style license and is copyright (c) 2007-2011
+John W. Long and Adam I. Williams. Portions have been contributed by Robert
+Evans and others. A copy of the license can be found in the LICENSE file.

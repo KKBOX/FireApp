@@ -1,0 +1,135 @@
+= Change Log
+
+== 1.5.1 (July 13, 2011)
+* Include .empty file in Gem for "blank" template. Closes #42. [jlong]
+* Include .htaccess file in Gem for "default" template. [jlong]
+
+== 1.5.0 (July 12, 2011)
+* Integrated bundler into config.ru and added a default Gemfile. [jlong]
+* Added new --template option which allows you to specify a project template when creating a new project. [jlong]
+* Made Textile partials work. Closes #29. [rmetzler, jlong]
+* Fixed problem with export that caused filenames with underscore to be excluded. [bmaland]
+* Updated generated config.ru to require Sass. Closes #20. [jlong]
+* Updated project README and other files to be more friendly to new users [jlong]
+* Changed Sass directory name to "stylesheets" to be more consistent with Rails. [jlong]
+* Modified redirects so that only the last line is interpreted as the URL, everything else is ignored. This is useful for adding a comment at the beginning of the file. [jlong]
+* Modified params helper to work with POST params in addition to GET. Closes #19. [jlong]
+* Added an export command which allows you to convert a Serve site to static HTML. Closes #10. [jlong]
+
+== 1.1.1 (June 7, 2011)
+* Fix: Allow create command to work without Git. Closes #24. [jlong]
+* Add javascript and stylesheet include helpers [zaeleus]
+
+== 1.1.0 (May 25, 2010)
+
+* Use latest versions of dependencies [jlong]
+* Added support for locals in partials [heikki]
+* Added limited support for Radius [jlong]
+* Added support for LESS [jlong]
+* Added support for ERubis [jlong]
+* Rewrote the way that Serve resolves file names [jlong]
+* Incorporated Tilt so that other template languages can be added with ease. [jlong]
+* Added limited support for Slim [fleadope, jlong]
+
+== 1.0.0 (November 3, 2010)
+
+* Various tweaks and fixes [jlong]
+* Added `serve convert` command for converting Compass projects. [revans]
+* Added `serve create` command for bootstrapping projects. See README for details. Yay! [revans]
+* Added option to use Thin if Mongrel isn't installed [benatkin] 
+
+== 0.11.7 (July 22, 2010)
+
+* Use latest version of Rack
+* Use Mongrel instead of Webrick by default
+
+== 0.11.6 (June 13, 2010)
+
+* Support for activesupport 3.x [railsjedi]
+
+== 0.11.5 (June 5, 2010)
+
+* Add support for static asset processing (HTML, XML, etc..); directories with index.html files should now resolve. Yay! [jlong]
+
+== 0.11.4 (May 27, 2010)
+
+* fixed image helper [jlong]
+
+== 0.11.3 (May 26, 2010) 
+
+* Check for config.ru and use the `rackup` command instead if present.
+
+== 0.11.2 (May 25, 2010) 
+
+* Add dependency on Rack to gemspec [jlong]
+
+== 0.11.1 (May 25, 2010) 
+
+* Added support for Ruby 1.9 [jlong]
+* Refactored to use Rack internally [jlong]
+
+== 0.10.2 (May 13, 2010)
+
+* Changed render helper to support passing the name of the partial as the first parameter to match the new Rails syntax [jlong]
+* Added additional view helpers for escaping content, access to params and flash, and creating tags in code [jlong]
+
+== 0.10.1 (May 13, 2010)
+
+* Added handling for SCSS files with HAML/SASS 3.0 [nathany]
+
+== 0.10.0 (December 28, 2009)
+
+* Added additional view helper methods and harmonized the API a bit [aiwilliams]
+* Added support for using Serve as a Rails plugin [aiwilliams]
+* Added support for rack [ntalbott]
+* Dropped Hoe and Newgem in favor of Jeweler [jlong]
+
+== 0.9.10 (October 25, 2008)
+
+* Updated to work with Haml 2.0.3. [jlong]
+
+== 0.9.9 (September 19, 2008)
+
+* Fixed ERB partial support. [jlong]
+* Added support for content_for blocks in ERB. [jlong]
+
+== 0.9.8 (July 18, 2008)
+
+* Added experimental support for ERB layouts. [Lawjoskar]
+
+== 0.9.7 (July 17, 2008)
+
+* Added experimental support for view helpers. [aiwilliams]
+* Added limited support for ERB. Layouts are not yet supported. [jlong]
+
+== 0.9.6 (February 20, 2008)
+
+* Changed default port to 4000 so that serve plays nicely with Rails apps.
+* Rearranged source.
+
+== 0.9.5 (February 19, 2008)
+
+* Added support for rendering other files with the following syntax:
+
+  render :template => "template_name"
+
+== 0.9.4 (January 31, 2008)
+
+* Small fix for calculating the partial name in render_partial.
+
+== 0.9.3 (January 23, 2008)
+
+* Added support for layouts and partials for HAML documents.
+
+== 0.9.2 (January 17, 2008)
+
+* Added support for redirects.
+
+== 0.9.1 (October 19, 2007)
+
+* Added basic support for email mockups.
+* Updated description and help text.
+
+== 0.9.0 (September 25, 2007)
+
+* Initial release
