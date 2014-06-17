@@ -19,8 +19,13 @@ module Compass
       def initialize(project_path, watches=[], options={}, poll=false)
         super
         @watchers << livereload_watchers
-        @watchers += livescript_watchers
-        @watchers += coffeescript_watchers
+        #@watchers += livescript_watchers
+        #@watchers += coffeescript_watchers
+        
+        @watchers += custom_watcher(Compass.configuration.fireapp_coffeescripts_dir, "*.coffee", method(:coffee_callback))
+        @watchers += custom_watcher(Compass.configuration.fireapp_livescripts_dir, "*.ls", method(:livescript_callback))
+        @watchers += custom_watcher(Compass.configuration.fireapp_less_dir, "*.less", method(:less_callback))
+
         setup_listener
       end
 
@@ -69,28 +74,21 @@ module Compass
 
       end
 
-      def coffeescript_watchers
-        coffee_filter = File.join(Compass.configuration.fireapp_coffeescripts_dir,  "*.coffee")
-        child_coffee_filter = File.join(Compass.configuration.fireapp_coffeescripts_dir, "**", "*.coffee")
 
-        [ Watcher::Watch.new(child_coffee_filter, &method(:coffee_callback) ),
-          Watcher::Watch.new(coffee_filter, &method(:coffee_callback) ) ]
+      def custom_watcher(dir, extensions, callback)
+        filter = File.join(dir, extensions)
+        childe_filter = File.join(dir, "**", extensions)
+
+        [Watcher::Watch.new(filter, &callback),
+         Watcher::Watch.new(childe_filter, &callback)]
       end
 
       def coffee_callback(base, file, action)
         log_action(:info, "#{file} was #{action}", options)
         puts( "#{file} was #{action}", options)
-        CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir,
+        CoffeeScriptCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir,
                                       Compass.configuration.javascripts_dir, 
                                       Compass.configuration.fireapp_coffeescript_options );
-      end
-      
-      def livescript_watchers
-        filter = File.join(Compass.configuration.fireapp_livescripts_dir,  "*.ls")
-        child_filter = File.join(Compass.configuration.fireapp_livescripts_dir, "**", "*.ls")
-
-        [ Watcher::Watch.new(child_filter, &method(:livescript_callback) ),
-          Watcher::Watch.new(filter, &method(:livescript_callback) ) ]
       end
 
       def livescript_callback(base, file, action)
@@ -99,6 +97,16 @@ module Compass
         LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir,
                                       Compass.configuration.javascripts_dir, 
                                       Compass.configuration.fireapp_livescript_options );
+      end
+
+
+
+      def less_callback(base, file, action)
+        log_action(:info, "#{file} was #{action}", options)
+        puts( "#{file} was #{action}", options)
+        LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir,
+                                      Compass.configuration.css_dir, 
+                                      Compass.configuration.fireapp_less_options );
       end
 
       def livereload_watchers
@@ -116,22 +124,6 @@ module Compass
         tray = Tray.instance
         tray.shell.display.wake if tray.shell
       end 
-
-      def less_watchers
-        filter = File.join(Compass.configuration.fireapp_less_dir,  "*.less")
-        child_filter = File.join(Compass.configuration.fireapp_less_dir, "**", "*.less")
-
-        [ Watcher::Watch.new(child_filter, &method(:less_callback) ),
-          Watcher::Watch.new(filter, &method(:less_callback) ) ]
-      end
-
-      def less_callback(base, file, action)
-        log_action(:info, "#{file} was #{action}", options)
-        puts( "#{file} was #{action}", options)
-        LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir,
-                                      Compass.configuration.css_dir, 
-                                      Compass.configuration.fireapp_less_options );
-      end
 
 
       def setup_listener

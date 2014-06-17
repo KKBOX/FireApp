@@ -79,7 +79,7 @@ module Compass
     class UpdateProject
       def perform
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-          CoffeeCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
+          CoffeeScriptCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
         end
         if File.exists?( Compass.configuration.fireapp_livescripts_dir )
           LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_livescript_options );
@@ -98,13 +98,13 @@ module Compass
     class CleanProject
       def perform
         if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-          CoffeeCompiler.clean_compile_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
+          CoffeeScriptCompiler.clean_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
         end
         if File.exists?( Compass.configuration.fireapp_livescripts_dir )
-          LiveScriptCompiler.clean_compile_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )
+          LiveScriptCompiler.clean_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )
         end
         if File.exists?( Compass.configuration.fireapp_less_dir )
-          LessCompiler.clean_compile_folder(Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir )
+          LessCompiler.clean_folder(Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir )
         end
         compiler = new_compiler_instance
         compiler.clean!

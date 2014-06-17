@@ -38,6 +38,11 @@ require "yaml"
   require "ui/#{f}"
 end
 
+
+
+
+
+
 require 'optparse'
 options = {}
 OptionParser.new do |opts|
@@ -71,14 +76,19 @@ begin
     $LOAD_PATH.unshift('src')
     require 'execjs'
     require "fsevent_patch" if App::OS == 'darwin'
-    require "coffee_compiler.rb"
-    require "livescript_compiler.rb"
-    require "less_compiler.rb"
+    # require "less_compiler.rb"
     require "app_watcher.rb"
     require "compass_patch.rb"
     require "the_hold_uploader.rb"
     require "project_builder.rb"
     require "notifier"
+
+
+
+    %w{compilation_cache base_compiler coffeescript_compiler livescript_compiler less_compiler}.each do | f |
+      require "compiler/#{f}"
+    end
+    
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
   end
