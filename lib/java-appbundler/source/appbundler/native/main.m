@@ -67,7 +67,9 @@ int main(int argc, char *argv[]) {
         [alert setAlertStyle:NSCriticalAlertStyle];
         [alert setMessageText:[exception reason]];
         [alert runModal];
-
+        if ([[exception name] isEqualToString:@JAVA_LAUNCH_ERROR]) {
+            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://www.java.com/download"]];
+        }
         result = 1;
     }
 
