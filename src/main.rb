@@ -102,7 +102,6 @@ begin
     bootstrap-sass 
     susy 
     zurb-foundation 
-    zurb-foundation-compass-template
     fireapp-example}.each do |x|
     begin
       require x
