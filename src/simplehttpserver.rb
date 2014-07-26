@@ -49,12 +49,14 @@ class SimpleHTTPServer
       if( File.exists?(views_dir) && File.exists?(public_dir))
         run Rack::Cascade.new([
                               Serve::RackAdapter.new( views_dir ),
-                              Rack::Directory.new( public_dir)
+                              Rack::Directory.new( public_dir),
+                              Serve::RackAdapter.new( views_dir, true ) # for custom 404 page
         ]) 
       else 
         run Rack::Cascade.new([
                               Serve::RackAdapter.new( dir ),
-                              Rack::Directory.new( dir )
+                              Rack::Directory.new( dir ),
+                              Serve::RackAdapter.new( views_dir, true )
         ]) 
       end
     end

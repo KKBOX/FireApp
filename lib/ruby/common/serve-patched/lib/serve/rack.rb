@@ -89,13 +89,17 @@ module Serve
     
     # Initialize a Rack endpoint for Serve with the root path to
     # the views directory.
-    def initialize(root)
+    def initialize(root, is_404_handler = false)
       @root = root
+      @is_404_handler = is_404_handler
     end
     
     # Called by Rack to process a request.
     def call(env)
       request = Request.new(env)
+     
+      request.path_info='404' if @is_404_handler
+
       response = Response.new()
       process(request, response).to_a
     end
@@ -106,6 +110,7 @@ module Serve
       # URLs without extensions and directory indexes work.
       def process(request, response)
         path = Serve::Router.resolve(@root, request.path_info)
+        
         if path
           # Fetch the file handler for a file with a given extension/
           ext = File.extname(path)[1..-1]
