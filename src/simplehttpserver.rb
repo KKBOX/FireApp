@@ -56,7 +56,7 @@ class SimpleHTTPServer
         run Rack::Cascade.new([
                               Serve::RackAdapter.new( dir ),
                               Rack::Directory.new( dir ),
-                              Serve::RackAdapter.new( views_dir, true )
+                              Serve::RackAdapter.new( dir, true )
         ]) 
       end
     end

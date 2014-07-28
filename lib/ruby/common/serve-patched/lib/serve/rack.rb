@@ -98,7 +98,7 @@ module Serve
     def call(env)
       request = Request.new(env)
      
-      request.path_info='404' if @is_404_handler
+      request.path_info='/404' if @is_404_handler
 
       response = Response.new()
       process(request, response).to_a
