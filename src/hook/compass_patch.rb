@@ -20,7 +20,7 @@ require 'after_do'
 
 require 'compass/commands'
 
-# exposure listener
+# expose listener
 class Sass::Plugin::Compiler
 
   attr_accessor :listener
@@ -32,7 +32,7 @@ class Sass::Plugin::Compiler
 
 end
 
-# exposure compiler
+# expose compiler
 # - use compiler.listener to get listener
 class Compass::SassCompiler
   attr_accessor :compiler # This compiler is Sass::Plugin::Compiler
@@ -40,7 +40,7 @@ class Compass::SassCompiler
 end
 
 
-# exposure compiler
+# expose compiler
 class Compass::Commands::WatchProject
 
   attr_accessor :sass_compiler # This compiler is Compass::SassCompiler
@@ -52,7 +52,7 @@ class Compass::Commands::WatchProject
 
 end
 
-# exposure watches
+# expose watches
 class Compass::Configuration::Data
   def watches=(w)
     @watches = w
