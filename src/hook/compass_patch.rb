@@ -53,6 +53,12 @@ class Compass::Commands::WatchProject
 
 end
 
+# exposure watches
+class Compass::Configuration::Data
+  def watches=(w)
+    @watches = w
+  end
+end
 
 Compass::Commands::WatchProject.extend AfterDo
 Compass::Commands::WatchProject.after :notify_watches do |modified, added, removed|
