@@ -19,6 +19,23 @@ require 'after_do'
 # end
 
 
+
+# exposure listener
+class Sass::Plugin::Compiler
+
+  def listener=(l)
+    @listener = l
+  end
+
+  def listener
+    @listener
+  end
+
+end
+
+
+
+
 Compass::Commands::WatchProject.extend AfterDo
 Compass::Commands::WatchProject.after :notify_watches do |modified, added, removed|
 
