@@ -33,7 +33,11 @@ class Sass::Plugin::Compiler
 
 end
 
-
+# exposure compiler
+# - use compiler.listener to get listener
+class Compass::SassCompiler
+  attr_accessor :compiler
+end
 
 
 Compass::Commands::WatchProject.extend AfterDo
