@@ -36,12 +36,25 @@ end
 # exposure compiler
 # - use compiler.listener to get listener
 class Compass::SassCompiler
-  attr_accessor :compiler
+  attr_accessor :compiler # This compiler is Sass::Plugin::Compiler
+end
+
+
+# exposure compiler
+class Compass::Commands::WatchProject
+
+  def compiler=(l) 
+    @compiler = l
+  end
+
+  def compiler # This compiler is Sass::Plugin::Compiler
+    @compiler
+  end
+
 end
 
 
 Compass::Commands::WatchProject.extend AfterDo
 Compass::Commands::WatchProject.after :notify_watches do |modified, added, removed|
-
   java.lang.System.gc()
 end
