@@ -1,7 +1,9 @@
 
+require "base_compass_hooker"
+
 module CompassHooker
 
-  class WatchHooker
+  class WatchHooker < BaseCompassHooker
 
 
   end
