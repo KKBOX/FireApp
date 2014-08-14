@@ -12,27 +12,30 @@ class  AppWatcher < Compass::Commands::WatchProject
   def initialize(project_path, options={})
     super
 
-    WatchHooker.watches << livereload_watchers
+    CompassHooker::WatchHooker.watches << livereload_watchers
     #@watchers += livescript_watchers
     #@watchers += coffeescript_watchers
     
-    WatchHooker.watches  += custom_watcher(Compass.configuration.fireapp_coffeescripts_dir, "*.coffee", method(:coffee_callback))
-    WatchHooker.watches  += custom_watcher(Compass.configuration.fireapp_livescripts_dir, "*.ls", method(:livescript_callback))
-    WatchHooker.watches  += custom_watcher(Compass.configuration.fireapp_less_dir, "*.less", method(:less_callback))
+    CompassHooker::WatchHooker.watches  += custom_watcher(Compass.configuration.fireapp_coffeescripts_dir, "*.coffee", method(:coffee_callback))
+    CompassHooker::WatchHooker.watches  += custom_watcher(Compass.configuration.fireapp_livescripts_dir, "*.ls", method(:livescript_callback))
+    CompassHooker::WatchHooker.watches  += custom_watcher(Compass.configuration.fireapp_less_dir, "*.less", method(:less_callback))
 
   end
 
   def watch!
     perform
-    compiler.compile!
+    sass_compiler.compile!
   end
   
   def stop
-    listener = compiler.compiler.listener
+    puts sass_compiler
+    puts sass_compiler.compiler
+    puts sass_compiler.compiler.listener
+    listener = sass_compiler.compiler.listener
 
     log_action(:info, "AppWatcher stop!",{})
     begin
-      listener.stop if listener.adapter
+      listener.stop if listener and listener.adapter
     rescue Exception => e
       log_action(:warning, "#{e.message}\n#{e.backtrace}", {})
     end
