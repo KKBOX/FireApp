@@ -1,11 +1,8 @@
 
-require "base_compass_hooker"
-require "singleton"
-
 module CompassHooker
 
-  class WatchHooker 
-    include Singleton
+  module WatchHooker 
+    extend self
 
     def watch(glob, &block)
       Compass.configuration.watch(glob, &block)
@@ -15,6 +12,9 @@ module CompassHooker
       Compass.configuration.watches
     end
 
+    def watches=(w)
+      Compass.configuration.watches = w
+    end
   end
 
 end
