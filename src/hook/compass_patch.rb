@@ -22,4 +22,5 @@ require 'after_do'
 Compass::Commands::WatchProject.extend AfterDo
 Compass::Commands::WatchProject.after :notify_watches do |modified, added, removed|
 
+  java.lang.System.gc()
 end

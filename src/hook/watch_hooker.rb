@@ -4,7 +4,7 @@ require "singleton"
 
 module CompassHooker
 
-  class WatchHooker < BaseCompassHooker
+  class WatchHooker 
     include Singleton
 
     def watch(glob, &block)
