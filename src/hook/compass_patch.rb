@@ -1,11 +1,25 @@
 
+require 'after_do'
 
-module Compass
-  module Commands
+# module Compass
+#   module Commands
 
-    class WatchProject
+#     class WatchProject
+#       extend AfterDo
 
-    end
 
-  end
+#       def initialize(*p)
+#         super
+
+#       end
+
+#     end
+
+#   end
+# end
+
+
+Compass::Commands::WatchProject.extend AfterDo
+Compass::Commands::WatchProject.after :notify_watches do |modified, added, removed|
+
 end
