@@ -28,9 +28,6 @@ class  AppWatcher < Compass::Commands::WatchProject
   end
   
   def stop
-    puts sass_compiler
-    puts sass_compiler.compiler
-    puts sass_compiler.compiler.listener
     listener = sass_compiler.compiler.listener
 
     log_action(:info, "AppWatcher stop!",{})
