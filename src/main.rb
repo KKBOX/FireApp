@@ -88,6 +88,12 @@ begin
     %w{compilation_cache base_compiler coffeescript_compiler livescript_compiler less_compiler}.each do | f |
       require "compiler/#{f}"
     end
+
+    %w{compass_patch hook_utils base_compass_hooker watch_hooker}.each do | f |
+      require "hook/#{f}"
+    end
+
+
     
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"

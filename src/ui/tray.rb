@@ -556,7 +556,7 @@ class Tray
 
       Thread.abort_on_exception = true
       @compass_thread = Thread.new do
-        Thread.current[:watcher]=Compass::Watcher::AppWatcher.new(dir, Compass.configuration.watches, {:logger=> @logger})
+        Thread.current[:watcher]=AppWatcher.new(dir, {:logger=> @logger})
         Thread.current[:watcher].watch!
       end
 
