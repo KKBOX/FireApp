@@ -1,18 +1,10 @@
 require 'livereload.rb'
 
-class LivereloadWatch < Compass::Configuration::Watch
-  def match?(changed_path)
-    @glob.split(/,/).each do  |ext|
-      changed_path =~ Regexp.new("#{ext}\\Z")
-    end
-  end
-end
-
 class  AppWatcher < Compass::Commands::WatchProject
   def initialize(project_path, options={})
     super
 
-    CompassHooker::WatchHooker.watches << livereload_watchers
+    CompassHooker::WatchHooker.watches += livereload_watchers
     #@watchers += livescript_watchers
     #@watchers += coffeescript_watchers
     
@@ -75,7 +67,11 @@ class  AppWatcher < Compass::Commands::WatchProject
   end
 
   def livereload_watchers
-   LivereloadWatch.new(::App::CONFIG["services_livereload_extensions"], &method(:livereload_callback))
+    watches = []
+    App::CONFIG["services_livereload_extensions"].split(/\s*,\s*/).each do |ext|
+      watches += custom_watcher("", "*.#{ext}", method(:livereload_callback))
+    end
+    watches
   end
 
   def livereload_callback(base, file, action)
