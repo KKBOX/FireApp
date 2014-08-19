@@ -1,5 +1,6 @@
 
 require 'after_do'
+require 'pathname'
 
 require 'compass/commands'
 
@@ -80,6 +81,38 @@ class Compass::Commands::CleanProject
     end
 
     m.bind(self).(*args, &block)
+  end
+
+end
+
+# class Compass::Configuration::Watch
+  
+#   m = instance_method("match?")
+#   define_method("match?") do |*args, &block| 
+
+#     changed_path = Pathname.new(args[0])
+#     project_path = Pathname.new(Compass.configuration.project_path)
+
+#     if changed_path.exist? and project_path.exist? and changed_path.realpath =~ Regexp.new("^#{project_path.realpath}")
+#       @sass_compiler = m.bind(self).(*args, &block)
+#     else
+#       false
+#     end
+#   end
+
+# end
+
+class Sass::Plugin::Compiler
+
+  m = instance_method("update_stylesheet")
+  define_method("update_stylesheet") do |*args, &block| 
+    
+    sassfile_path = Pathname.new(args[0])
+    project_path = Pathname.new(Compass.configuration.project_path)
+
+    if sassfile_path.exist? and project_path.exist? and sassfile_path.realpath.to_s =~ Regexp.new("^#{project_path.realpath.to_s}")
+      m.bind(self).(*args, &block)
+    end
   end
 
 end
