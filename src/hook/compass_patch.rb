@@ -42,6 +42,27 @@ class Compass::Configuration::Data
   end
 end
 
+# run custom compile on update
+class Compass::Commands::UpdateProject
+
+  m = instance_method("perform")
+  define_method("perform") do |*args, &block| 
+    
+    if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
+      CoffeeScriptCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
+    end
+    if File.exists?( Compass.configuration.fireapp_livescripts_dir )
+      LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_livescript_options );
+    end
+    if File.exists?( Compass.configuration.fireapp_less_dir )
+      LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir, Compass.configuration.fireapp_less_options );
+    end
+
+    m.bind(self).(*args, &block)
+  end
+
+end
+
 Compass::Commands::WatchProject.extend AfterDo
 Compass::Commands::WatchProject.after :notify_watches do |modified, added, removed|
   java.lang.System.gc()
