@@ -78,15 +78,7 @@ module Compass
   module Commands
     class UpdateProject
       def perform
-        if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-          CoffeeScriptCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
-        end
-        if File.exists?( Compass.configuration.fireapp_livescripts_dir )
-          LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_livescript_options );
-        end
-        if File.exists?( Compass.configuration.fireapp_less_dir )
-          LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir, Compass.configuration.fireapp_less_options );
-        end
+        
         compiler = new_compiler_instance
         check_for_sass_files!(compiler)
         compiler.clean! #if compiler.new_config?
