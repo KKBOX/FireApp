@@ -1,5 +1,6 @@
 
 require 'after_do'
+require 'pathname'
 
 require 'compass/commands'
 
@@ -40,6 +41,80 @@ class Compass::Configuration::Data
   def watches=(w)
     @watches = w
   end
+end
+
+# run custom compile on update
+class Compass::Commands::UpdateProject
+
+  m = instance_method("perform")
+  define_method("perform") do |*args, &block| 
+    
+    if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
+      CoffeeScriptCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
+    end
+    if File.exists?( Compass.configuration.fireapp_livescripts_dir )
+      LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_livescript_options );
+    end
+    if File.exists?( Compass.configuration.fireapp_less_dir )
+      LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir, Compass.configuration.fireapp_less_options );
+    end
+
+    m.bind(self).(*args, &block)
+  end
+
+end
+
+# run custom compile on clean
+class Compass::Commands::CleanProject
+
+  m = instance_method("perform")
+  define_method("perform") do |*args, &block| 
+    
+    if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
+      CoffeeScriptCompiler.clean_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
+    end
+    if File.exists?( Compass.configuration.fireapp_livescripts_dir )
+      LiveScriptCompiler.clean_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )
+    end
+    if File.exists?( Compass.configuration.fireapp_less_dir )
+      LessCompiler.clean_folder(Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir )
+    end
+
+    m.bind(self).(*args, &block)
+  end
+
+end
+
+# class Compass::Configuration::Watch
+  
+#   m = instance_method("match?")
+#   define_method("match?") do |*args, &block| 
+
+#     changed_path = Pathname.new(args[0])
+#     project_path = Pathname.new(Compass.configuration.project_path)
+
+#     if changed_path.exist? and project_path.exist? and changed_path.realpath =~ Regexp.new("^#{project_path.realpath}")
+#       @sass_compiler = m.bind(self).(*args, &block)
+#     else
+#       false
+#     end
+#   end
+
+# end
+
+class Sass::Plugin::Compiler
+
+  m = instance_method("update_stylesheet")
+  define_method("update_stylesheet") do |*args, &block| 
+    
+    sassfile_path = Pathname.new(args[0])
+    project_path = Pathname.new(Compass.configuration.project_path)
+
+    if sassfile_path.exist? and project_path.exist? and sassfile_path.realpath.to_s =~ Regexp.new("^#{project_path.realpath.to_s}")
+      m.bind(self).(*args, &block)
+    end
+  end
+
 end
 
 Compass::Commands::WatchProject.extend AfterDo

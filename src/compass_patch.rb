@@ -75,47 +75,6 @@ module Compass
     {}
   end 
 
-  module Commands
-    class UpdateProject
-      def perform
-        if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-          CoffeeScriptCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_coffeescript_options );
-        end
-        if File.exists?( Compass.configuration.fireapp_livescripts_dir )
-          LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir, Compass.configuration.fireapp_livescript_options );
-        end
-        if File.exists?( Compass.configuration.fireapp_less_dir )
-          LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir, Compass.configuration.fireapp_less_options );
-        end
-        compiler = new_compiler_instance
-        check_for_sass_files!(compiler)
-        compiler.clean! if compiler.new_config?
-        error_count = compiler.run
-        failed! if error_count > 0 
-      end 
-
-    end
-    class CleanProject
-      def perform
-        if File.exists?( Compass.configuration.fireapp_coffeescripts_dir )
-          CoffeeScriptCompiler.clean_folder(Compass.configuration.fireapp_coffeescripts_dir, Compass.configuration.javascripts_dir )
-        end
-        if File.exists?( Compass.configuration.fireapp_livescripts_dir )
-          LiveScriptCompiler.clean_folder(Compass.configuration.fireapp_livescripts_dir, Compass.configuration.javascripts_dir )
-        end
-        if File.exists?( Compass.configuration.fireapp_less_dir )
-          LessCompiler.clean_folder(Compass.configuration.fireapp_less_dir, Compass.configuration.css_dir )
-        end
-        compiler = new_compiler_instance
-        compiler.clean!
-        Compass::SpriteImporter.find_all_sprite_map_files(Compass.configuration.generated_images_path).each do |sprite|
-          remove sprite
-        end 
-      end 
-
-    end
-  end
-
   module Frameworks
     def register_directory(directory)
       loaders = [
