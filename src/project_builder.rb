@@ -1,4 +1,5 @@
 require 'tilt'
+require 'pathname'
 
 class ProjectBuilder
 
@@ -56,108 +57,113 @@ class ProjectBuilder
         "Gemfile.lock",
         "config.ru"
       ]
-
-      compass_config_file = Compass.detect_configuration_file 
-      if is_compass_project && compass_config_file
-        blacklist << File.basename(compass_config_file) 
-      end
-
-      Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? } if include_tilt_key
-
-      blacklist
     end
 
-
-
-    def build_html(release_dir, blacklist)
-      
-      # add fire.app project source code folder to blacklist
-      blacklist << File.join(Compass.configuration.sass_dir, "*")
-      blacklist << File.join(Compass.configuration.fireapp_coffeescripts_dir,"*")
-      blacklist << File.join(Compass.configuration.fireapp_livescripts_dir,"*")
-      blacklist << File.join(Compass.configuration.fireapp_less_dir,"*")
-
-      #build html 
-      Dir.glob( File.join(@project_path, '**', "[^_]*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
-        if file =~ /build_\d{14}/ || file.index(release_dir)
-          next 
-        end
-        extname=File.extname(file)
-        if Tilt[ extname[1..-1] ]
-          request_path = if extname == '.html' # *.html should not remove extname
-                           file[@project_path.length .. -1] 
-                         else
-                           file[@project_path.length ... (-1*extname.size)] 
-                         end
-          pass = false
-          blacklist.each do |pattern|
-
-            if File.fnmatch(pattern, request_path[1..-1])
-              pass = true
-              break
-            end
-          end
-          next if pass
-
-          write_dynamaic_file(release_dir, request_path)
-          ProjectBuilder.log("Create", "#{request_path}")
-          yield "Create: #{request_path}"
-        end
-      end
+    compass_config_file = Compass.detect_configuration_file 
+    if is_compass_project && compass_config_file
+      blacklist << File.basename(compass_config_file) 
     end
 
-    def build_static_file(release_dir, blacklist)
-
-      #copy static file
-      Dir.glob( File.join(@project_path, '**', '{.,}*') ) do |file|
-        path = file[(@project_path.length+1) .. -1]
-        next if path =~ /build_\d{14}/
-        
-        pass = false
-        blacklist.each do |pattern|
-            if File.fnmatch(pattern, path)
-              pass = true
-              break
-            end
-        end
-        next if pass
-
-        new_file = File.join(release_dir, path)
-        if File.file? file
-          FileUtils.mkdir_p( File.dirname(  new_file ))
-
-          if File.extname(file) == '.js' && Compass.configuration.fireapp_minifyjs_on_build then
-            
-            begin
-              File.open(new_file, 'w') do |f|
-                require 'uglifier'
-                f.write(Uglifier.compile(File.read(file)))
-              end
-              ProjectBuilder.log("Minify", "##{file.gsub(/#{@project_path}/,'')}")
-              yield "Minify: #{file.gsub(/#{@project_path}/,'')}"
-            rescue Exception => e
-              FileUtils.cp( file, new_file )
-              ProjectBuilder.log("! Minify", "##{file.gsub(/#{@project_path}/,'')} Fail, Please check")
-              yield "! Minify: #{file.gsub(/#{@project_path}/,'')} Fail, Please check"
-            end
-          else
-            FileUtils.cp( file, new_file )
-            ProjectBuilder.log("Copy", "##{file.gsub(/#{@project_path}/,'')}")
-            yield "Copy: #{file.gsub(/#{@project_path}/,'')}"
-          end
-
-          
-        end
-      end
-
-    end
+    Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? } if include_tilt_key
 
     if is_compass_project && Compass.configuration.fireapp_build_path 
       blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
     end
 
     blacklist.uniq!
-    blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
+    # blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
+
+    blacklist
+  end
+
+
+  def build_html(release_dir, blacklist)
+    
+    # add fire.app project source code folder to blacklist
+    blacklist << File.join(Compass.configuration.sass_dir, "*")
+    blacklist << File.join(Compass.configuration.fireapp_coffeescripts_dir,"*")
+    blacklist << File.join(Compass.configuration.fireapp_livescripts_dir,"*")
+    blacklist << File.join(Compass.configuration.fireapp_less_dir,"*")
+
+    #build html 
+    Dir.glob( File.join(@project_path, '**', "[^_]*.{#{Tilt.mappings.keys.join(',')}}") ) do |file|
+      if file =~ /build_\d{14}/ || file.index(release_dir)
+        next 
+      end
+      extname=File.extname(file)
+      if Tilt[ extname[1..-1] ]
+        request_path = if extname == '.html' # *.html should not remove extname
+                         file[@project_path.length .. -1] 
+                       else
+                         file[@project_path.length ... (-1*extname.size)] 
+                       end
+        pass = false
+        blacklist.each do |pattern|
+
+          if File.fnmatch(pattern, request_path[1..-1])
+            pass = true
+            break
+          end
+        end
+        next if pass
+
+        write_dynamaic_file(release_dir, request_path)
+        ProjectBuilder.log("Create", "#{request_path}")
+        yield "Create: #{request_path}"
+      end
+    end
+  end
+
+  def build_static_file(release_dir, blacklist)
+    puts blacklist.to_s
+
+    #copy static file
+    Dir.glob( File.join(@project_path, '**', '{.,}*') ) do |file|
+      path = file[(@project_path.length+1) .. -1]
+      next if path =~ /build_\d{14}/
+
+      path = Pathname.new(path).realpath.to_s
+
+      pass = false
+      blacklist.each do |pattern|
+
+        if File.fnmatch(pattern, path)
+          pass = true
+          break
+        end
+      end
+      next if pass
+
+      new_file = File.join(release_dir, path)
+      if File.file? file
+        FileUtils.mkdir_p( File.dirname(  new_file ))
+
+        if File.extname(file) == '.js' && Compass.configuration.fireapp_minifyjs_on_build then
+          
+          begin
+            File.open(new_file, 'w') do |f|
+              require 'uglifier'
+              f.write(Uglifier.compile(File.read(file)))
+            end
+            ProjectBuilder.log("Minify", "##{file.gsub(/#{@project_path}/,'')}")
+            yield "Minify: #{file.gsub(/#{@project_path}/,'')}"
+          rescue Exception => e
+            FileUtils.cp( file, new_file )
+            ProjectBuilder.log("! Minify", "##{file.gsub(/#{@project_path}/,'')} Fail, Please check")
+            yield "! Minify: #{file.gsub(/#{@project_path}/,'')} Fail, Please check"
+          end
+        else
+          FileUtils.cp( file, new_file )
+          ProjectBuilder.log("Copy", "##{file.gsub(/#{@project_path}/,'')}")
+          yield "Copy: #{file.gsub(/#{@project_path}/,'')}"
+        end
+
+          
+      end
+    end
+
+
+
   end
 
   def build(build_path)
