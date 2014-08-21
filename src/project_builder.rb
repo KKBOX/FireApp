@@ -22,12 +22,12 @@ class ProjectBuilder
   def get_black_list(include_tilt_key = false)
 
     # rebuild sass & coffeescript
-    is_compass_project = false
-    x = Compass::Commands::UpdateProject.new( @project_path, {})
-    if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
-      x.perform
-      is_compass_project = true
-    end
+    # is_compass_project = false
+    # x = Compass::Commands::UpdateProject.new( @project_path, {})
+    # if !x.new_compiler_instance.sass_files.empty? # if we rebuild compass project
+    #   x.perform
+    #   is_compass_project = true
+    # end
 
     blacklist = []
     build_ignore_file = "build_ignore.txt"
@@ -37,6 +37,7 @@ class ProjectBuilder
       blacklist += File.open( File.join( @project_path, build_ignore_file) ).readlines.map{|p|
         p.strip
       }
+      puts "from txt"
     else
       blacklist += [
         "*.swp",
@@ -55,23 +56,28 @@ class ProjectBuilder
         "view_helpers.rb",
         "Gemfile",
         "Gemfile.lock",
-        "config.ru"
+        "config.ru",
+        "*/config.rb",
+        "build_ignore.txt"
       ]
+      puts "from default"
     end
 
     compass_config_file = Compass.detect_configuration_file 
-    if is_compass_project && compass_config_file
+    if compass_config_file
       blacklist << File.basename(compass_config_file) 
     end
 
     Tilt.mappings.each{|key, value| blacklist << "*.#{key}" if !key.strip.empty? } if include_tilt_key
 
-    if is_compass_project && Compass.configuration.fireapp_build_path 
+    if Compass.configuration.fireapp_build_path 
       blacklist << File.join( Compass.configuration.fireapp_build_path, "*")
     end
 
     blacklist.uniq!
     # blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
+
+    puts blacklist.to_s
 
     blacklist
   end
