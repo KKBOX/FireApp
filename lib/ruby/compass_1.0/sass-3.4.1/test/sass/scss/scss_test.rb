@@ -715,6 +715,26 @@ CSS
 SCSS
   end
 
+  def test_keyframe_bubbling
+    assert_equal(<<CSS, render(<<SCSS, :style => :nested))
+@keyframes spin {
+  0% {
+    transform: rotate(0deg); } }
+@-webkit-keyframes spin {
+  0% {
+    transform: rotate(0deg); } }
+CSS
+.foo {
+  @keyframes spin {
+    0% {transform: rotate(0deg)}
+  }
+  @-webkit-keyframes spin {
+    0% {transform: rotate(0deg)}
+  }
+}
+SCSS
+  end
+
   ## Namespace Properties
 
   def test_namespace_properties
@@ -3527,6 +3547,19 @@ SCSS
   end
 
   # Regression
+
+  def test_attribute_selector_in_selector_pseudoclass
+    # Even though this is plain CSS, it only failed when given to the SCSS
+    # parser.
+    assert_equal(<<CSS, render(<<SCSS))
+[href^='http://'] {
+  color: red; }
+CSS
+[href^='http://'] {
+  color: red;
+}
+SCSS
+  end
 
   def test_top_level_unknown_directive_in_at_root
     assert_equal(<<CSS, render(<<SCSS))
