@@ -4,7 +4,9 @@ require 'java'
 $LOAD_PATH << 'src'
 
 require 'uri'
-resources_dir = File.join(File.dirname( File.dirname(File.dirname( URI.parse(__FILE__).path ))), 'Resources')
+require 'cgi'
+MAIN_FILE_PATH = CGI.unescape(URI.parse(URI.escape(__FILE__)).path)
+resources_dir = File.join(File.dirname( File.dirname(File.dirname( MAIN_FILE_PATH ))), 'Resources')
 if File.exists?( File.join(resources_dir, 'lib','ruby'))
     LIB_PATH = File.join(resources_dir, 'lib')
 else
