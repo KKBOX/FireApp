@@ -127,13 +127,11 @@ class ProjectBuilder
     Dir.glob( File.join(@project_path, '**', '{.,}*') ) do |file|
       path = file[(@project_path.length+1) .. -1]
       next if path =~ /build_\d{14}/
-
-      path = Pathname.new(path).realpath.to_s
-
+      
       pass = false
       blacklist.each do |pattern|
 
-        if File.fnmatch(pattern, path)
+        if File.fnmatch(pattern, Pathname.new(path).realpath.to_s)
           pass = true
           break
         end
