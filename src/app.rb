@@ -117,7 +117,7 @@ module App
 
     rescue LoadError => e
       if CONFIG["use_specify_gem_path"]
-        alert("Load custom Compass fail, use default Compass v1.0.0.alpha.20 library, please check the Gem Path")
+        alert("Load custom Compass fail, use default Compass v1.0.0 library, please check the Gem Path")
       end
  
 
@@ -125,7 +125,7 @@ module App
       scan_library( common_lib_path )
 
       if App::CONFIG['use_version'] && App::CONFIG['use_version'] < 1.0
-        alert("Welcome to use Fire.app v#{VERSION}!\nFire.app is using Compass 1.0 by default. Compass #{App::CONFIG['use_version']} is no longer supported.\nPlease check our site for more information.")
+        alert("Welcome to use Fire.app v#{VERSION}!\nFire.app is using Compass 1.0 by default. Compass #{App::CONFIG['use_version']} is no longer supported.")
         App::CONFIG['use_version']=1.0
         App.save_config
       end
