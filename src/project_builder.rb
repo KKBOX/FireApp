@@ -37,7 +37,6 @@ class ProjectBuilder
       blacklist += File.open( File.join( @project_path, build_ignore_file) ).readlines.map{|p|
         p.strip
       }
-      puts "from txt"
     else
       blacklist += [
         "*.swp",
@@ -60,7 +59,6 @@ class ProjectBuilder
         "*/config.rb",
         "build_ignore.txt"
       ]
-      puts "from default"
     end
 
     compass_config_file = Compass.detect_configuration_file 
@@ -76,8 +74,6 @@ class ProjectBuilder
 
     blacklist.uniq!
     # blacklist = blacklist.map{|x| x.sub(/^.\//, '')}
-
-    puts blacklist.to_s
 
     blacklist
   end
@@ -121,7 +117,6 @@ class ProjectBuilder
   end
 
   def build_static_file(release_dir, blacklist)
-    puts blacklist.to_s
 
     #copy static file
     Dir.glob( File.join(@project_path, '**', '{.,}*') ) do |file|
