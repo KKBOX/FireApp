@@ -320,9 +320,11 @@ class Tray
         pattern = 'project'
       end
 
+      current_dir = @watching_dir
+      stop_watch
       App.try do 
         actual = App.get_stdout do
-          Compass::Commands::StampPattern.new( @watching_dir, 
+          Compass::Commands::StampPattern.new( current_dir, 
                                               { :framework => framework_name, 
                                                 :pattern => pattern,
                                                 :preferred_syntax => App::CONFIG["preferred_syntax"].to_sym 
@@ -330,7 +332,7 @@ class Tray
         end
         App.report( actual)
       end
-
+      watch(current_dir)
     end
   end
 
