@@ -1,27 +1,25 @@
-GIT
-  remote: git://github.com/rawr/rawr.git
-  revision: 65b1cba5c284d4ed5ecffed1d59684232308ab2f
-  specs:
-    rawr (1.6.6)
-
 GEM
   remote: https://rubygems.org/
+  remote: http://gems.neurogami.com/
   specs:
-    builder (3.2.0)
-    hoe (3.6.0)
+    builder (3.2.2)
+    hoe (3.12.0)
       rake (>= 0.8, < 11.0)
-    rake (10.0.4)
+    rake (10.3.2)
+    rawr (1.6.6)
+      rubyzip
+      user-choices
+    rubyzip (1.1.6)
     s4t-utils (1.0.4)
       hoe (>= 1.3.0)
     user-choices (1.1.6.1)
       builder (>= 2.1.2)
       s4t-utils (>= 1.0.3)
       xml-simple (>= 1.0.11)
-    xml-simple (1.1.2)
+    xml-simple (1.1.4)
 
 PLATFORMS
   java
-  ruby
 
 DEPENDENCIES
   rake
