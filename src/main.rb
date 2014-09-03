@@ -1,7 +1,7 @@
 INITAT=Time.now
 
 require 'java'
-$LOAD_PATH << 'src'
+$LOAD_PATH << File.expand_path("src")
 
 require 'uri'
 require 'cgi'
