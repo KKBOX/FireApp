@@ -10,7 +10,7 @@ resources_dir = File.join(File.dirname( File.dirname(File.dirname( MAIN_FILE_PAT
 if File.exists?( File.join(resources_dir, 'lib','ruby'))
     LIB_PATH = File.join(resources_dir, 'lib')
 else
-    LIB_PATH = File.expand_path 'lib' 
+    LIB_PATH = File.expand_path 'lib'
 end
 
 # set execjs runtime
@@ -49,7 +49,7 @@ require 'optparse'
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: example.rb [options]"
-  
+
   options[:config_dir] = File.join( java.lang.System.getProperty("user.home") , '.fire-app' )
   opts.on("-c PATH", "--config-dir PATH", "config dir path") do |v|
     options[:config_dir] = v
@@ -64,7 +64,7 @@ end.parse!
 
 begin
   # TODO: dirty, need refactor
-  if File.directory?(File.dirname(options[:config_dir])) && File.writable?(File.dirname(options[:config_dir])) 
+  if File.directory?(File.dirname(options[:config_dir])) && File.writable?(File.dirname(options[:config_dir]))
     CONFIG_DIR = options[:config_dir]
   else
     CONFIG_DIR = File.join(Dir.pwd, 'config')
@@ -73,7 +73,7 @@ begin
 
   require "app.rb"
   App.require_compass
- 
+
   begin
     $LOAD_PATH.unshift('src')
     require 'execjs'
@@ -96,7 +96,7 @@ begin
     end
 
 
-    
+
   rescue ExecJS::RuntimeUnavailable => e
     raise  "Please install Node.js first\n https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager"
   end
@@ -104,12 +104,13 @@ begin
   require 'json'
 
   %w{ninesixty
-    html5-boilerplate 
-    compass-h5bp 
-    compass-normalize 
-    bootstrap-sass 
-    susy 
-    zurb-foundation 
+    html5-boilerplate
+    compass-h5bp
+    compass-normalize
+    bootstrap-sass
+    breakpoint
+    susy
+    zurb-foundation
     fireapp-example}.each do |x|
     begin
       require x
@@ -117,7 +118,7 @@ begin
     end
   end
 
-  
+
   if App::CONFIG['show_welcome']
     WelcomeWindow.new
   end
