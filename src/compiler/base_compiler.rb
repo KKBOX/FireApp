@@ -87,7 +87,9 @@ class BaseCompiler
       src_file_path = File.expand_path(src_file_path)
 
       new_dir  = File.dirname(src_file_path.to_s.sub(src_dir, ""))
-      new_file = File.basename(src_file_path).gsub(/\.#{self.src_file_ext}/,".#{self.dst_file_ext}").gsub(/\.#{self.dst_file_ext}\.#{self.dst_file_ext}/,"#{self.dst_file_ext}")
+      new_file = File.basename(src_file_path)
+        .gsub(/\.#{self.src_file_ext}$/,".#{self.dst_file_ext}")
+        .gsub(/\.#{self.dst_file_ext}\.#{self.dst_file_ext}$/,".#{self.dst_file_ext}")
       
       return  File.join(dst_dir, new_dir, new_file)
     end
