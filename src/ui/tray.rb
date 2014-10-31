@@ -289,6 +289,8 @@ class Tray
           pattern = 'project'
         end
 
+        stop_watch
+
         App.try do 
           actual = App.get_stdout do
             Compass::Commands::CreateProject.new( dir, 
@@ -668,6 +670,7 @@ class Tray
     FSEvent.stop_all_instances if Object.const_defined?("FSEvent") && FSEvent.methods.map{|x| x.to_sym}.include?(:stop_all_instances)
 
     ChangeOptionsPanel.instance.close
+    Compass.reset_configuration!
 
     if @compass_thread 
       @compass_thread[:watcher].stop 
