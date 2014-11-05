@@ -39,25 +39,38 @@ class SimpleHTTPServer
       use Rack::ShowStatus
       use Rack::ShowExceptions
 
+
+
       if File.exists?( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb'))
         eval(File.read( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')))
       end
+
+
 
       views_dir = File.join(dir, 'views')
       public_dir = File.join(dir, 'public')
 
       if( File.exists?(views_dir) && File.exists?(public_dir))
+        map '/' do
+          index = (Dir.glob("#{views_dir}/index.*", File::FNM_CASEFOLD)-Dir.glob("#{views_dir}/index.{css,js,scss,sass}", File::FNM_CASEFOLD))[0]
+          run lambda {|env| [200, {"Content-Type" => "text/html"}, File.open(index)] } if index
+        end
         run Rack::Cascade.new([
                               Serve::RackAdapter.new( views_dir ),
                               Rack::Directory.new( public_dir),
                               Serve::RackAdapter.new( views_dir, true ) # for custom 404 page
         ]) 
       else 
+        map '/' do
+          index = (Dir.glob("index.*", File::FNM_CASEFOLD)-Dir.glob("index.{css,js,scss,sass}", File::FNM_CASEFOLD))[0]
+          run lambda {|env| [200, {"Content-Type" => "text/html"}, File.open(index)] } if index
+        end
         run Rack::Cascade.new([
                               Serve::RackAdapter.new( dir ),
                               Rack::Directory.new( dir ),
                               Serve::RackAdapter.new( dir, true )
         ]) 
+
       end
     end
 
