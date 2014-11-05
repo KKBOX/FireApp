@@ -14,7 +14,7 @@ module Serve
         path
       when File.directory?(full_path) 
         # It's a directory? Try a directory index.
-        resolve(root, File.join(path, 'index'))
+        resolve(root, File.join(path, 'index.')) || resolve(root, File.join(path, 'index'))
       else
         # Still no luck? Check to see if a file with an extension exists by that name.
         # TODO: Return a path with an extension based on priority, not just the first found.
