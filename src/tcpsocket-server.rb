@@ -7,6 +7,8 @@ def help
     "- watch path [path]",
     "- watch stop",
     "- watch status",
+    "- watch lastest",
+    "- extension list"
     "- quit",
     "- echo [msg]",
     "- help",
@@ -14,6 +16,20 @@ def help
   ].join("\n")
 end
 
+
+def fetch_menu_tree (menuitem)
+  
+  if menuitem.menu
+    tree = Hash.new
+    menuitem.menu.getItems.each do |item|
+      tree[item.text] = fetch_menu_tree(item)
+    end
+    tree
+  else
+    ""
+  end
+
+end
 
 Thread.abort_on_exception = true
 server_thread = Thread.new do
@@ -50,6 +66,12 @@ server_thread = Thread.new do
                     end
                   }
                 }
+
+              when /^extension list$/
+                App.display.syncExec {
+                  output = JSON.pretty_generate fetch_menu_tree(Tray.instance.create_item)
+                }
+                output
 
               when /^watch stop$/i
                 App.display.syncExec {

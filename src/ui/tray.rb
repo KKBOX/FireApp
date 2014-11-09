@@ -3,6 +3,10 @@ class Tray
   include Singleton
   attr_reader :logger
   attr_reader :watching_dir
+
+  attr_reader :create_item
+  attr_reader :install_item
+
   def initialize()
     @http_server = nil
     @compass_thread = nil
@@ -40,10 +44,9 @@ class Tray
 
     add_menu_separator
 
-    item =  add_menu_item( "Create Project", create_project_handler, Swt::SWT::CASCADE)
-
-    item.menu = Swt::Widgets::Menu.new( @menu )
-    build_compass_framework_menuitem( item.menu, create_project_handler )
+    @create_item =  add_menu_item( "Create Project", create_project_handler, Swt::SWT::CASCADE)
+    @create_item.menu = Swt::Widgets::Menu.new( @menu )
+    build_compass_framework_menuitem( @create_item.menu, create_project_handler )
 
     item =  add_menu_item( "Open Extensions Folder", open_extensions_folder_handler, Swt::SWT::PUSH)
     item =  add_menu_item( "Preference...", preference_handler, Swt::SWT::PUSH)
