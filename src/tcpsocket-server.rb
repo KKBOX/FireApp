@@ -35,7 +35,19 @@ server_thread = Thread.new do
               when /^watch path \s*(.*)\s*/i
                 App.get_stdout {
                   App.display.syncExec {
-                    Tray.instance.watch $1
+                    Tray.instance.watch $1 # if exception occurred, it'll stop at here
+                    puts "Watching Success: #{$1}" 
+                  }
+                }
+
+
+              when /^watch lastest$/i
+                App.get_stdout {
+                  App.display.syncExec {
+                    if App.get_history[0]
+                      Tray.instance.watch App.get_history[0] 
+                      puts "Watching Success: #{App.get_history[0]}"
+                    end
                   }
                 }
 
@@ -46,6 +58,9 @@ server_thread = Thread.new do
 
               when /^watch status$/i
                 "Watching: #{Tray.instance.watching_dir || "Nothing"}"
+
+
+
 
               when /^echo (.*)/i
                 $1
