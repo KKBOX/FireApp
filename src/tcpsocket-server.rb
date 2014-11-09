@@ -6,6 +6,8 @@ def help
     "** We support following commands:",
     "- watch path [path]",
     "- watch stop",
+    "- watch status",
+    "- quit",
     "- echo [msg]",
     "- help",
     ""
@@ -47,6 +49,12 @@ server_thread = Thread.new do
 
               when /^echo (.*)/i
                 $1
+
+              when /^quit$/i
+                App.display.syncExec {
+                  Tray.instance.exit_handler.trigger
+                }
+
               when /^help$/i
                 help()
               else 
