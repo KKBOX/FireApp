@@ -1,6 +1,16 @@
 
 require 'socket'
 
+def help
+  [
+    "** We support following commands:",
+    "- watch path [path]",
+    "- watch stop",
+    "- echo [msg]",
+    "- help",
+    ""
+  ].join("\n")
+end
 
 
 Thread.abort_on_exception = true
@@ -19,29 +29,29 @@ server_thread = Thread.new do
             input = sock.gets
             puts "#{client_ip}:#{client_port} => #{input}"
 
-            case input
+            output = case input
               when /^watch path \s*(.*)\s*/i
-                output = App.get_stdout {
+                App.get_stdout {
                   App.display.syncExec {
                     Tray.instance.watch $1
                   }
                 }
-                sock.puts output
-                puts "#{client_ip}:#{client_port} <= #{output}"
 
               when /^watch stop$/i
-                output App.display.syncExec {
+                App.display.syncExec {
                   Tray.instance.stop_watch
                 }
 
-                sock.puts output
-                puts "#{client_ip}:#{client_port} <= #{output}"
-                
               when /^echo (.*)/i
-                output = $1
-                sock.puts output
-                puts "#{client_ip}:#{client_port} <= #{output}"
+                $1
+              when /^help$/i
+                help()
+              else 
+                "Command '#{input.strip}' is not found.\n#{help()}"
               end
+
+              sock.puts output
+              puts "#{client_ip}:#{client_port} <= #{output}"
               
           end
         end
