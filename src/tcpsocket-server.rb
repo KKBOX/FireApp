@@ -26,7 +26,7 @@ server_thread = Thread.new do
           puts "Client Connected from #{client_ip}:#{client_port}"
 
           loop do
-            input = sock.gets
+            input = sock.gets.strip
             puts "#{client_ip}:#{client_port} => #{input}"
 
             output = case input
@@ -41,6 +41,9 @@ server_thread = Thread.new do
                 App.display.syncExec {
                   Tray.instance.stop_watch
                 }
+
+              when /^watch status$/i
+                "Watching: #{Tray.instance.watching_dir || "Nothing"}"
 
               when /^echo (.*)/i
                 $1
