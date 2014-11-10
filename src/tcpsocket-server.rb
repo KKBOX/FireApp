@@ -8,7 +8,7 @@ def help
     "- watch stop",
     "- watch status",
     "- watch lastest",
-    "- extension list"
+    "- extension list",
     "- quit",
     "- echo [msg]",
     "- help",
@@ -27,6 +27,22 @@ def fetch_menu_tree (menuitem)
     tree
   else
     ""
+  end
+
+end
+
+def click (steps = [], menuitem = nil)
+  menuitem = menuitem || Tray.instance.tray_item
+  step = steps[0]
+  if step and menuitem.menu
+    next_menuitem = menuitem.menu.getItems.find {|f| f.text.strip =~ Regexp.new(step) }
+    if next_menuitem and steps.size == 1
+      menuitem.getListeners(Swt::SWT::Selection).each { |l| l.trigger }
+    elsif next_menuitem
+      return click(steps[1..-1], next_menuitem)
+    end
+  else
+    return false
   end
 
 end
@@ -67,11 +83,16 @@ server_thread = Thread.new do
                   }
                 }
 
-              when /^extension list$/
+              when /^extension list$/i
                 App.display.syncExec {
                   output = JSON.pretty_generate fetch_menu_tree(Tray.instance.create_item)
                 }
                 output
+
+              when /^create project$/i
+                App.display.syncExec {
+                  click(["compass", "project"], Tray.instance.create_item)
+                }
 
               when /^watch stop$/i
                 App.display.syncExec {

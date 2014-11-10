@@ -4,6 +4,7 @@ class Tray
   attr_reader :logger
   attr_reader :watching_dir
 
+  attr_reader :watch_item
   attr_reader :create_item
   attr_reader :install_item
 
