@@ -18,7 +18,7 @@ Fire.app 在啟動後，會自動 listen 13425 port。
 
 - 使用 `watch path [project_path]` 控制 Fire.app watch 此 project。
 
-	*注意： project_path 指的是與 Fire.app 同一臺電腦下的 path，而目前尚無法讓 Fire.app watch 其他電腦上的 prject。 若是 client 與 Fire.app 不使用同一個 host 時請小心。*
+	*注意： project_path 指的是與 Fire.app 同一臺電腦下的 path，而目前尚無法讓 Fire.app watch 其他電腦上的 project。 若是 client 與 Fire.app 不使用同一個 host 時請小心。*
 
 - 使用 `watch lastest` 直接 watch 最近一個使用過的 project 。
 - 使用 `watch status` 可確認目前是否有 watch project 。若是有的話，一併回傳目前的 project path。
