@@ -161,9 +161,18 @@ class PreferencePanel
        Swt::Program.launch(evt.text)
     end)
 
-    layoutdata = Swt::Layout::FormData.new(150, Swt::SWT::DEFAULT)
+    layoutdata = Swt::Layout::FormData.new()
     layoutdata.left = Swt::Layout::FormAttachment.new( livereload_service_help_info, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( livereload_service_help_info, 10, Swt::SWT::BOTTOM)
+    @service_remote_control_button = Swt::Widgets::Button.new(composite, Swt::SWT::CHECK )
+    @service_remote_control_button.setText( 'Enable Remote Control' )
+    @service_remote_control_button.setSelection( App::CONFIG["services"].include? :remote_control )
+    @service_remote_control_button.addListener(Swt::SWT::Selection, services_button_handler)
+    @service_remote_control_button.setLayoutData(layoutdata)
+
+    layoutdata = Swt::Layout::FormData.new(150, Swt::SWT::DEFAULT)
+    layoutdata.left = Swt::Layout::FormAttachment.new( @service_http_button, 0, Swt::SWT::LEFT )
+    layoutdata.top  = Swt::Layout::FormAttachment.new( @service_remote_control_button, 10, Swt::SWT::BOTTOM)
     @services_apply_button = Swt::Widgets::Button.new( composite,  Swt::SWT::PUSH )
     @services_apply_button.setLayoutData(layoutdata)
     @services_apply_button.setText("Apply Change")
@@ -173,12 +182,21 @@ class PreferencePanel
   end
 
   def services_button_handler 
-    Swt::Widgets::Listener.impl do |method, evt|   
+    Swt::Widgets::Listener.impl do |method, evt| 
+      orig = App::CONFIG["services"]
       App::CONFIG["services"] = []
       App::CONFIG["services"] << :http if @service_http_button.getSelection       
       App::CONFIG["services"] << :livereload if @service_livereload_button.getSelection       
+      App::CONFIG["services"] << :remote_control if @service_remote_control_button.getSelection       
       App.save_config
-      Tray.instance.rewatch
+
+      if orig.include?(:remote_control) != App::CONFIG["services"].include?(:remote_control)
+        evt.widget.shell.dispose();
+        Tray.instance.stop_watch
+        java.lang.System.exit(0)
+      else
+        Tray.instance.rewatch
+      end
     end
   end
   

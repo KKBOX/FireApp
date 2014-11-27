@@ -730,6 +730,5 @@ class Tray
     @compass_thread = nil
   end
 
-
 end
 

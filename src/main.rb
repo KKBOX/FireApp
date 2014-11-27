@@ -40,7 +40,7 @@ require "yaml"
   require "ui/#{f}"
 end
 
-require 'tcpsocket-server'
+
 
 
 
@@ -122,6 +122,9 @@ begin
     WelcomeWindow.new
   end
 
+  if App::CONFIG["services"].include? :remote_control
+    require 'tcpsocket-server'
+  end
 
   Tray.instance.run(:watch => options[:watch_dir])
 
