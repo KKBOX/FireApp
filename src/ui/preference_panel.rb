@@ -183,20 +183,22 @@ class PreferencePanel
 
   def services_button_handler 
     Swt::Widgets::Listener.impl do |method, evt| 
-      orig = App::CONFIG["services"]
       App::CONFIG["services"] = []
       App::CONFIG["services"] << :http if @service_http_button.getSelection       
       App::CONFIG["services"] << :livereload if @service_livereload_button.getSelection       
       App::CONFIG["services"] << :remote_control if @service_remote_control_button.getSelection       
       App.save_config
 
-      if orig.include?(:remote_control) != App::CONFIG["services"].include?(:remote_control)
-        evt.widget.shell.dispose();
-        Tray.instance.stop_watch
-        java.lang.System.exit(0)
-      else
-        Tray.instance.rewatch
+      case [App::CONFIG["services"].include?(:remote_control), RemoteControlServer.instance.open?]
+      when [true, false]
+        RemoteControlServer.instance.open
+      when [false, true]
+        RemoteControlServer.instance.close
       end
+      # puts [App::CONFIG["services"].include?(:remote_control), RemoteControlServer.instance.open?].to_s
+      
+
+      Tray.instance.rewatch
     end
   end
   

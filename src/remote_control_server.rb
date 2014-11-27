@@ -11,22 +11,27 @@ class RemoteControlServer
 
   def initialize
     @server = nil
+    @connected_pool = []
   end
 
   def open(port = 13425)
+    close
     @server = Thread.new do
       TCPServer.open(13425) do |sock_server|
         
         loop {
           begin
-            t = Thread.new(sock_server.accept) do |sock|
+            @connected_pool << Thread.new(sock_server.accept) do |sock|
               client_port, client_ip = Socket.unpack_sockaddr_in(sock.getpeername)
               sock.puts "# Fireapp Remote Interface #"
 
               puts "Client Connected from #{client_ip}:#{client_port}"
 
               loop do
-                input = sock.gets.strip
+                input = sock.gets
+                break if input.nil?
+                
+                input = input.strip
                 puts "#{client_ip}:#{client_port} => #{input}"
 
                 output = case input
@@ -100,13 +105,20 @@ class RemoteControlServer
 
   end
 
-  def close
-    Thread.kill(@server) if @server
+  def close(disconnect_all = true)
+    @server.kill if open?
     @server = nil
+    if disconnect_all
+      @connected_pool.each do |x|
+        x.kill if x and x.alive?
+      end
+      @connected_pool = []
+    end
   end
 
   def open?
-    not @server.nil?
+    return true if @server and @server.alive?
+    return false
   end
 
   def help

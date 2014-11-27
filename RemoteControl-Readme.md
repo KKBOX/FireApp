@@ -49,5 +49,5 @@ Fire.app 在啟動後，會自動 listen 13425 port。
 3. 需要有 nc 的 ruby implement version ，除了不是所有作業系統都有 nc 指令這個原因之外，我們也需要讓 rspec 可以控制 nc 
 4. 像是 Preference / Change Option 等功能，會開啟一個新視窗。新開的那個視窗的控制方法必須要研究一下。
 
-*本功能的主要模組在 src/tcpsocket-server.rb*
+*本功能的主要模組在 src/remote_control_server.rb*
 
