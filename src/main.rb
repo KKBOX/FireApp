@@ -39,7 +39,7 @@ require "yaml"
 %w{alert notification quit_window tray preference_panel report welcome_window change_options_panel progress_window}.each do | f |
   require "ui/#{f}"
 end
-
+require 'remote_control_server'
 
 
 
@@ -123,7 +123,7 @@ begin
   end
 
   if App::CONFIG["services"].include? :remote_control
-    require 'tcpsocket-server'
+    RemoteControlServer.instance.open
   end
 
   Tray.instance.run(:watch => options[:watch_dir])
