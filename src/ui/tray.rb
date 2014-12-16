@@ -3,6 +3,11 @@ class Tray
   include Singleton
   attr_reader :logger
   attr_reader :watching_dir
+
+  attr_reader :watch_item
+  attr_reader :create_item
+  attr_reader :install_item
+
   def initialize()
     @http_server = nil
     @compass_thread = nil
@@ -40,10 +45,9 @@ class Tray
 
     add_menu_separator
 
-    item =  add_menu_item( "Create Project", create_project_handler, Swt::SWT::CASCADE)
-
-    item.menu = Swt::Widgets::Menu.new( @menu )
-    build_compass_framework_menuitem( item.menu, create_project_handler )
+    @create_item =  add_menu_item( "Create Project", create_project_handler, Swt::SWT::CASCADE)
+    @create_item.menu = Swt::Widgets::Menu.new( @menu )
+    build_compass_framework_menuitem( @create_item.menu, create_project_handler )
 
     item =  add_menu_item( "Open Extensions Folder", open_extensions_folder_handler, Swt::SWT::PUSH)
     item =  add_menu_item( "Preference...", preference_handler, Swt::SWT::PUSH)
@@ -289,6 +293,8 @@ class Tray
           pattern = 'project'
         end
 
+        stop_watch
+
         App.try do 
           actual = App.get_stdout do
             Compass::Commands::CreateProject.new( dir, 
@@ -453,6 +459,7 @@ class Tray
 
   def deploy_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
+      ENV["RACK_ENV"] = "production"
       App.try do 
         options = Compass.configuration.the_hold_options
         temp_build_folder = File.join(Dir.tmpdir, "fireapp", rand.to_s)
@@ -481,6 +488,7 @@ class Tray
         FileUtils.rm_rf(build_path)
 
       end
+      ENV["RACK_ENV"] = "development"    
     end
   end
 
@@ -666,6 +674,7 @@ class Tray
     FSEvent.stop_all_instances if Object.const_defined?("FSEvent") && FSEvent.methods.map{|x| x.to_sym}.include?(:stop_all_instances)
 
     ChangeOptionsPanel.instance.close
+    Compass.reset_configuration!
 
     if @compass_thread 
       @compass_thread[:watcher].stop 
@@ -720,7 +729,6 @@ class Tray
 
     @compass_thread = nil
   end
-
 
 end
 

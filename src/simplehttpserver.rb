@@ -39,9 +39,13 @@ class SimpleHTTPServer
       use Rack::ShowStatus
       use Rack::ShowExceptions
 
+
+
       if File.exists?( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb'))
         eval(File.read( File.join(Compass.configuration.project_path, 'http_servlet_handler.rb')))
       end
+
+
 
       views_dir = File.join(dir, 'views')
       public_dir = File.join(dir, 'public')
@@ -58,6 +62,7 @@ class SimpleHTTPServer
                               Rack::Directory.new( dir ),
                               Serve::RackAdapter.new( dir, true )
         ]) 
+
       end
     end
 
