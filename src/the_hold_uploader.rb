@@ -2,8 +2,9 @@
 require "digest/md5"
 require "json"
 require "zip/zip"
-require 'net/http/post/multipart'
 require "tempfile"
+require 'rest_client'
+
 class TheHoldUploader
 
   def self.build_manifest(folder_path)
@@ -14,8 +15,13 @@ class TheHoldUploader
     manifest = {}
     Dir.glob(File.join("**", "*")) do | filename |
       next if File.directory?(filename)
-    md5sum = Digest::MD5.hexdigest( open(filename, 'r'){|f| f.read })
-    manifest[filename]= md5sum
+      begin
+      md5sum = Digest::MD5.hexdigest( File.read(filename))
+      manifest[filename]= md5sum
+      rescue => e
+        App.alert(filename)  
+        App.alert(e.inspect)  
+      end
     end
 
     open("manifest.json", "w"){|f| f.write( JSON.dump(manifest) )}
@@ -53,23 +59,22 @@ class TheHoldUploader
         end
       end
     end
+    f = File.new(tempfile)
+    f.instance_eval "def content_type; 'application/zip'; end"
+    f.instance_eval "def original_filename; 'patch_file.zip'; end"
 
-    url = URI.parse("#{options[:host]}/upload")
-    tempfile_io = open(tempfile)
-    req = Net::HTTP::Post::Multipart.new url.path,
-      "patch_file" => UploadIO.new(tempfile_io, "application/zip", "patch_file.zip"),
+    respone= RestClient.post( "#{options[:host]}/upload" , {
+      "patch_file" => f,
       "login"      => options[:login],
       "token"      => options[:token],
       "project"    => options[:project],
       "cname"      => options[:cname],
       "project_site_password"    => options[:project_site_password]
-    respone = Net::HTTP.start(url.host, url.port) do |http|
-      http.request(req)
-    end
-    tempfile_io.close
+    })
+    
     File.unlink(tempfile)
     puts respone.inspect
-    respone
+    respone.body
   end
 
 end 
