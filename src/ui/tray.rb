@@ -460,6 +460,7 @@ class Tray
   def deploy_project_handler
     Swt::Widgets::Listener.impl do |method, evt|
       ENV["RACK_ENV"] = "production"
+      deploy_window = nil
       App.try do 
         options = Compass.configuration.the_hold_options
         temp_build_folder = File.join(Dir.tmpdir, "fireapp", rand.to_s)
@@ -482,12 +483,12 @@ class Tray
         else
           App.alert(respone.body)
         end
-        deploy_window.dispose
 
         require 'fileutils'
         FileUtils.rm_rf(build_path)
 
       end
+      deploy_window.dispose
       ENV["RACK_ENV"] = "development"    
     end
   end
