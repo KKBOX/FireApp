@@ -126,7 +126,7 @@ class ProjectBuilder
       pass = false
       blacklist.each do |pattern|
 
-        if File.fnmatch(pattern, Pathname.new(path).realpath.to_s)
+        if File.fnmatch(pattern, Pathname.new(path).realpath.to_s) || File.fnmatch(pattern.gsub(/\//,'\\'), Pathname.new(path).realpath.to_s)
           pass = true
           break
         end
