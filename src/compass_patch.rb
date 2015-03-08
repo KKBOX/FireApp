@@ -5,6 +5,16 @@ module Compass
     def self.strip_trailing_separator(*args)
       Data.strip_trailing_separator(*args)
     end
+
+    class Watch
+      def match?(changed_path)
+        if org.jruby.platform.Platform::IS_WINDOWS
+          changed_path.gsub!("\\","/")
+        end
+        
+        File.fnmatch(full_glob, changed_path, File::FNM_PATHNAME)
+      end
+    end
   end
 
   # add fireapp_build_path configuration property
