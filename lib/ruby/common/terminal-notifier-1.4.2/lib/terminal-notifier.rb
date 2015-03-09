@@ -2,12 +2,12 @@ module TerminalNotifier
   BIN_PATH = File.expand_path('../../vendor/fireapp-notifier/fireapp-notifier.app/Contents/MacOS/Fire.app', __FILE__)
 
   class UnsupportedPlatformError < StandardError; end
-  # Returns wether or not the current platform is Mac OS X 10.8, or higher.
   def self.available?
-    if @available.nil?
-      @available = `uname`.strip == 'Darwin' && `sw_vers -productVersion`.strip >= '10.8'
-    end
-    @available
+    @available ||= Gem::Version.new(version) > Gem::Version.new('10.8')
+  end
+
+  def self.version
+    @version ||= `uname`.strip == 'Darwin' && `sw_vers -productVersion`.strip
   end
 
   def self.execute(verbose, options)
