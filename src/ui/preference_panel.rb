@@ -160,7 +160,7 @@ class PreferencePanel
     livereload_service_help_info.addListener(Swt::SWT::Selection, Swt::Widgets::Listener.impl do |method, evt| 
        Swt::Program.launch(evt.text)
     end)
-
+=begin
     layoutdata = Swt::Layout::FormData.new()
     layoutdata.left = Swt::Layout::FormAttachment.new( livereload_service_help_info, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( livereload_service_help_info, 10, Swt::SWT::BOTTOM)
@@ -169,7 +169,7 @@ class PreferencePanel
     @service_remote_control_button.setSelection( App::CONFIG["services"].include? :remote_control )
     @service_remote_control_button.addListener(Swt::SWT::Selection, services_button_handler)
     @service_remote_control_button.setLayoutData(layoutdata)
-
+=end
     layoutdata = Swt::Layout::FormData.new(150, Swt::SWT::DEFAULT)
     layoutdata.left = Swt::Layout::FormAttachment.new( @service_http_button, 0, Swt::SWT::LEFT )
     layoutdata.top  = Swt::Layout::FormAttachment.new( @service_remote_control_button, 10, Swt::SWT::BOTTOM)
