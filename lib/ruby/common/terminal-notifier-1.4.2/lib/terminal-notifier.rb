@@ -3,7 +3,7 @@ module TerminalNotifier
 
   class UnsupportedPlatformError < StandardError; end
   def self.available?
-    @available ||= Gem::Version.new(version) > Gem::Version.new('10.8')
+    @available ||= (/darwin/ =~ RUBY_PLATFORM) && Gem::Version.new(version) > Gem::Version.new('10.8')
   end
 
   def self.version
