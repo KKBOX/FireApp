@@ -1,5 +1,7 @@
 ![Fire.app](https://github.com/kkbox/FireApp/raw/master/lib/images/icon/256.png)
 
+We have decided to discontinue the Compass.app & Fire.app projects. You can still get the source code under GPL as always, and we have put the latest binary on GitHub for free. [What happened?](https://github.com/KKBOX/compassapp/wiki/farewell)
+
 # Fire.app
 
 [Fire.app][fireapp] is a **menubar only app** for dead easy HTML prototyping.
@@ -18,9 +20,7 @@ Fire.app is written in **Java (JRuby)**, so you must install JRE(Java Runtime En
 
 ## Download
 
-You can buy Fire.app from [our official site][fireapp]. Once you bought it, We will send an email with download links to your PayPal's email address. You will also get 1.x updates for free.
-
-Fire.app is **GPLv2 licensed** because we love open source so much. The source code is [available on GitHub][fireapp-github]. You can build it your own, or even modify it based on your needs.
+You can download [the latest release](https://github.com/KKBOX/FireApp/releases).
 
 ## Install
 
