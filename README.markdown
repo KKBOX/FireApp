@@ -1,6 +1,6 @@
 ![Fire.app](https://github.com/kkbox/FireApp/raw/master/lib/images/icon/256.png)
 
-We have decided to discontinue the Compass.app & Fire.app projects. You can still get the source code under GPL as always, and we have put the latest binary on GitHub for free. [What happened?](https://github.com/KKBOX/compassapp/wiki/farewell)
+Fire.app is not maintained. You can still get the source code under GPL as always, and download the latest binary on GitHub for free. [What happened?](https://github.com/KKBOX/compassapp/wiki/farewell)
 
 # Fire.app
 
