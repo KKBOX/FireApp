@@ -8,7 +8,7 @@ require 'rest_client'
 class TheHoldUploader
 
   def self.build_manifest(folder_path)
-    pwd = Dir.pwd 
+    pwd = Dir.pwd
 
     Dir.chdir( folder_path )
 
@@ -19,21 +19,21 @@ class TheHoldUploader
       md5sum = Digest::MD5.hexdigest( File.read(filename))
       manifest[filename]= md5sum
       rescue => e
-        App.alert(filename)  
-        App.alert(e.inspect)  
+        App.alert(filename)
+        App.alert(e.inspect)
       end
     end
 
-    open("manifest.json", "w"){|f| f.write( JSON.dump(manifest) )}
+    open("manifest.json", "wb"){|f| f.write( JSON.dump(manifest) )}
 
     Dir.chdir(pwd)
-  end 
+  end
 
 
 
   def self.upload_patch(to_folder, options)
 
-    begin 
+    begin
       uri = URI(options[:host])
       puts "#{uri.scheme}://#{options[:project]}.#{options[:login]}.#{uri.host}/manifest.json"
       form = JSON.load( open("#{uri.scheme}://#{options[:project]}.#{options[:login]}.#{uri.host}/manifest.json",'r'){|f| f.read} )
@@ -47,19 +47,53 @@ class TheHoldUploader
     to = JSON.load( to_json_data )
 
     tempfile = File.join( Dir.tmpdir,"the-hold-#{options[:project]}-#{rand}.zip")
-    Zip::ZipOutputStream.open(tempfile) do |zos|
-      zos.put_next_entry 'manifest.json'
-      zos.puts to_json_data
 
-      to.each do |filename, md5| 
-        puts filename
-        if form[filename] != md5 
-          zos.put_next_entry filename
-          zos.puts open( File.join(to_folder, filename), 'r'){|f| f.read}
+    # Call java.util.zip directly.
+    abs_path = File.absolute_path(to_folder)
+    puts "Creating zipped file: #{tempfile}"
+    fo = java.io::FileOutputStream.new(tempfile)
+    zo = java.util.zip.ZipOutputStream.new(fo)
+
+    puts "=> Writing manifest.json"
+    zo.putNextEntry(java.util.zip.ZipEntry.new("manifest.json"))
+    fi = java.io::FileInputStream.new(File.join(abs_path, 'manifest.json'))
+    c = 0
+    while((c=fi.read())!=-1) do
+      zo.write(c)
+    end
+    zo.closeEntry
+
+    to.each do |filename, md5|
+      if form[filename] != md5
+        puts "=> Writing #{filename}"
+        zo.putNextEntry( java.util.zip.ZipEntry.new(filename) )
+        fi = java.io::FileInputStream.new( File.join(abs_path, filename) )
+        c = 0
+        while((c=fi.read())!=-1) do
+          zo.write(c)
         end
+        zo.closeEntry
+      else
+        puts "-  Skipping #{filename}"
       end
     end
-    f = File.new(tempfile)
+
+    zo.close
+    fo.close
+
+    #Zip::ZipOutputStream.open(tempfile) do |zos|
+      #zos.put_next_entry 'manifest.json'
+      #zos.puts to_json_data
+
+      #to.each do |filename, md5|
+        #puts filename
+        #if form[filename] != md5
+          #zos.put_next_entry filename
+          #zos.puts open( File.join(to_folder, filename), 'r'){|f| f.read}
+        #end
+      #end
+    #end
+    f = File.new(tempfile, "rb")
     f.instance_eval "def content_type; 'application/zip'; end"
     f.instance_eval "def original_filename; 'patch_file.zip'; end"
 
@@ -71,10 +105,10 @@ class TheHoldUploader
       "cname"      => options[:cname],
       "project_site_password"    => options[:project_site_password]
     })
-    
+
     File.unlink(tempfile)
     puts respone.inspect
     respone.body
   end
 
-end 
+end
