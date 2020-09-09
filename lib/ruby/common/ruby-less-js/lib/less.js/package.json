@@ -36,7 +36,7 @@
     "test": "make test"
   },
   "optionalDependencies": {
-    "mime": "1.2.x",
+    "mime": "2.4.x",
     "request": ">=2.12.0",
     "mkdirp": "~0.3.4",
     "ycssmin": ">=1.0.1"
@@ -78,7 +78,7 @@
   "readme": "less.js\n=======\n\nThe **dynamic** stylesheet language.\n\n<http://lesscss.org>\n\nabout\n-----\n\nThis is the JavaScript, and now official, stable version of LESS.\n\nFor more information on the language and usage visit [lesscss.org](http://lesscss.org). More information also available [in our wiki](https://github.com/cloudhead/less.js/wiki)\n\nlicense\n-------\n\nSee `LICENSE` file.\n\n> Copyright (c) 2009-2013 Alexis Sellier & The Core Less Team\n",
   "readmeFilename": "README.md",
   "dependencies": {
-    "mime": "1.2.x",
+    "mime": "2.4.x",
     "request": ">=2.12.0",
     "mkdirp": "~0.3.4",
     "ycssmin": ">=1.0.1"
