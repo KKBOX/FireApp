@@ -7,7 +7,7 @@ class  AppWatcher < Compass::Commands::WatchProject
     CompassHooker::WatchHooker.watches += livereload_watchers
     #@watchers += livescript_watchers
     #@watchers += coffeescript_watchers
-    
+
     CompassHooker::WatchHooker.watches  += custom_watcher(Compass.configuration.fireapp_coffeescripts_dir, "*.coffee", method(:coffee_callback))
     CompassHooker::WatchHooker.watches  += custom_watcher(Compass.configuration.fireapp_livescripts_dir, "*.ls", method(:livescript_callback))
     CompassHooker::WatchHooker.watches  += custom_watcher(Compass.configuration.fireapp_less_dir, "*.less", method(:less_callback))
@@ -18,7 +18,7 @@ class  AppWatcher < Compass::Commands::WatchProject
     perform
     sass_compiler.compile!
   end
-  
+
   def stop
     listener = sass_compiler.compiler.listener
 
@@ -41,7 +41,7 @@ class  AppWatcher < Compass::Commands::WatchProject
       filter = File.join(dir, extensions)
       child_filter = File.join(dir, "**", extensions)
     end
-    
+
 
     #[Compass::Configuration::Watch.new(filter, &callback),
     # Compass::Configuration::Watch.new(child_filter, &callback)]
@@ -52,7 +52,7 @@ class  AppWatcher < Compass::Commands::WatchProject
     log_action(:info, "#{file} was #{action}", options)
     puts( "#{file} was #{action}", options)
     CoffeeScriptCompiler.compile_folder( Compass.configuration.fireapp_coffeescripts_dir,
-                                  Compass.configuration.javascripts_dir, 
+                                  Compass.configuration.javascripts_path,
                                   Compass.configuration.fireapp_coffeescript_options );
   end
 
@@ -60,7 +60,7 @@ class  AppWatcher < Compass::Commands::WatchProject
     log_action(:info, "#{file} was #{action}", options)
     puts( "#{file} was #{action}", options)
     LiveScriptCompiler.compile_folder( Compass.configuration.fireapp_livescripts_dir,
-                                  Compass.configuration.javascripts_dir, 
+                                  Compass.configuration.javascripts_path,
                                   Compass.configuration.fireapp_livescript_options );
   end
 
@@ -70,7 +70,7 @@ class  AppWatcher < Compass::Commands::WatchProject
     log_action(:info, "#{file} was #{action}", options)
     puts( "#{file} was #{action}", options)
     LessCompiler.compile_folder( Compass.configuration.fireapp_less_dir,
-                                  Compass.configuration.css_dir, 
+                                  Compass.configuration.css_path,
                                   Compass.configuration.fireapp_less_options );
   end
 
@@ -92,7 +92,7 @@ class  AppWatcher < Compass::Commands::WatchProject
 
     tray = Tray.instance
     tray.shell.display.wake if tray.shell
-  end 
+  end
 
 
 end
